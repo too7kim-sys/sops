@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('응용시스템')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('system')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">기준정보 관리 &gt; 응용시스템</div>
+        <div class="page-head">
+            <div>
+                <div class="page-title">응용시스템 마스터</div>
+                <div class="page-desc">운영대상 응용시스템 기준정보 관리</div>
+            </div>
+            <div class="toolbar">
+                <a th:href="@{/system/write}" class="btn btn-primary">＋ 시스템 등록</a>
+            </div>
+        </div>
+
+        <form method="get" th:action="@{/system/list}" class="searchbar">
+            <select name="searchCondition">
+                <option value="">전체 등급</option>
+                <option value="1" th:selected="${searchVO.searchCondition == '1'}">1등급(상)</option>
+                <option value="2" th:selected="${searchVO.searchCondition == '2'}">2등급(중)</option>
+                <option value="3" th:selected="${searchVO.searchCondition == '3'}">3등급(하)</option>
+            </select>
+            <input type="text" name="searchKeyword" th:value="${searchVO.searchKeyword}" placeholder="시스템ID/시스템명/담당자 검색"/>
+            <button type="submit" class="btn btn-default">검색</button>
+        </form>
+
+        <div class="panel mb0">
+            <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b th:text="${totalCnt}">0</b>건</p>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th style="width:140px;">시스템ID</th>
+                    <th>시스템명</th>
+                    <th class="center" style="width:110px;">운영담당자</th>
+                    <th class="center" style="width:130px;">운영부서</th>
+                    <th class="center" style="width:110px;">중요도등급</th>
+                    <th class="center" style="width:90px;">사용여부</th>
+                    <th class="center" style="width:130px;">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${systemList}">
+                    <td><a th:href="@{/system/detail/{id}(id=${s.sysId})}" th:text="${s.sysId}">SYS001</a></td>
+                    <td th:text="${s.sysNm}">시스템명</td>
+                    <td class="center" th:text="${s.mngrNm}">담당자</td>
+                    <td class="center" th:text="${s.mngrDept}">부서</td>
+                    <td class="center">
+                        <span th:switch="${s.grad}">
+                            <span th:case="'1'">1등급(상)</span>
+                            <span th:case="'2'">2등급(중)</span>
+                            <span th:case="'3'">3등급(하)</span>
+                            <span th:case="*" th:text="${s.grad}">-</span>
+                        </span>
+                    </td>
+                    <td class="center" th:text="${s.useAt == 'Y'}?'사용':'미사용'">사용</td>
+                    <td class="center" th:text="${s.regDt}">일시</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(systemList)}"><td colspan="7" class="empty">등록된 시스템이 없습니다.</td></tr>
+                </tbody>
+            </table>
+            <div th:replace="~{fragments/common :: paging(${pageInfo}, '/system/list')}"></div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

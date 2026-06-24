@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.check.service.impl.CheckMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND C.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND C.RESULT = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND C.CHKR_ID LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectCheckList" parameterType="egovframework.ops.check.service.CheckVO"
+            resultType="egovframework.ops.check.service.CheckVO">
+        SELECT C.CHK_ID    AS chkId,
+               C.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               C.CHK_TYPE  AS chkType,
+               TC.CODE_NM  AS chkTypeNm,
+               TO_CHAR(C.CHK_DT, 'YYYY-MM-DD') AS chkDt,
+               C.CHKR_ID   AS chkrId,
+               C.RESULT    AS result,
+               RC.CODE_NM  AS resultNm,
+               C.REMARK    AS remark,
+               (SELECT COUNT(*) FROM OPS_CHECK_ITEM IT WHERE IT.CHK_ID = C.CHK_ID) AS itemCnt,
+               (SELECT COUNT(*) FROM OPS_CHECK_ITEM IT WHERE IT.CHK_ID = C.CHK_ID AND IT.ITEM_RESULT = 'ABNORMAL') AS abnormalCnt
+          FROM OPS_CHECK C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CHECK_TYPE' AND TC.CODE_ID = C.CHK_TYPE
+          LEFT JOIN OPS_CODE RC ON RC.CODE_GRP = 'CHECK_RESULT' AND RC.CODE_ID = C.RESULT
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY C.CHK_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectCheckListCnt" parameterType="egovframework.ops.check.service.CheckVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_CHECK C
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectCheck" parameterType="long"
+            resultType="egovframework.ops.check.service.CheckVO">
+        SELECT C.CHK_ID    AS chkId,
+               C.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               C.CHK_TYPE  AS chkType,
+               TC.CODE_NM  AS chkTypeNm,
+               TO_CHAR(C.CHK_DT, 'YYYY-MM-DD') AS chkDt,
+               C.CHKR_ID   AS chkrId,
+               C.RESULT    AS result,
+               RC.CODE_NM  AS resultNm,
+               C.REMARK    AS remark,
+               TO_CHAR(C.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_CHECK C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CHECK_TYPE' AND TC.CODE_ID = C.CHK_TYPE
+          LEFT JOIN OPS_CODE RC ON RC.CODE_GRP = 'CHECK_RESULT' AND RC.CODE_ID = C.RESULT
+         WHERE C.CHK_ID = #{chkId}
+    </select>
+
+    <select id="selectCheckItemList" parameterType="long"
+            resultType="egovframework.ops.check.service.CheckItemVO">
+        SELECT IT.ITEM_ID     AS itemId,
+               IT.CHK_ID      AS chkId,
+               IT.ITEM_NM     AS itemNm,
+               IT.ITEM_RESULT AS itemResult,
+               IT.ITEM_REMARK AS itemRemark
+          FROM OPS_CHECK_ITEM IT
+         WHERE IT.CHK_ID = #{chkId}
+         ORDER BY IT.ITEM_ID
+    </select>
+
+    <insert id="insertCheck" parameterType="egovframework.ops.check.service.CheckVO"
+            useGeneratedKeys="true" keyProperty="chkId">
+        INSERT INTO OPS_CHECK
+            (SYS_ID, CHK_TYPE, CHK_DT, CHKR_ID, RESULT, REMARK, REG_DT)
+        VALUES
+            (#{sysId}, #{chkType},
+             <choose><when test="chkDt != null and chkDt != ''">TO_DATE(#{chkDt}, 'YYYY-MM-DD')</when><otherwise>CURRENT_DATE</otherwise></choose>,
+             #{chkrId}, #{result}, #{remark}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <insert id="insertCheckItem" parameterType="egovframework.ops.check.service.CheckItemVO">
+        INSERT INTO OPS_CHECK_ITEM
+            (CHK_ID, ITEM_NM, ITEM_RESULT, ITEM_REMARK)
+        VALUES
+            (#{chkId}, #{itemNm}, #{itemResult}, #{itemRemark})
+    </insert>
+
+    <delete id="deleteCheck" parameterType="long">
+        DELETE FROM OPS_CHECK WHERE CHK_ID = #{chkId}
+    </delete>
+
+    <delete id="deleteCheckItem" parameterType="long">
+        DELETE FROM OPS_CHECK_ITEM WHERE CHK_ID = #{chkId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.change.service.impl.ChangeMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND C.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND C.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND C.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectChangeList" parameterType="egovframework.ops.change.service.ChangeVO"
+            resultType="egovframework.ops.change.service.ChangeVO">
+        SELECT C.CHG_ID    AS chgId,
+               C.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               C.TITLE     AS title,
+               C.CHG_TYPE  AS chgType,
+               TC.CODE_NM  AS chgTypeNm,
+               C.STATUS    AS status,
+               SC.CODE_NM  AS statusNm,
+               C.REQ_ID    AS reqId,
+               TO_CHAR(C.REQ_DT, 'YYYY-MM-DD HH24:MI') AS reqDt,
+               TO_CHAR(C.PLAN_DT, 'YYYY-MM-DD')        AS planDt
+          FROM OPS_CHANGE C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CHANGE_STATUS' AND SC.CODE_ID = C.STATUS
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CHANGE_TYPE' AND TC.CODE_ID = C.CHG_TYPE
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY C.CHG_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectChangeListCnt" parameterType="egovframework.ops.change.service.ChangeVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_CHANGE C
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectChange" parameterType="long"
+            resultType="egovframework.ops.change.service.ChangeVO">
+        SELECT C.CHG_ID       AS chgId,
+               C.SYS_ID       AS sysId,
+               S.SYS_NM       AS sysNm,
+               C.TITLE        AS title,
+               C.CHG_TYPE     AS chgType,
+               TC.CODE_NM     AS chgTypeNm,
+               C.REASON       AS reason,
+               C.CONTENT      AS content,
+               C.STATUS       AS status,
+               SC.CODE_NM     AS statusNm,
+               C.REQ_ID       AS reqId,
+               TO_CHAR(C.REQ_DT,   'YYYY-MM-DD HH24:MI') AS reqDt,
+               C.APPR_ID      AS apprId,
+               TO_CHAR(C.APPR_DT,  'YYYY-MM-DD HH24:MI') AS apprDt,
+               C.APPR_OPINION AS apprOpinion,
+               TO_CHAR(C.PLAN_DT,  'YYYY-MM-DD')         AS planDt,
+               TO_CHAR(C.APPLY_DT, 'YYYY-MM-DD HH24:MI') AS applyDt,
+               TO_CHAR(C.REG_DT,   'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_CHANGE C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CHANGE_STATUS' AND SC.CODE_ID = C.STATUS
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CHANGE_TYPE' AND TC.CODE_ID = C.CHG_TYPE
+         WHERE C.CHG_ID = #{chgId}
+    </select>
+
+    <insert id="insertChange" parameterType="egovframework.ops.change.service.ChangeVO"
+            useGeneratedKeys="true" keyProperty="chgId">
+        INSERT INTO OPS_CHANGE
+            (SYS_ID, TITLE, CHG_TYPE, REASON, CONTENT, STATUS, REQ_ID, REQ_DT, PLAN_DT, REG_DT)
+        VALUES
+            (#{sysId}, #{title}, #{chgType}, #{reason}, #{content}, #{status},
+             #{reqId}, CURRENT_TIMESTAMP,
+             <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>NULL</otherwise></choose>,
+             CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateChange" parameterType="egovframework.ops.change.service.ChangeVO">
+        UPDATE OPS_CHANGE
+           SET SYS_ID   = #{sysId},
+               TITLE    = #{title},
+               CHG_TYPE = #{chgType},
+               REASON   = #{reason},
+               CONTENT  = #{content},
+               PLAN_DT  = <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>NULL</otherwise></choose>
+         WHERE CHG_ID = #{chgId}
+    </update>
+
+    <update id="updateChangeApprove" parameterType="egovframework.ops.change.service.ChangeVO">
+        UPDATE OPS_CHANGE
+           SET STATUS       = #{status},
+               APPR_ID      = #{apprId},
+               APPR_DT      = CURRENT_TIMESTAMP,
+               APPR_OPINION = #{apprOpinion}
+         WHERE CHG_ID = #{chgId}
+    </update>
+
+    <update id="updateChangeApply" parameterType="egovframework.ops.change.service.ChangeVO">
+        UPDATE OPS_CHANGE
+           SET STATUS   = #{status},
+               APPLY_DT = COALESCE(APPLY_DT, CURRENT_TIMESTAMP)
+         WHERE CHG_ID = #{chgId}
+    </update>
+
+    <delete id="deleteChange" parameterType="long">
+        DELETE FROM OPS_CHANGE WHERE CHG_ID = #{chgId}
+    </delete>
+
+</mapper>

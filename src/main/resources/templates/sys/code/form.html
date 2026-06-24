@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('공통코드 등록/수정')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('code')}"></nav>
+    <main class="content">
+        <div th:with="isNew=${code.codeId == null or code.codeId == ''}">
+        <div class="breadcrumb">기준정보 관리 &gt; 공통코드관리 &gt; <span th:text="${isNew}?'등록':'수정'">등록</span></div>
+        <div class="page-head">
+            <div class="page-title" th:text="${isNew}?'공통코드 등록':'공통코드 수정'">공통코드 등록</div>
+        </div>
+
+        <form method="post" th:action="${isNew}?@{/sys/code/insert}:@{/sys/code/update}">
+            <div class="panel">
+                <table class="form">
+                    <tr>
+                        <th>코드그룹 <span class="required">*</span></th>
+                        <td>
+                            <input type="text" name="codeGrp" th:value="${code.codeGrp}" required
+                                   th:readonly="${!isNew}"/>
+                        </td>
+                        <th>코드값 <span class="required">*</span></th>
+                        <td>
+                            <input type="text" name="codeId" th:value="${code.codeId}" required
+                                   th:readonly="${!isNew}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>코드명 <span class="required">*</span></th>
+                        <td colspan="3"><input type="text" name="codeNm" th:value="${code.codeNm}" required/></td>
+                    </tr>
+                    <tr>
+                        <th>정렬순서</th>
+                        <td><input type="number" name="sortOrdr" th:value="${code.sortOrdr}"/></td>
+                        <th>사용여부 <span class="required">*</span></th>
+                        <td>
+                            <select name="useAt" required>
+                                <option value="Y" th:selected="${code.useAt == 'Y' or code.useAt == null or code.useAt == ''}">Y</option>
+                                <option value="N" th:selected="${code.useAt == 'N'}">N</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="toolbar right" style="justify-content:flex-end;">
+                <a th:href="@{/sys/code/list}" class="btn btn-default">목록</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+        </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

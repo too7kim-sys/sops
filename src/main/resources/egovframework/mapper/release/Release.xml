@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.release.service.impl.ReleaseMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND R.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND R.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND R.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectReleaseList" parameterType="egovframework.ops.release.service.ReleaseVO"
+            resultType="egovframework.ops.release.service.ReleaseVO">
+        SELECT R.REL_ID     AS relId,
+               R.SYS_ID     AS sysId,
+               S.SYS_NM     AS sysNm,
+               R.VER        AS ver,
+               R.TITLE      AS title,
+               R.STATUS     AS status,
+               SC.CODE_NM   AS statusNm,
+               R.CHARGER_ID AS chargerId,
+               TO_CHAR(R.PLAN_DT, 'YYYY-MM-DD HH24:MI') AS planDt
+          FROM OPS_RELEASE R
+          LEFT JOIN OPS_SYSTEM S ON R.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'RELEASE_STATUS' AND SC.CODE_ID = R.STATUS
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY R.REL_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectReleaseListCnt" parameterType="egovframework.ops.release.service.ReleaseVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_RELEASE R
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectRelease" parameterType="long"
+            resultType="egovframework.ops.release.service.ReleaseVO">
+        SELECT R.REL_ID     AS relId,
+               R.SYS_ID     AS sysId,
+               S.SYS_NM     AS sysNm,
+               R.CHG_ID     AS chgId,
+               R.VER        AS ver,
+               R.TITLE      AS title,
+               R.CONTENT    AS content,
+               R.STATUS     AS status,
+               SC.CODE_NM   AS statusNm,
+               TO_CHAR(R.PLAN_DT,   'YYYY-MM-DD HH24:MI') AS planDt,
+               TO_CHAR(R.DEPLOY_DT, 'YYYY-MM-DD HH24:MI') AS deployDt,
+               R.CHARGER_ID AS chargerId,
+               R.RESULT     AS result,
+               TO_CHAR(R.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_RELEASE R
+          LEFT JOIN OPS_SYSTEM S ON R.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'RELEASE_STATUS' AND SC.CODE_ID = R.STATUS
+         WHERE R.REL_ID = #{relId}
+    </select>
+
+    <insert id="insertRelease" parameterType="egovframework.ops.release.service.ReleaseVO"
+            useGeneratedKeys="true" keyProperty="relId">
+        INSERT INTO OPS_RELEASE
+            (SYS_ID, CHG_ID, VER, TITLE, CONTENT, STATUS, PLAN_DT, CHARGER_ID, REG_DT)
+        VALUES
+            (#{sysId}, #{chgId}, #{ver}, #{title}, #{content}, #{status},
+             <choose>
+                 <when test="planDt != null and planDt != ''">TO_TIMESTAMP(REPLACE(#{planDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when>
+                 <otherwise>NULL</otherwise>
+             </choose>,
+             #{chargerId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateRelease" parameterType="egovframework.ops.release.service.ReleaseVO">
+        UPDATE OPS_RELEASE
+           SET SYS_ID     = #{sysId},
+               CHG_ID     = #{chgId},
+               VER        = #{ver},
+               TITLE      = #{title},
+               CONTENT    = #{content},
+               PLAN_DT    =
+               <choose>
+                   <when test="planDt != null and planDt != ''">TO_TIMESTAMP(REPLACE(#{planDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when>
+                   <otherwise>NULL</otherwise>
+               </choose>
+         WHERE REL_ID = #{relId}
+    </update>
+
+    <update id="updateReleaseProcess" parameterType="egovframework.ops.release.service.ReleaseVO">
+        UPDATE OPS_RELEASE
+           SET STATUS     = #{status},
+               RESULT     = #{result},
+               CHARGER_ID = #{chargerId}
+               <if test="status == 'DEPLOYED'">
+               , DEPLOY_DT = COALESCE(DEPLOY_DT, CURRENT_TIMESTAMP)
+               </if>
+         WHERE REL_ID = #{relId}
+    </update>
+
+    <delete id="deleteRelease" parameterType="long">
+        DELETE FROM OPS_RELEASE WHERE REL_ID = #{relId}
+    </delete>
+
+</mapper>

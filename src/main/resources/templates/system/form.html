@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('응용시스템 등록/수정')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('system')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">기준정보 관리 &gt; 응용시스템 &gt; <span th:text="${system.sysId == null or system.sysId == ''}?'등록':'수정'">등록</span></div>
+        <div class="page-head">
+            <div class="page-title" th:text="${system.sysId == null or system.sysId == ''}?'응용시스템 등록':'응용시스템 수정'">응용시스템 등록</div>
+        </div>
+
+        <form method="post" th:action="${system.sysId == null or system.sysId == ''}?@{/system/insert}:@{/system/update}">
+            <div class="panel">
+                <table class="form">
+                    <tr>
+                        <th>시스템ID <span class="required">*</span></th>
+                        <td>
+                            <input th:if="${system.sysId == null or system.sysId == ''}" type="text" name="sysId" th:value="${system.sysId}" required/>
+                            <span th:unless="${system.sysId == null or system.sysId == ''}">
+                                <input type="hidden" name="sysId" th:value="${system.sysId}"/>
+                                <span th:text="${system.sysId}">SYS001</span>
+                            </span>
+                        </td>
+                        <th>중요도등급 <span class="required">*</span></th>
+                        <td>
+                            <select name="grad" required>
+                                <option value="1" th:selected="${system.grad == '1'}">1등급(상)</option>
+                                <option value="2" th:selected="${system.grad == '2'}">2등급(중)</option>
+                                <option value="3" th:selected="${system.grad == '3'}">3등급(하)</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>시스템명 <span class="required">*</span></th>
+                        <td colspan="3"><input type="text" name="sysNm" th:value="${system.sysNm}" required/></td>
+                    </tr>
+                    <tr>
+                        <th>운영담당자</th>
+                        <td><input type="text" name="mngrNm" th:value="${system.mngrNm}"/></td>
+                        <th>운영부서</th>
+                        <td><input type="text" name="mngrDept" th:value="${system.mngrDept}"/></td>
+                    </tr>
+                    <tr>
+                        <th>사용여부</th>
+                        <td colspan="3">
+                            <select name="useAt">
+                                <option value="Y" th:selected="${system.useAt == 'Y' or system.useAt == null or system.useAt == ''}">사용</option>
+                                <option value="N" th:selected="${system.useAt == 'N'}">미사용</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>시스템설명</th>
+                        <td colspan="3"><textarea name="sysDesc" rows="5" th:text="${system.sysDesc}"></textarea></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="toolbar right" style="justify-content:flex-end;">
+                <a th:href="@{/system/list}" class="btn btn-default">목록</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+        </form>
+    </main>
+</div>
+</body>
+</html>

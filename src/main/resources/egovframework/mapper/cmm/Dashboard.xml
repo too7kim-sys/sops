@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.cmm.dashboard.service.impl.DashboardMapper">
+
+    <select id="selectOpenIncidentCnt" resultType="int">
+        SELECT COUNT(*) FROM OPS_INCIDENT WHERE STATUS NOT IN ('CLOSED')
+    </select>
+
+    <select id="selectPendingChangeCnt" resultType="int">
+        SELECT COUNT(*) FROM OPS_CHANGE WHERE STATUS IN ('REQUESTED', 'REVIEWING')
+    </select>
+
+    <select id="selectTodayReleaseCnt" resultType="int">
+        SELECT COUNT(*) FROM OPS_RELEASE
+         WHERE CAST(PLAN_DT AS DATE) = CURRENT_DATE
+            OR CAST(DEPLOY_DT AS DATE) = CURRENT_DATE
+    </select>
+
+    <select id="selectTodayAbnormalCheckCnt" resultType="int">
+        SELECT COUNT(*) FROM OPS_CHECK
+         WHERE CHK_DT = CURRENT_DATE AND RESULT = 'ABNORMAL'
+    </select>
+
+    <select id="selectSystemCnt" resultType="int">
+        SELECT COUNT(*) FROM OPS_SYSTEM WHERE USE_AT = 'Y'
+    </select>
+
+    <select id="selectIncidentStatusStat" resultType="map">
+        SELECT C.CODE_ID  AS "code",
+               C.CODE_NM  AS "name",
+               NVL(I.CNT, 0) AS "cnt"
+          FROM OPS_CODE C
+          LEFT JOIN (
+                SELECT STATUS, COUNT(*) AS CNT
+                  FROM OPS_INCIDENT
+                 GROUP BY STATUS
+               ) I ON C.CODE_ID = I.STATUS
+         WHERE C.CODE_GRP = 'INCIDENT_STATUS'
+         ORDER BY C.SORT_ORDR
+    </select>
+
+    <select id="selectChangeStatusStat" resultType="map">
+        SELECT C.CODE_ID  AS "code",
+               C.CODE_NM  AS "name",
+               NVL(H.CNT, 0) AS "cnt"
+          FROM OPS_CODE C
+          LEFT JOIN (
+                SELECT STATUS, COUNT(*) AS CNT
+                  FROM OPS_CHANGE
+                 GROUP BY STATUS
+               ) H ON C.CODE_ID = H.STATUS
+         WHERE C.CODE_GRP = 'CHANGE_STATUS'
+         ORDER BY C.SORT_ORDR
+    </select>
+
+    <select id="selectRecentIncidents" resultType="map">
+        SELECT I.INC_ID    AS "incId",
+               I.TITLE     AS "title",
+               S.SYS_NM    AS "sysNm",
+               I.SEVERITY  AS "severity",
+               I.STATUS    AS "status",
+               SC.CODE_NM  AS "statusNm",
+               TO_CHAR(I.RCPT_DT, 'YYYY-MM-DD HH24:MI') AS "rcptDt"
+          FROM OPS_INCIDENT I
+          LEFT JOIN OPS_SYSTEM S ON I.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INCIDENT_STATUS' AND SC.CODE_ID = I.STATUS
+         ORDER BY I.INC_ID DESC
+         FETCH FIRST 5 ROWS ONLY
+    </select>
+
+    <select id="selectRecentChanges" resultType="map">
+        SELECT H.CHG_ID    AS "chgId",
+               H.TITLE     AS "title",
+               S.SYS_NM    AS "sysNm",
+               H.STATUS    AS "status",
+               SC.CODE_NM  AS "statusNm",
+               TO_CHAR(H.REQ_DT, 'YYYY-MM-DD HH24:MI') AS "reqDt"
+          FROM OPS_CHANGE H
+          LEFT JOIN OPS_SYSTEM S ON H.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CHANGE_STATUS' AND SC.CODE_ID = H.STATUS
+         ORDER BY H.CHG_ID DESC
+         FETCH FIRST 5 ROWS ONLY
+    </select>
+
+</mapper>

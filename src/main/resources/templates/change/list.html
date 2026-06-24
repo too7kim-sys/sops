@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('변경관리')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('change')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 변경관리</div>
+        <div class="page-head">
+            <div>
+                <div class="page-title">변경관리</div>
+                <div class="page-desc">변경요청 → 심의/승인 → 적용 → 완료 표준 처리절차</div>
+            </div>
+            <div class="toolbar">
+                <a th:href="@{/change/write}" class="btn btn-primary">＋ 변경요청</a>
+            </div>
+        </div>
+
+        <form method="get" th:action="@{/change/list}" class="searchbar">
+            <select name="searchSysId">
+                <option value="">전체 시스템</option>
+                <option th:each="s : ${systemList}" th:value="${s.sysId}" th:text="${s.sysNm}"
+                        th:selected="${s.sysId == searchVO.searchSysId}">시스템</option>
+            </select>
+            <select name="searchStatus">
+                <option value="">전체 상태</option>
+                <option th:each="c : ${statusList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                        th:selected="${c.codeId == searchVO.searchStatus}">상태</option>
+            </select>
+            <input type="text" name="searchKeyword" th:value="${searchVO.searchKeyword}" placeholder="제목 검색"/>
+            <button type="submit" class="btn btn-default">검색</button>
+        </form>
+
+        <div class="panel mb0">
+            <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b th:text="${totalCnt}">0</b>건</p>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th class="center" style="width:70px;">번호</th>
+                    <th style="width:160px;">시스템</th>
+                    <th>제목</th>
+                    <th class="center" style="width:100px;">유형</th>
+                    <th class="center" style="width:90px;">상태</th>
+                    <th class="center" style="width:90px;">요청자</th>
+                    <th class="center" style="width:130px;">요청일시</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${changeList}">
+                    <td class="center" th:text="${c.chgId}">1</td>
+                    <td th:text="${c.sysNm}">시스템</td>
+                    <td><a th:href="@{/change/detail/{id}(id=${c.chgId})}" th:text="${c.title}">제목</a></td>
+                    <td class="center" th:text="${c.chgTypeNm}">유형</td>
+                    <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(c.status)}" th:text="${c.statusNm}">상태</span></td>
+                    <td class="center" th:text="${c.reqId}">요청자</td>
+                    <td class="center" th:text="${c.reqDt}">일시</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(changeList)}"><td colspan="7" class="empty">등록된 변경요청이 없습니다.</td></tr>
+                </tbody>
+            </table>
+            <div th:replace="~{fragments/common :: paging(${pageInfo}, '/change/list')}"></div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

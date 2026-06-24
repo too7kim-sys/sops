@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('사용자 등록/수정')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('user')}"></nav>
+    <main class="content">
+        <div th:with="isNew=${user.userId == null or user.userId == ''}">
+        <div class="breadcrumb">기준정보 관리 &gt; 사용자관리 &gt; <span th:text="${isNew}?'등록':'수정'">등록</span></div>
+        <div class="page-head">
+            <div class="page-title" th:text="${isNew}?'사용자 등록':'사용자 정보 수정'">사용자 등록</div>
+        </div>
+
+        <form method="post" th:action="${isNew}?@{/sys/user/insert}:@{/sys/user/update}">
+            <div class="panel">
+                <table class="form">
+                    <tr>
+                        <th>사용자ID <span class="required">*</span></th>
+                        <td>
+                            <input type="text" name="userId" th:value="${user.userId}" required
+                                   th:readonly="${!isNew}"/>
+                        </td>
+                        <th>사용자명 <span class="required">*</span></th>
+                        <td><input type="text" name="userNm" th:value="${user.userNm}" required/></td>
+                    </tr>
+                    <tr>
+                        <th>비밀번호 <span class="required" th:if="${isNew}">*</span></th>
+                        <td colspan="3">
+                            <input type="password" name="password"
+                                   th:required="${isNew}"
+                                   th:placeholder="${isNew}?'비밀번호 입력':'변경시에만 입력'"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>권한 <span class="required">*</span></th>
+                        <td>
+                            <select name="role" required>
+                                <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">운영관리자</option>
+                                <option value="OPERATOR" th:selected="${user.role == 'OPERATOR'}">운영자</option>
+                                <option value="USER" th:selected="${user.role == 'USER'}">일반사용자</option>
+                            </select>
+                        </td>
+                        <th>사용여부 <span class="required">*</span></th>
+                        <td>
+                            <select name="useAt" required>
+                                <option value="Y" th:selected="${user.useAt == 'Y' or user.useAt == null or user.useAt == ''}">Y</option>
+                                <option value="N" th:selected="${user.useAt == 'N'}">N</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>부서</th>
+                        <td><input type="text" name="deptNm" th:value="${user.deptNm}"/></td>
+                        <th>연락처</th>
+                        <td><input type="text" name="telno" th:value="${user.telno}"/></td>
+                    </tr>
+                    <tr>
+                        <th>이메일</th>
+                        <td colspan="3"><input type="email" name="email" th:value="${user.email}"/></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="toolbar right" style="justify-content:flex-end;">
+                <a th:href="@{/sys/user/list}" class="btn btn-default">목록</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+        </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.cmm.code.service.impl.CodeMapper">
+
+    <resultMap id="codeMap" type="egovframework.ops.cmm.code.service.CodeVO">
+        <result property="codeGrp"   column="CODE_GRP"/>
+        <result property="codeId"    column="CODE_ID"/>
+        <result property="codeNm"    column="CODE_NM"/>
+        <result property="sortOrdr"  column="SORT_ORDR"/>
+        <result property="useAt"     column="USE_AT"/>
+    </resultMap>
+
+    <select id="selectCodeList" parameterType="string" resultMap="codeMap">
+        SELECT CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT
+          FROM OPS_CODE
+         WHERE CODE_GRP = #{codeGrp} AND USE_AT = 'Y'
+         ORDER BY SORT_ORDR
+    </select>
+
+    <select id="selectCodeMngList" parameterType="egovframework.ops.cmm.code.service.CodeVO"
+            resultMap="codeMap">
+        SELECT CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT
+          FROM OPS_CODE
+         WHERE 1 = 1
+        <if test="searchCondition != null and searchCondition != ''">
+            AND CODE_GRP = #{searchCondition}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (CODE_ID LIKE '%' || #{searchKeyword} || '%'
+                 OR CODE_NM LIKE '%' || #{searchKeyword} || '%')
+        </if>
+         ORDER BY CODE_GRP, SORT_ORDR
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectCodeMngListCnt" parameterType="egovframework.ops.cmm.code.service.CodeVO"
+            resultType="int">
+        SELECT COUNT(*) FROM OPS_CODE WHERE 1 = 1
+        <if test="searchCondition != null and searchCondition != ''">
+            AND CODE_GRP = #{searchCondition}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (CODE_ID LIKE '%' || #{searchKeyword} || '%'
+                 OR CODE_NM LIKE '%' || #{searchKeyword} || '%')
+        </if>
+    </select>
+
+    <insert id="insertCode" parameterType="egovframework.ops.cmm.code.service.CodeVO">
+        INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT)
+        VALUES (#{codeGrp}, #{codeId}, #{codeNm}, #{sortOrdr}, #{useAt})
+    </insert>
+
+    <update id="updateCode" parameterType="egovframework.ops.cmm.code.service.CodeVO">
+        UPDATE OPS_CODE
+           SET CODE_NM = #{codeNm}, SORT_ORDR = #{sortOrdr}, USE_AT = #{useAt}
+         WHERE CODE_GRP = #{codeGrp} AND CODE_ID = #{codeId}
+    </update>
+
+    <delete id="deleteCode" parameterType="egovframework.ops.cmm.code.service.CodeVO">
+        DELETE FROM OPS_CODE WHERE CODE_GRP = #{codeGrp} AND CODE_ID = #{codeId}
+    </delete>
+
+</mapper>

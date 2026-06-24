@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('운영점검 상세')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('check')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 운영점검 &gt; 상세</div>
+        <div class="page-head">
+            <div class="page-title">운영점검 상세 <span style="color:#888;font-weight:400;">(CHK-<span th:text="${check.chkId}">1</span>)</span></div>
+            <div class="toolbar">
+                <form th:action="@{/check/delete/{id}(id=${check.chkId})}" method="post"
+                      onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>점검 정보</h3>
+            <table class="form">
+                <tr><th>대상 시스템</th><td th:text="${check.sysNm}">시스템</td>
+                    <th>점검 유형</th><td th:text="${check.chkTypeNm}">유형</td></tr>
+                <tr><th>점검 일자</th><td th:text="${check.chkDt}">일자</td>
+                    <th>점검자</th><td th:text="${check.chkrId} ?: '-'">점검자</td></tr>
+                <tr><th>종합 결과</th><td>
+                        <span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(check.result)}" th:text="${check.resultNm}">결과</span>
+                    </td>
+                    <th>등록 일시</th><td th:text="${check.regDt}">일시</td></tr>
+                <tr><th>비고</th><td colspan="3" style="white-space:pre-line;" th:text="${check.remark} ?: '-'">-</td></tr>
+            </table>
+        </div>
+
+        <div class="panel">
+            <h3>점검 항목</h3>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th class="center" style="width:50px;">#</th>
+                    <th>항목명</th>
+                    <th class="center" style="width:120px;">결과</th>
+                    <th>비고</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="it,stat : ${check.itemList}">
+                    <td class="center" th:text="${stat.count}">1</td>
+                    <td th:text="${it.itemNm}">항목명</td>
+                    <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(it.itemResult)}"
+                                              th:text="${it.itemResult == 'ABNORMAL'}?'이상':'정상'">결과</span></td>
+                    <td th:text="${it.itemRemark} ?: '-'">비고</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(check.itemList)}"><td colspan="4" class="empty">점검 항목이 없습니다.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="toolbar"><a th:href="@{/check/list}" class="btn btn-default">＜ 목록</a></div>
+    </main>
+</div>
+</body>
+</html>

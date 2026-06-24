@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.sys.user.service.impl.UserMapper">
+
+    <sql id="searchWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (USER_ID LIKE '%' || #{searchKeyword} || '%'
+                 OR USER_NM LIKE '%' || #{searchKeyword} || '%'
+                 OR DEPT_NM LIKE '%' || #{searchKeyword} || '%')
+        </if>
+        <if test="searchCondition != null and searchCondition != ''">
+            AND ROLE = #{searchCondition}
+        </if>
+    </sql>
+
+    <select id="selectUserList" parameterType="egovframework.ops.sys.user.service.UserVO"
+            resultType="egovframework.ops.sys.user.service.UserVO">
+        SELECT USER_ID, USER_NM, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT,
+               TO_CHAR(REG_DT, 'YYYY-MM-DD HH24:MI') AS REG_DT
+          FROM OPS_USER
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY REG_DT DESC, USER_ID
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectUserListCnt" parameterType="egovframework.ops.sys.user.service.UserVO"
+            resultType="int">
+        SELECT COUNT(*) FROM OPS_USER WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectUser" parameterType="string"
+            resultType="egovframework.ops.sys.user.service.UserVO">
+        SELECT USER_ID, USER_NM, PASSWORD, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT,
+               TO_CHAR(REG_DT, 'YYYY-MM-DD HH24:MI') AS REG_DT
+          FROM OPS_USER
+         WHERE USER_ID = #{userId}
+    </select>
+
+    <insert id="insertUser" parameterType="egovframework.ops.sys.user.service.UserVO">
+        INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT, REG_DT)
+        VALUES (#{userId}, #{userNm}, #{password}, #{role}, #{deptNm}, #{email}, #{telno},
+                #{useAt}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateUser" parameterType="egovframework.ops.sys.user.service.UserVO">
+        UPDATE OPS_USER
+           SET USER_NM = #{userNm},
+               ROLE    = #{role},
+               DEPT_NM = #{deptNm},
+               EMAIL   = #{email},
+               TELNO   = #{telno},
+               USE_AT  = #{useAt}
+               <if test="password != null and password != ''">
+               , PASSWORD = #{password}
+               </if>
+         WHERE USER_ID = #{userId}
+    </update>
+
+    <delete id="deleteUser" parameterType="string">
+        DELETE FROM OPS_USER WHERE USER_ID = #{userId}
+    </delete>
+
+</mapper>

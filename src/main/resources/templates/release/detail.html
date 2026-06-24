@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('배포 상세')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('release')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 배포관리 &gt; 상세</div>
+        <div class="page-head">
+            <div class="page-title">배포 상세 <span style="color:#888;font-weight:400;">(REL-<span th:text="${release.relId}">1</span>)</span></div>
+            <div class="toolbar">
+                <a th:href="@{/release/edit/{id}(id=${release.relId})}" class="btn btn-default">수정</a>
+                <form th:action="@{/release/delete/{id}(id=${release.relId})}" method="post"
+                      onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="panel">
+                <h3>배포 정보</h3>
+                <table class="form">
+                    <tr><th>대상 시스템</th><td th:text="${release.sysNm}">시스템</td></tr>
+                    <tr><th>버전</th><td th:text="${release.ver}">버전</td></tr>
+                    <tr><th>제목</th><td th:text="${release.title}">제목</td></tr>
+                    <tr><th>상태</th><td>
+                        <span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(release.status)}" th:text="${release.statusNm}">상태</span>
+                    </td></tr>
+                    <tr><th>연계 변경ID</th><td th:text="${release.chgId} ?: '-'">-</td></tr>
+                    <tr><th>배포 예정 / 일시</th><td><span th:text="${release.planDt} ?: '-'">-</span> / <span th:text="${release.deployDt} ?: '-'">-</span></td></tr>
+                    <tr><th>담당자</th><td th:text="${release.chargerId} ?: '-'">-</td></tr>
+                    <tr><th>배포 내용</th><td style="white-space:pre-line;" th:text="${release.content}">내용</td></tr>
+                    <tr><th>배포 결과</th><td style="white-space:pre-line;" th:text="${release.result} ?: '-'">-</td></tr>
+                </table>
+            </div>
+
+            <div>
+                <!-- 배포 처리 (상태전이) -->
+                <div class="panel" th:if="${release.status != 'DEPLOYED' and release.status != 'ROLLBACK'}">
+                    <h3>배포 처리</h3>
+                    <form method="post" th:action="@{/release/process}">
+                        <input type="hidden" name="relId" th:value="${release.relId}"/>
+                        <table class="form">
+                            <tr><th>처리 상태 <span class="required">*</span></th>
+                                <td>
+                                    <select name="status" required>
+                                        <option th:each="c : ${statusList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                                                th:selected="${c.codeId == release.status}">상태</option>
+                                    </select>
+                                </td></tr>
+                            <tr><th>담당자</th><td><input type="text" name="chargerId" th:value="${release.chargerId}"/></td></tr>
+                            <tr><th>배포 결과</th><td><textarea name="result" rows="4" th:text="${release.result}"></textarea></td></tr>
+                        </table>
+                        <div class="right" style="margin-top:12px;">
+                            <button type="submit" class="btn btn-success">처리 등록</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar"><a th:href="@{/release/list}" class="btn btn-default">＜ 목록</a></div>
+    </main>
+</div>
+</body>
+</html>

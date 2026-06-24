@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.system.service.impl.SystemMapper">
+
+    <sql id="searchWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (SYS_ID LIKE '%' || #{searchKeyword} || '%'
+                 OR SYS_NM LIKE '%' || #{searchKeyword} || '%'
+                 OR MNGR_NM LIKE '%' || #{searchKeyword} || '%')
+        </if>
+        <if test="searchCondition != null and searchCondition != ''">
+            AND GRAD = #{searchCondition}
+        </if>
+    </sql>
+
+    <select id="selectSystemList" parameterType="egovframework.ops.system.service.SystemVO"
+            resultType="egovframework.ops.system.service.SystemVO">
+        SELECT SYS_ID AS sysId, SYS_NM AS sysNm, SYS_DESC AS sysDesc,
+               MNGR_NM AS mngrNm, MNGR_DEPT AS mngrDept, GRAD AS grad, USE_AT AS useAt,
+               TO_CHAR(REG_DT, 'YYYY-MM-DD') AS regDt
+          FROM OPS_SYSTEM
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY SYS_ID
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectSystemListCnt" parameterType="egovframework.ops.system.service.SystemVO"
+            resultType="int">
+        SELECT COUNT(*) FROM OPS_SYSTEM WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectSystemAll" resultType="egovframework.ops.system.service.SystemVO">
+        SELECT SYS_ID AS sysId, SYS_NM AS sysNm
+          FROM OPS_SYSTEM
+         WHERE USE_AT = 'Y'
+         ORDER BY SYS_ID
+    </select>
+
+    <select id="selectSystem" parameterType="string"
+            resultType="egovframework.ops.system.service.SystemVO">
+        SELECT SYS_ID AS sysId, SYS_NM AS sysNm, SYS_DESC AS sysDesc,
+               MNGR_NM AS mngrNm, MNGR_DEPT AS mngrDept, GRAD AS grad, USE_AT AS useAt,
+               TO_CHAR(REG_DT, 'YYYY-MM-DD') AS regDt
+          FROM OPS_SYSTEM
+         WHERE SYS_ID = #{sysId}
+    </select>
+
+    <insert id="insertSystem" parameterType="egovframework.ops.system.service.SystemVO">
+        INSERT INTO OPS_SYSTEM (SYS_ID, SYS_NM, SYS_DESC, MNGR_NM, MNGR_DEPT, GRAD, USE_AT, REG_DT)
+        VALUES (#{sysId}, #{sysNm}, #{sysDesc}, #{mngrNm}, #{mngrDept}, #{grad}, #{useAt}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateSystem" parameterType="egovframework.ops.system.service.SystemVO">
+        UPDATE OPS_SYSTEM
+           SET SYS_NM = #{sysNm}, SYS_DESC = #{sysDesc}, MNGR_NM = #{mngrNm},
+               MNGR_DEPT = #{mngrDept}, GRAD = #{grad}, USE_AT = #{useAt}
+         WHERE SYS_ID = #{sysId}
+    </update>
+
+    <delete id="deleteSystem" parameterType="string">
+        DELETE FROM OPS_SYSTEM WHERE SYS_ID = #{sysId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.incident.service.impl.IncidentMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND I.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND I.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND I.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectIncidentList" parameterType="egovframework.ops.incident.service.IncidentVO"
+            resultType="egovframework.ops.incident.service.IncidentVO">
+        SELECT I.INC_ID    AS incId,
+               I.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               I.TITLE     AS title,
+               I.SEVERITY  AS severity,
+               I.STATUS    AS status,
+               SC.CODE_NM  AS statusNm,
+               I.CHARGER_ID AS chargerId,
+               TO_CHAR(I.OCCR_DT, 'YYYY-MM-DD HH24:MI') AS occrDt,
+               TO_CHAR(I.RCPT_DT, 'YYYY-MM-DD HH24:MI') AS rcptDt
+          FROM OPS_INCIDENT I
+          LEFT JOIN OPS_SYSTEM S ON I.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INCIDENT_STATUS' AND SC.CODE_ID = I.STATUS
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY I.INC_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectIncidentListCnt" parameterType="egovframework.ops.incident.service.IncidentVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_INCIDENT I
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectIncident" parameterType="long"
+            resultType="egovframework.ops.incident.service.IncidentVO">
+        SELECT I.INC_ID    AS incId,
+               I.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               I.TITLE     AS title,
+               I.CONTENT   AS content,
+               I.SEVERITY  AS severity,
+               I.STATUS    AS status,
+               SC.CODE_NM  AS statusNm,
+               TO_CHAR(I.OCCR_DT,    'YYYY-MM-DD HH24:MI') AS occrDt,
+               TO_CHAR(I.RCPT_DT,    'YYYY-MM-DD HH24:MI') AS rcptDt,
+               TO_CHAR(I.RESOLVE_DT, 'YYYY-MM-DD HH24:MI') AS resolveDt,
+               I.CAUSE     AS cause,
+               I.ACTION    AS action,
+               I.CHARGER_ID AS chargerId,
+               I.REG_ID    AS regId,
+               TO_CHAR(I.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_INCIDENT I
+          LEFT JOIN OPS_SYSTEM S ON I.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INCIDENT_STATUS' AND SC.CODE_ID = I.STATUS
+         WHERE I.INC_ID = #{incId}
+    </select>
+
+    <select id="selectIncidentHisList" parameterType="long"
+            resultType="egovframework.ops.incident.service.IncidentHisVO">
+        SELECT H.HIS_ID   AS hisId,
+               H.INC_ID   AS incId,
+               H.STATUS   AS status,
+               SC.CODE_NM AS statusNm,
+               H.CONTENT  AS content,
+               H.PROC_ID  AS procId,
+               TO_CHAR(H.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt
+          FROM OPS_INCIDENT_HIS H
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INCIDENT_STATUS' AND SC.CODE_ID = H.STATUS
+         WHERE H.INC_ID = #{incId}
+         ORDER BY H.HIS_ID
+    </select>
+
+    <insert id="insertIncident" parameterType="egovframework.ops.incident.service.IncidentVO"
+            useGeneratedKeys="true" keyProperty="incId">
+        INSERT INTO OPS_INCIDENT
+            (SYS_ID, TITLE, CONTENT, SEVERITY, STATUS, OCCR_DT, RCPT_DT, CHARGER_ID, REG_ID, REG_DT)
+        VALUES
+            (#{sysId}, #{title}, #{content}, #{severity}, #{status},
+             <choose><when test="occrDt != null and occrDt != ''">TO_TIMESTAMP(#{occrDt}, 'YYYY-MM-DD HH24:MI')</when><otherwise>CURRENT_TIMESTAMP</otherwise></choose>,
+             CURRENT_TIMESTAMP, #{chargerId}, #{regId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateIncident" parameterType="egovframework.ops.incident.service.IncidentVO">
+        UPDATE OPS_INCIDENT
+           SET SYS_ID    = #{sysId},
+               TITLE     = #{title},
+               CONTENT   = #{content},
+               SEVERITY  = #{severity},
+               CHARGER_ID = #{chargerId}
+         WHERE INC_ID = #{incId}
+    </update>
+
+    <update id="updateIncidentProcess" parameterType="egovframework.ops.incident.service.IncidentVO">
+        UPDATE OPS_INCIDENT
+           SET STATUS    = #{status},
+               CAUSE     = #{cause},
+               ACTION    = #{action},
+               CHARGER_ID = #{chargerId}
+               <if test="status == 'RESOLVED' or status == 'CLOSED'">
+               , RESOLVE_DT = COALESCE(RESOLVE_DT, CURRENT_TIMESTAMP)
+               </if>
+         WHERE INC_ID = #{incId}
+    </update>
+
+    <insert id="insertIncidentHis" parameterType="egovframework.ops.incident.service.IncidentHisVO">
+        INSERT INTO OPS_INCIDENT_HIS (INC_ID, STATUS, CONTENT, PROC_ID, PROC_DT)
+        VALUES (#{incId}, #{status}, #{content}, #{procId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteIncident" parameterType="long">
+        DELETE FROM OPS_INCIDENT WHERE INC_ID = #{incId}
+    </delete>
+
+    <delete id="deleteIncidentHis" parameterType="long">
+        DELETE FROM OPS_INCIDENT_HIS WHERE INC_ID = #{incId}
+    </delete>
+
+</mapper>

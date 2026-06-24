@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('로그인')}"></head>
+<body>
+<div class="login-wrap">
+    <div class="login-box">
+        <h1>범정부 응용프로그램<br/>운영관리시스템</h1>
+        <p class="sub">전자정부 표준프레임워크 · 표준운영절차</p>
+
+        <div class="login-err" th:if="${param.error}">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+        <div class="login-info" th:if="${param.logout}">정상적으로 로그아웃되었습니다.</div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="field">
+                <label for="userId">아이디</label>
+                <input type="text" id="userId" name="userId" autofocus required/>
+            </div>
+            <div class="field">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" required/>
+            </div>
+            <button type="submit" class="btn btn-primary">로그인</button>
+        </form>
+
+        <div class="login-help">
+            데모 계정 : admin / admin123!<br/>
+            (운영자) oper01 / oper123!
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('운영점검')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('check')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 운영점검</div>
+        <div class="page-head">
+            <div>
+                <div class="page-title">운영점검</div>
+                <div class="page-desc">일일/정기 운영점검 등록 및 점검결과 관리</div>
+            </div>
+            <div class="toolbar">
+                <a th:href="@{/check/write}" class="btn btn-primary">＋ 점검 등록</a>
+            </div>
+        </div>
+
+        <form method="get" th:action="@{/check/list}" class="searchbar">
+            <select name="searchSysId">
+                <option value="">전체 시스템</option>
+                <option th:each="s : ${systemList}" th:value="${s.sysId}" th:text="${s.sysNm}"
+                        th:selected="${s.sysId == searchVO.searchSysId}">시스템</option>
+            </select>
+            <select name="searchStatus">
+                <option value="">전체 결과</option>
+                <option th:each="c : ${resultList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                        th:selected="${c.codeId == searchVO.searchStatus}">결과</option>
+            </select>
+            <input type="text" name="searchKeyword" th:value="${searchVO.searchKeyword}" placeholder="점검자 검색"/>
+            <button type="submit" class="btn btn-default">검색</button>
+        </form>
+
+        <div class="panel mb0">
+            <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b th:text="${totalCnt}">0</b>건</p>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th class="center" style="width:70px;">번호</th>
+                    <th style="width:180px;">시스템</th>
+                    <th class="center" style="width:100px;">점검유형</th>
+                    <th class="center" style="width:120px;">점검일자</th>
+                    <th class="center" style="width:110px;">점검자</th>
+                    <th class="center" style="width:100px;">종합결과</th>
+                    <th class="center" style="width:120px;">항목/이상</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${checkList}">
+                    <td class="center" th:text="${c.chkId}">1</td>
+                    <td><a th:href="@{/check/detail/{id}(id=${c.chkId})}" th:text="${c.sysNm}">시스템</a></td>
+                    <td class="center" th:text="${c.chkTypeNm}">유형</td>
+                    <td class="center" th:text="${c.chkDt}">일자</td>
+                    <td class="center" th:text="${c.chkrId}">점검자</td>
+                    <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(c.result)}" th:text="${c.resultNm}">결과</span></td>
+                    <td class="center"><span th:text="${c.itemCnt}">0</span> / <b th:classappend="${c.abnormalCnt > 0}?'st-abnormal'" th:text="${c.abnormalCnt}">0</b></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(checkList)}"><td colspan="7" class="empty">등록된 운영점검이 없습니다.</td></tr>
+                </tbody>
+            </table>
+            <div th:replace="~{fragments/common :: paging(${pageInfo}, '/check/list')}"></div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
