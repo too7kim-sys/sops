@@ -117,6 +117,11 @@ java -jar target/egov-ops.jar --spring.profiles.active=prod
 - 환경변수: `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_MAX`(기본 20), `SQL_INIT_MODE`(기본 always)
 - **최초 적용 후 `admin` 계정 비밀번호를 반드시 변경할 것.**
 
+### 4.3 이클립스(Eclipse / 전자정부 표준프레임워크 IDE)에서 사용
+
+Maven 프로젝트이므로 **File → Import → Maven → Existing Maven Projects** 로 가져와 실행합니다.
+JDK 21 등록·Lombok 설치·UTF-8 인코딩 등 상세 절차는 **[docs/ECLIPSE.md](docs/ECLIPSE.md)** 참고.
+
 ### 데모 계정
 
 | 아이디 | 비밀번호 | 권한 | 비고 |
