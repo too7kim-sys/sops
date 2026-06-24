@@ -61,10 +61,17 @@
             <version>${mybatis-spring-boot.version}</version>
         </dependency>
 
-        <!-- DB : H2 (In-memory) -->
+        <!-- DB : H2 (개발/데모 In-memory) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- DB : PostgreSQL (운영) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 

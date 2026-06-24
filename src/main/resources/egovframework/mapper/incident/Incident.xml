@@ -89,7 +89,7 @@
             (SYS_ID, TITLE, CONTENT, SEVERITY, STATUS, OCCR_DT, RCPT_DT, CHARGER_ID, REG_ID, REG_DT)
         VALUES
             (#{sysId}, #{title}, #{content}, #{severity}, #{status},
-             <choose><when test="occrDt != null and occrDt != ''">TO_TIMESTAMP(#{occrDt}, 'YYYY-MM-DD HH24:MI')</when><otherwise>CURRENT_TIMESTAMP</otherwise></choose>,
+             <choose><when test="occrDt != null and occrDt != ''">TO_TIMESTAMP(REPLACE(#{occrDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when><otherwise>CURRENT_TIMESTAMP</otherwise></choose>,
              CURRENT_TIMESTAMP, #{chargerId}, #{regId}, CURRENT_TIMESTAMP)
     </insert>
 

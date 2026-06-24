@@ -29,7 +29,7 @@
     <select id="selectIncidentStatusStat" resultType="map">
         SELECT C.CODE_ID  AS "code",
                C.CODE_NM  AS "name",
-               NVL(I.CNT, 0) AS "cnt"
+               COALESCE(I.CNT, 0) AS "cnt"
           FROM OPS_CODE C
           LEFT JOIN (
                 SELECT STATUS, COUNT(*) AS CNT
@@ -43,7 +43,7 @@
     <select id="selectChangeStatusStat" resultType="map">
         SELECT C.CODE_ID  AS "code",
                C.CODE_NM  AS "name",
-               NVL(H.CNT, 0) AS "cnt"
+               COALESCE(H.CNT, 0) AS "cnt"
           FROM OPS_CODE C
           LEFT JOIN (
                 SELECT STATUS, COUNT(*) AS CNT

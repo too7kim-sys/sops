@@ -32,8 +32,12 @@
 | Business Logic | Service / ServiceImpl (`EgovAbstractServiceImpl` 상속) |
 | Persistence | MyBatis (XML Mapper), `@Mapper` |
 | Security | Spring Security (폼 로그인, 권한기반 접근통제, BCrypt) |
-| DB | H2 (In-memory, Oracle 호환모드) |
+| DB | **운영: PostgreSQL** / 개발·데모: H2 (In-memory) |
 | Build / Runtime | Maven, Java 21 |
+
+> 프로파일 분리: 기본(dev) 프로파일은 H2 In-memory 로 즉시 구동되며, 운영(`prod`) 프로파일은
+> PostgreSQL 에 연결된다. 매퍼 SQL 은 양쪽 모두 호환되도록 표준 함수(`COALESCE`, `TO_CHAR`,
+> `TO_TIMESTAMP`, `OFFSET … FETCH NEXT …`)로 작성되어 있다.
 
 > 표준프레임워크 실행환경(egovframework-rte) 의존성을 외부 저장소에서 받지 않고도 빌드/실행할 수 있도록,
 > `egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl` 등 핵심 기반 클래스를 동등하게 자체 포함하였습니다.
@@ -74,11 +78,10 @@ egovframework
 
 ## 4. 실행 방법
 
-```bash
-# 빌드
-mvn clean package
+### 4.1 개발/데모 (H2 In-memory) — 기본 프로파일
 
-# 실행
+```bash
+mvn clean package
 java -jar target/egov-ops.jar
 #  또는
 mvn spring-boot:run
@@ -86,6 +89,33 @@ mvn spring-boot:run
 
 - 접속: <http://localhost:8080>
 - H2 콘솔: <http://localhost:8080/h2-console> (JDBC URL `jdbc:h2:mem:egovops`, user `sa`)
+- 데모용 샘플 거래데이터(장애/변경/배포/점검)가 자동 적재된다.
+
+### 4.2 운영 (PostgreSQL) — `prod` 프로파일
+
+PostgreSQL 데이터베이스/계정을 준비한다.
+
+```sql
+CREATE ROLE egovops LOGIN PASSWORD 'egovops';
+CREATE DATABASE egovops OWNER egovops;
+```
+
+접속정보를 환경변수로 주입하고 `prod` 프로파일로 기동한다.
+
+```bash
+export DB_URL=jdbc:postgresql://DB호스트:5432/egovops
+export DB_USERNAME=egovops
+export DB_PASSWORD=********
+
+java -jar target/egov-ops.jar --spring.profiles.active=prod
+```
+
+- 스키마/기준데이터는 비파괴적(`CREATE TABLE IF NOT EXISTS`, `ON CONFLICT DO NOTHING`)으로
+  기동 시 멱등 적용된다. 운영에는 샘플 거래데이터를 적재하지 않고 **기준정보(사용자/응용시스템/공통코드)** 만 시딩한다.
+- DBA 가 스키마를 직접 관리하려면 `SQL_INIT_MODE=never` 로 자동 적재를 끈다.
+  (DDL/시드 스크립트: `src/main/resources/db/postgresql/`)
+- 환경변수: `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_MAX`(기본 20), `SQL_INIT_MODE`(기본 always)
+- **최초 적용 후 `admin` 계정 비밀번호를 반드시 변경할 것.**
 
 ### 데모 계정
 
