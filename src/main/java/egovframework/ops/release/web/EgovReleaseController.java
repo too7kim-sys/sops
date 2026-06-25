@@ -4,6 +4,7 @@ import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.release.service.EgovReleaseService;
+import egovframework.ops.release.service.ReleaseItemVO;
 import egovframework.ops.release.service.ReleaseVO;
 import egovframework.ops.system.service.EgovSystemService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -58,6 +59,7 @@ public class EgovReleaseController {
     public String detail(@PathVariable Long relId, Model model) {
         model.addAttribute("release", releaseService.selectRelease(relId));
         model.addAttribute("statusList", codeService.selectCodeList("RELEASE_STATUS"));
+        model.addAttribute("itemResultList", codeService.selectCodeList("RELEASE_ITEM_RESULT"));
         model.addAttribute("menu", "release");
         return "release/detail";
     }
@@ -105,6 +107,13 @@ public class EgovReleaseController {
         }
         releaseService.processRelease(releaseVO);
         return "redirect:/release/detail/" + releaseVO.getRelId();
+    }
+
+    /** 배포 항목 등록 */
+    @PostMapping("/item")
+    public String addItem(@ModelAttribute ReleaseItemVO releaseItemVO) {
+        releaseService.addReleaseItem(releaseItemVO);
+        return "redirect:/release/detail/" + releaseItemVO.getRelId();
     }
 
     /** 배포 삭제 */

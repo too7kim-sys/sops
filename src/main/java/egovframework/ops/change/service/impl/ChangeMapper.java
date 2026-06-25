@@ -1,5 +1,6 @@
 package egovframework.ops.change.service.impl;
 
+import egovframework.ops.change.service.ChangeCabVO;
 import egovframework.ops.change.service.ChangeVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,4 +27,12 @@ public interface ChangeMapper {
     void updateChangeApply(ChangeVO vo);
 
     void deleteChange(Long chgId);
+
+    List<ChangeCabVO> selectChangeCabList(Long chgId);
+
+    void insertChangeCab(ChangeCabVO vo);
+
+    void updateCabStatus(ChangeVO vo);
+
+    void updatePir(ChangeVO vo);
 }

@@ -65,7 +65,9 @@
                C.APPR_OPINION AS apprOpinion,
                TO_CHAR(C.PLAN_DT,  'YYYY-MM-DD')         AS planDt,
                TO_CHAR(C.APPLY_DT, 'YYYY-MM-DD HH24:MI') AS applyDt,
-               TO_CHAR(C.REG_DT,   'YYYY-MM-DD HH24:MI') AS regDt
+               TO_CHAR(C.REG_DT,   'YYYY-MM-DD HH24:MI') AS regDt,
+               C.PIR_CONTENT  AS pirContent,
+               TO_CHAR(C.PIR_DT,   'YYYY-MM-DD HH24:MI') AS pirDt
           FROM OPS_CHANGE C
           LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
           LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CHANGE_STATUS' AND SC.CODE_ID = C.STATUS
@@ -114,5 +116,41 @@
     <delete id="deleteChange" parameterType="long">
         DELETE FROM OPS_CHANGE WHERE CHG_ID = #{chgId}
     </delete>
+
+    <select id="selectChangeCabList" parameterType="long"
+            resultType="egovframework.ops.change.service.ChangeCabVO">
+        SELECT B.CAB_ID     AS cabId,
+               B.CHG_ID     AS chgId,
+               B.DECISION   AS decision,
+               DC.CODE_NM   AS decisionNm,
+               B.OPINION    AS opinion,
+               B.REVIEWER   AS reviewer,
+               TO_CHAR(B.CAB_DT, 'YYYY-MM-DD HH24:MI') AS cabDt
+          FROM OPS_CHANGE_CAB B
+          LEFT JOIN OPS_CODE DC ON DC.CODE_GRP = 'CAB_DECISION' AND DC.CODE_ID = B.DECISION
+         WHERE B.CHG_ID = #{chgId}
+         ORDER BY B.CAB_ID DESC
+    </select>
+
+    <insert id="insertChangeCab" parameterType="egovframework.ops.change.service.ChangeCabVO"
+            useGeneratedKeys="true" keyProperty="cabId">
+        INSERT INTO OPS_CHANGE_CAB
+            (CHG_ID, DECISION, OPINION, REVIEWER, CAB_DT)
+        VALUES
+            (#{chgId}, #{decision}, #{opinion}, #{reviewer}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateCabStatus" parameterType="egovframework.ops.change.service.ChangeVO">
+        UPDATE OPS_CHANGE
+           SET STATUS = #{status}
+         WHERE CHG_ID = #{chgId}
+    </update>
+
+    <update id="updatePir" parameterType="egovframework.ops.change.service.ChangeVO">
+        UPDATE OPS_CHANGE
+           SET PIR_CONTENT = #{pirContent},
+               PIR_DT      = CURRENT_TIMESTAMP
+         WHERE CHG_ID = #{chgId}
+    </update>
 
 </mapper>

@@ -36,4 +36,17 @@ public interface EgovChangeService {
 
     /** 변경 삭제 */
     void deleteChange(Long chgId);
+
+    /**
+     * CAB(변경자문위원회) 심의 등록.
+     * OPS_CHANGE_CAB 에 심의 이력을 적재하고 심의결과에 따라 변경 STATUS 를 자동 갱신한다.
+     * (APPROVED→'APPROVED', REJECTED→'REJECTED', HOLD→'REVIEWING')
+     */
+    void cabReview(ChangeCabVO vo);
+
+    /**
+     * 이행후검토(PIR) 기록.
+     * 변경이 적용/완료 단계일 때 PIR_CONTENT/PIR_DT 를 갱신한다.
+     */
+    void recordPir(ChangeVO vo);
 }

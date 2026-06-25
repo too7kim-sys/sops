@@ -127,6 +127,38 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('PROBLEM_STATUS', 'RESOLVED',   '해결완료', 5, 'Y'),
  ('PROBLEM_STATUS', 'CLOSED',     '종료',     6, 'Y');
 
+-- 현행 모듈 보강 공통코드 ----------------------------------------------
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
+ ('RELEASE_STATUS', 'VERIFYING',  '배포검증', 6, 'Y'),
+ ('RELEASE_STATUS', 'STABILIZING','안정화',   7, 'Y'),
+ ('CAB_DECISION', 'APPROVED', '승인', 1, 'Y'),
+ ('CAB_DECISION', 'REJECTED', '반려', 2, 'Y'),
+ ('CAB_DECISION', 'HOLD',     '보류', 3, 'Y'),
+ ('ESCAL_LEVEL', 'L1',      '1차(운영자)',   1, 'Y'),
+ ('ESCAL_LEVEL', 'L2',      '2차(전문기술)', 2, 'Y'),
+ ('ESCAL_LEVEL', 'MANAGER', '관리자',        3, 'Y'),
+ ('ESCAL_LEVEL', 'VENDOR',  '제조사/벤더',   4, 'Y'),
+ ('RELEASE_ITEM_RESULT', 'SUCCESS', '성공', 1, 'Y'),
+ ('RELEASE_ITEM_RESULT', 'FAIL',    '실패', 2, 'Y'),
+ ('RELEASE_ITEM_RESULT', 'SKIP',    '제외', 3, 'Y');
+
+-- 보강 샘플 데이터 ------------------------------------------------------
+-- 장애 목표복구일시(SLA) 및 문제 연계 (샘플)
+UPDATE OPS_INCIDENT SET TARGET_RESOLVE_DT = TIMESTAMP '2026-06-20 11:25:00' WHERE INC_ID = 1;
+UPDATE OPS_INCIDENT SET TARGET_RESOLVE_DT = TIMESTAMP '2026-06-23 16:10:00', REF_PRB_ID = 1 WHERE INC_ID = 2;
+UPDATE OPS_INCIDENT SET TARGET_RESOLVE_DT = TIMESTAMP '2026-06-25 08:35:00' WHERE INC_ID = 3;
+INSERT INTO OPS_INCIDENT_ESCAL (INC_ID, ESCAL_LEVEL, ESCAL_TO, REASON, ESCAL_BY) VALUES
+ (2, 'L2', '인증기술지원팀', '세션 동기화 전문 분석 필요', 'oper01'),
+ (2, 'MANAGER', '운영관리책임자', '1등급 장애 SLA 임박 보고', 'oper01');
+-- 변경 CAB 심의 이력 (샘플)
+INSERT INTO OPS_CHANGE_CAB (CHG_ID, DECISION, OPINION, REVIEWER) VALUES
+ (1, 'APPROVED', '야간 적용 조건부 승인', '변경자문위원회'),
+ (2, 'HOLD', '영향도 추가 분석 후 재심의', '변경자문위원회');
+-- 배포 항목 (샘플)
+INSERT INTO OPS_RELEASE_ITEM (REL_ID, ITEM_NM, ITEM_DESC, ITEM_RESULT) VALUES
+ (1, 'minwon.war', '민원포털 애플리케이션', 'SUCCESS'),
+ (1, 'idx_minwon.sql', '조회 인덱스 DDL', 'SUCCESS');
+
 -- 장애관리 데이터 -----------------------------------------------------
 INSERT INTO OPS_INCIDENT (SYS_ID, TITLE, CONTENT, SEVERITY, STATUS, OCCR_DT, RCPT_DT, RESOLVE_DT, CAUSE, ACTION, CHARGER_ID, REG_ID) VALUES
  ('SYS001', '민원신청 화면 응답지연', '민원신청 페이지 로딩이 30초 이상 지연됨', '2', 'CLOSED',

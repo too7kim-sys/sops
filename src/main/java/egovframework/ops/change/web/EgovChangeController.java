@@ -3,6 +3,7 @@ package egovframework.ops.change.web;
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
 import egovframework.ops.cmm.code.service.EgovCodeService;
+import egovframework.ops.change.service.ChangeCabVO;
 import egovframework.ops.change.service.ChangeVO;
 import egovframework.ops.change.service.EgovChangeService;
 import egovframework.ops.system.service.EgovSystemService;
@@ -58,6 +59,7 @@ public class EgovChangeController {
     public String detail(@PathVariable Long chgId, Model model) {
         model.addAttribute("change", changeService.selectChange(chgId));
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
+        model.addAttribute("cabDecisionList", codeService.selectCodeList("CAB_DECISION"));
         model.addAttribute("menu", "change");
         return "change/detail";
     }
@@ -117,6 +119,24 @@ public class EgovChangeController {
     public String delete(@PathVariable Long chgId) {
         changeService.deleteChange(chgId);
         return "redirect:/change/list";
+    }
+
+    /** CAB(변경자문위원회) 심의 등록 */
+    @PostMapping("/cab")
+    public String cab(@ModelAttribute ChangeCabVO cabVO,
+                      @AuthenticationPrincipal LoginUser loginUser) {
+        if (cabVO.getReviewer() == null || cabVO.getReviewer().isBlank()) {
+            cabVO.setReviewer(loginUser.getUsername());
+        }
+        changeService.cabReview(cabVO);
+        return "redirect:/change/detail/" + cabVO.getChgId();
+    }
+
+    /** 이행후검토(PIR) 기록 */
+    @PostMapping("/pir")
+    public String pir(@ModelAttribute ChangeVO changeVO) {
+        changeService.recordPir(changeVO);
+        return "redirect:/change/detail/" + changeVO.getChgId();
     }
 
     private void addFormCodes(Model model) {

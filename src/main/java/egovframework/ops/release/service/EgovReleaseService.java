@@ -30,4 +30,7 @@ public interface EgovReleaseService {
 
     /** 배포 삭제 */
     void deleteRelease(Long relId);
+
+    /** 배포 항목 등록 */
+    void addReleaseItem(ReleaseItemVO vo);
 }

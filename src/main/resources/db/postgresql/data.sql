@@ -121,3 +121,19 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('PROBLEM_STATUS', 'RESOLVED',   '해결완료', 5, 'Y'),
  ('PROBLEM_STATUS', 'CLOSED',     '종료',     6, 'Y')
 ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;
+
+-- 현행 모듈 보강 공통코드 ----------------------------------------------
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
+ ('RELEASE_STATUS', 'VERIFYING',  '배포검증', 6, 'Y'),
+ ('RELEASE_STATUS', 'STABILIZING','안정화',   7, 'Y'),
+ ('CAB_DECISION', 'APPROVED', '승인', 1, 'Y'),
+ ('CAB_DECISION', 'REJECTED', '반려', 2, 'Y'),
+ ('CAB_DECISION', 'HOLD',     '보류', 3, 'Y'),
+ ('ESCAL_LEVEL', 'L1',      '1차(운영자)',   1, 'Y'),
+ ('ESCAL_LEVEL', 'L2',      '2차(전문기술)', 2, 'Y'),
+ ('ESCAL_LEVEL', 'MANAGER', '관리자',        3, 'Y'),
+ ('ESCAL_LEVEL', 'VENDOR',  '제조사/벤더',   4, 'Y'),
+ ('RELEASE_ITEM_RESULT', 'SUCCESS', '성공', 1, 'Y'),
+ ('RELEASE_ITEM_RESULT', 'FAIL',    '실패', 2, 'Y'),
+ ('RELEASE_ITEM_RESULT', 'SKIP',    '제외', 3, 'Y')
+ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;

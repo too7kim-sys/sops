@@ -4,6 +4,7 @@ import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.incident.service.EgovIncidentService;
+import egovframework.ops.incident.service.IncidentEscalVO;
 import egovframework.ops.incident.service.IncidentVO;
 import egovframework.ops.system.service.EgovSystemService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -58,6 +59,7 @@ public class EgovIncidentController {
     public String detail(@PathVariable Long incId, Model model) {
         model.addAttribute("incident", incidentService.selectIncident(incId));
         model.addAttribute("statusList", codeService.selectCodeList("INCIDENT_STATUS"));
+        model.addAttribute("escalLevelList", codeService.selectCodeList("ESCAL_LEVEL"));
         model.addAttribute("menu", "incident");
         return "incident/detail";
     }
@@ -105,6 +107,17 @@ public class EgovIncidentController {
         }
         incidentService.processIncident(incidentVO);
         return "redirect:/incident/detail/" + incidentVO.getIncId();
+    }
+
+    /** 에스컬레이션 등록 */
+    @PostMapping("/escalate")
+    public String escalate(@ModelAttribute IncidentEscalVO escalVO,
+                           @AuthenticationPrincipal LoginUser loginUser) {
+        if (escalVO.getEscalBy() == null || escalVO.getEscalBy().isBlank()) {
+            escalVO.setEscalBy(loginUser.getUsername());
+        }
+        incidentService.escalateIncident(escalVO);
+        return "redirect:/incident/detail/" + escalVO.getIncId();
     }
 
     /** 장애 삭제 */

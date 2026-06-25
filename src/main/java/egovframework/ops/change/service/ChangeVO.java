@@ -4,6 +4,8 @@ import egovframework.com.cmm.ComDefaultVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * 변경관리 VO.
  *
@@ -69,4 +71,13 @@ public class ChangeVO extends ComDefaultVO {
 
     /** 등록 일시 */
     private String regDt;
+
+    /** 이행후검토(PIR) 내용 */
+    private String pirContent;
+
+    /** 이행후검토(PIR) 일시 */
+    private String pirDt;
+
+    /** CAB(변경자문위원회) 심의 이력 목록 */
+    private List<ChangeCabVO> cabList;
 }

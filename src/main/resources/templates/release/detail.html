@@ -61,6 +61,55 @@
             </div>
         </div>
 
+        <!-- 배포 항목 -->
+        <div class="panel">
+            <h3>배포 항목</h3>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th class="center" style="width:50px;">#</th>
+                    <th>항목명</th>
+                    <th>설명</th>
+                    <th class="center" style="width:120px;">결과</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="it,stat : ${release.itemList}">
+                    <td class="center" th:text="${stat.count}">1</td>
+                    <td th:text="${it.itemNm}">항목명</td>
+                    <td style="white-space:pre-line;" th:text="${it.itemDesc} ?: '-'">설명</td>
+                    <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(it.itemResult)}"
+                                              th:text="${it.itemResultNm} ?: it.itemResult">결과</span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(release.itemList)}"><td colspan="4" class="empty">배포 항목이 없습니다.</td></tr>
+                </tbody>
+            </table>
+
+            <form method="post" th:action="@{/release/item}" style="margin-top:12px;">
+                <input type="hidden" name="relId" th:value="${release.relId}"/>
+                <table class="form">
+                    <tr>
+                        <th>항목명 <span class="required">*</span></th>
+                        <td><input type="text" name="itemNm" required/></td>
+                        <th>결과 <span class="required">*</span></th>
+                        <td>
+                            <select name="itemResult" required>
+                                <option value="">선택</option>
+                                <option th:each="c : ${itemResultList}" th:value="${c.codeId}" th:text="${c.codeNm}">결과</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>설명</th>
+                        <td colspan="3"><textarea name="itemDesc" rows="3"></textarea></td>
+                    </tr>
+                </table>
+                <div class="right" style="margin-top:12px;">
+                    <button type="submit" class="btn btn-success">항목 등록</button>
+                </div>
+            </form>
+        </div>
+
         <div class="toolbar"><a th:href="@{/release/list}" class="btn btn-default">＜ 목록</a></div>
     </main>
 </div>

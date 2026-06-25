@@ -30,4 +30,7 @@ public interface EgovIncidentService {
 
     /** 장애 삭제 */
     void deleteIncident(Long incId);
+
+    /** 에스컬레이션 등록 */
+    void escalateIncident(IncidentEscalVO vo);
 }

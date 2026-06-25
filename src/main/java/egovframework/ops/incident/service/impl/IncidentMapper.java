@@ -1,5 +1,6 @@
 package egovframework.ops.incident.service.impl;
 
+import egovframework.ops.incident.service.IncidentEscalVO;
 import egovframework.ops.incident.service.IncidentHisVO;
 import egovframework.ops.incident.service.IncidentVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,4 +32,8 @@ public interface IncidentMapper {
     void deleteIncident(Long incId);
 
     void deleteIncidentHis(Long incId);
+
+    List<IncidentEscalVO> selectIncidentEscalList(Long incId);
+
+    void insertIncidentEscal(IncidentEscalVO vo);
 }

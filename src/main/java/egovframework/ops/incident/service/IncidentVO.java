@@ -66,6 +66,18 @@ public class IncidentVO extends ComDefaultVO {
     /** 등록 일시 */
     private String regDt;
 
+    /** 목표복구일시 (SLA) */
+    private String targetResolveDt;
+
+    /** 연계 문제 ID */
+    private Long refPrbId;
+
+    /** SLA 상태 (transient: 준수/위반/진행중/지연) */
+    private String slaStatus;
+
     /** 처리이력 목록 */
     private List<IncidentHisVO> historyList;
+
+    /** 에스컬레이션 목록 */
+    private List<IncidentEscalVO> escalList;
 }

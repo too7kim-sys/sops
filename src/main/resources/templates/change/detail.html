@@ -84,6 +84,70 @@
             </div>
         </div>
 
+        <!-- CAB(변경자문위원회) 심의이력 -->
+        <div class="panel">
+            <h3>CAB 심의이력</h3>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th style="width:120px;">심의결과</th>
+                    <th>의견</th>
+                    <th style="width:140px;">심의위원</th>
+                    <th style="width:150px;">심의일시</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${change.cabList == null or change.cabList.isEmpty()}">
+                    <td colspan="4" class="empty">등록된 CAB 심의이력이 없습니다.</td>
+                </tr>
+                <tr th:each="cab : ${change.cabList}">
+                    <td><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(cab.decision)}"
+                              th:text="${cab.decisionNm} ?: ${cab.decision}">결과</span></td>
+                    <td style="white-space:pre-line;" th:text="${cab.opinion} ?: '-'">-</td>
+                    <td th:text="${cab.reviewer} ?: '-'">-</td>
+                    <td th:text="${cab.cabDt} ?: '-'">-</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <form method="post" th:action="@{/change/cab}" style="margin-top:12px;">
+                <input type="hidden" name="chgId" th:value="${change.chgId}"/>
+                <table class="form">
+                    <tr><th>심의 결과 <span class="required">*</span></th>
+                        <td>
+                            <select name="decision" required>
+                                <option value="">선택</option>
+                                <option th:each="d : ${cabDecisionList}" th:value="${d.codeId}" th:text="${d.codeNm}">결과</option>
+                            </select>
+                        </td></tr>
+                    <tr><th>심의 의견</th><td><textarea name="opinion" rows="3"></textarea></td></tr>
+                    <tr><th>심의위원</th><td><input type="text" name="reviewer" placeholder="미입력 시 로그인 사용자"/></td></tr>
+                </table>
+                <div class="right" style="margin-top:12px;">
+                    <button type="submit" class="btn btn-success">CAB 심의 등록</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 이행후검토(PIR) -->
+        <div class="panel" th:if="${change.status == 'APPLIED' or change.status == 'COMPLETED'}">
+            <h3>이행후검토(PIR)</h3>
+            <table class="form">
+                <tr><th>검토 일시</th><td th:text="${change.pirDt} ?: '-'">-</td></tr>
+                <tr><th>검토 내용</th><td style="white-space:pre-line;" th:text="${change.pirContent} ?: '-'">-</td></tr>
+            </table>
+            <form method="post" th:action="@{/change/pir}" style="margin-top:12px;">
+                <input type="hidden" name="chgId" th:value="${change.chgId}"/>
+                <table class="form">
+                    <tr><th>이행후검토 내용 <span class="required">*</span></th>
+                        <td><textarea name="pirContent" rows="4" required th:text="${change.pirContent}"></textarea></td></tr>
+                </table>
+                <div class="right" style="margin-top:12px;">
+                    <button type="submit" class="btn btn-primary">PIR 기록</button>
+                </div>
+            </form>
+        </div>
+
         <div class="toolbar"><a th:href="@{/change/list}" class="btn btn-default">＜ 목록</a></div>
     </main>
 </div>

@@ -57,6 +57,8 @@
                TO_CHAR(I.OCCR_DT,    'YYYY-MM-DD HH24:MI') AS occrDt,
                TO_CHAR(I.RCPT_DT,    'YYYY-MM-DD HH24:MI') AS rcptDt,
                TO_CHAR(I.RESOLVE_DT, 'YYYY-MM-DD HH24:MI') AS resolveDt,
+               TO_CHAR(I.TARGET_RESOLVE_DT, 'YYYY-MM-DD HH24:MI') AS targetResolveDt,
+               I.REF_PRB_ID AS refPrbId,
                I.CAUSE     AS cause,
                I.ACTION    AS action,
                I.CHARGER_ID AS chargerId,
@@ -86,11 +88,13 @@
     <insert id="insertIncident" parameterType="egovframework.ops.incident.service.IncidentVO"
             useGeneratedKeys="true" keyProperty="incId">
         INSERT INTO OPS_INCIDENT
-            (SYS_ID, TITLE, CONTENT, SEVERITY, STATUS, OCCR_DT, RCPT_DT, CHARGER_ID, REG_ID, REG_DT)
+            (SYS_ID, TITLE, CONTENT, SEVERITY, STATUS, OCCR_DT, RCPT_DT, TARGET_RESOLVE_DT, CHARGER_ID, REG_ID, REG_DT)
         VALUES
             (#{sysId}, #{title}, #{content}, #{severity}, #{status},
              <choose><when test="occrDt != null and occrDt != ''">TO_TIMESTAMP(REPLACE(#{occrDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when><otherwise>CURRENT_TIMESTAMP</otherwise></choose>,
-             CURRENT_TIMESTAMP, #{chargerId}, #{regId}, CURRENT_TIMESTAMP)
+             CURRENT_TIMESTAMP,
+             <choose><when test="targetResolveDt != null and targetResolveDt != ''">TO_TIMESTAMP(REPLACE(#{targetResolveDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when><otherwise>NULL</otherwise></choose>,
+             #{chargerId}, #{regId}, CURRENT_TIMESTAMP)
     </insert>
 
     <update id="updateIncident" parameterType="egovframework.ops.incident.service.IncidentVO">
@@ -108,7 +112,8 @@
            SET STATUS    = #{status},
                CAUSE     = #{cause},
                ACTION    = #{action},
-               CHARGER_ID = #{chargerId}
+               CHARGER_ID = #{chargerId},
+               REF_PRB_ID = #{refPrbId}
                <if test="status == 'RESOLVED' or status == 'CLOSED'">
                , RESOLVE_DT = COALESCE(RESOLVE_DT, CURRENT_TIMESTAMP)
                </if>
@@ -127,5 +132,27 @@
     <delete id="deleteIncidentHis" parameterType="long">
         DELETE FROM OPS_INCIDENT_HIS WHERE INC_ID = #{incId}
     </delete>
+
+    <select id="selectIncidentEscalList" parameterType="long"
+            resultType="egovframework.ops.incident.service.IncidentEscalVO">
+        SELECT E.ESCAL_ID    AS escalId,
+               E.INC_ID      AS incId,
+               E.ESCAL_LEVEL AS escalLevel,
+               EC.CODE_NM    AS escalLevelNm,
+               E.ESCAL_TO    AS escalTo,
+               E.REASON      AS reason,
+               E.ESCAL_BY    AS escalBy,
+               TO_CHAR(E.ESCAL_DT, 'YYYY-MM-DD HH24:MI') AS escalDt
+          FROM OPS_INCIDENT_ESCAL E
+          LEFT JOIN OPS_CODE EC ON EC.CODE_GRP = 'ESCAL_LEVEL' AND EC.CODE_ID = E.ESCAL_LEVEL
+         WHERE E.INC_ID = #{incId}
+         ORDER BY E.ESCAL_ID
+    </select>
+
+    <insert id="insertIncidentEscal" parameterType="egovframework.ops.incident.service.IncidentEscalVO"
+            useGeneratedKeys="true" keyProperty="escalId">
+        INSERT INTO OPS_INCIDENT_ESCAL (INC_ID, ESCAL_LEVEL, ESCAL_TO, REASON, ESCAL_BY, ESCAL_DT)
+        VALUES (#{incId}, #{escalLevel}, #{escalTo}, #{reason}, #{escalBy}, CURRENT_TIMESTAMP)
+    </insert>
 
 </mapper>

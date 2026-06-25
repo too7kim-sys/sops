@@ -1,6 +1,7 @@
 package egovframework.ops.change.service.impl;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import egovframework.ops.change.service.ChangeCabVO;
 import egovframework.ops.change.service.ChangeVO;
 import egovframework.ops.change.service.EgovChangeService;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,11 @@ public class EgovChangeServiceImpl extends EgovAbstractServiceImpl implements Eg
 
     @Override
     public ChangeVO selectChange(Long chgId) {
-        return changeMapper.selectChange(chgId);
+        ChangeVO vo = changeMapper.selectChange(chgId);
+        if (vo != null) {
+            vo.setCabList(changeMapper.selectChangeCabList(chgId));
+        }
+        return vo;
     }
 
     @Override
@@ -72,5 +77,32 @@ public class EgovChangeServiceImpl extends EgovAbstractServiceImpl implements Eg
     @Transactional
     public void deleteChange(Long chgId) {
         changeMapper.deleteChange(chgId);
+    }
+
+    @Override
+    @Transactional
+    public void cabReview(ChangeCabVO vo) {
+        changeMapper.insertChangeCab(vo);
+        // 심의결과에 따른 변경 상태 자동 갱신
+        String status;
+        if ("APPROVED".equals(vo.getDecision())) {
+            status = "APPROVED";
+        } else if ("REJECTED".equals(vo.getDecision())) {
+            status = "REJECTED";
+        } else {
+            status = "REVIEWING";
+        }
+        ChangeVO chg = new ChangeVO();
+        chg.setChgId(vo.getChgId());
+        chg.setStatus(status);
+        changeMapper.updateCabStatus(chg);
+        log.debug("변경 CAB 심의 : CHG-{} {} -> {}", vo.getChgId(), vo.getDecision(), status);
+    }
+
+    @Override
+    @Transactional
+    public void recordPir(ChangeVO vo) {
+        changeMapper.updatePir(vo);
+        log.debug("변경 이행후검토(PIR) 기록 : CHG-{}", vo.getChgId());
     }
 }

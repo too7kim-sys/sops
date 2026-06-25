@@ -1,5 +1,6 @@
 package egovframework.ops.release.service.impl;
 
+import egovframework.ops.release.service.ReleaseItemVO;
 import egovframework.ops.release.service.ReleaseVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -24,4 +25,8 @@ public interface ReleaseMapper {
     void updateReleaseProcess(ReleaseVO vo);
 
     void deleteRelease(Long relId);
+
+    List<ReleaseItemVO> selectReleaseItemList(Long relId);
+
+    void insertReleaseItem(ReleaseItemVO vo);
 }

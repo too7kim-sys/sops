@@ -4,6 +4,8 @@ import egovframework.com.cmm.ComDefaultVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * 배포관리 VO.
  *
@@ -57,4 +59,7 @@ public class ReleaseVO extends ComDefaultVO {
 
     /** 등록 일시 */
     private String regDt;
+
+    /** 배포 항목 목록 (조인) */
+    private List<ReleaseItemVO> itemList;
 }
