@@ -50,6 +50,83 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('CHECK_RESULT', 'NORMAL',   '정상', 1, 'Y'),
  ('CHECK_RESULT', 'ABNORMAL', '이상', 2, 'Y');
 
+-- 표준운영절차 확장 모듈 공통코드 ----------------------------------------
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
+ ('PRIORITY', 'HIGH', '높음', 1, 'Y'),
+ ('PRIORITY', 'MID',  '보통', 2, 'Y'),
+ ('PRIORITY', 'LOW',  '낮음', 3, 'Y'),
+ ('CSR_STATUS', 'REQUESTED',   '요청',     1, 'Y'),
+ ('CSR_STATUS', 'RECEIVED',    '접수',     2, 'Y'),
+ ('CSR_STATUS', 'CLASSIFIED',  '분류완료', 3, 'Y'),
+ ('CSR_STATUS', 'IN_PROGRESS', '처리중',   4, 'Y'),
+ ('CSR_STATUS', 'PROCESSED',   '처리완료', 5, 'Y'),
+ ('CSR_STATUS', 'CLOSED',      '종료',     6, 'Y'),
+ ('CSR_STATUS', 'REJECTED',    '반려',     7, 'Y'),
+ ('CSR_TYPE', 'INQUIRY', '단순문의', 1, 'Y'),
+ ('CSR_TYPE', 'CHANGE',  '변경요청', 2, 'Y'),
+ ('CSR_TYPE', 'IMPROVE', '개선요청', 3, 'Y'),
+ ('CSR_TYPE', 'WORK',    '작업요청', 4, 'Y'),
+ ('TEST_STATUS', 'PLANNED',  '계획',     1, 'Y'),
+ ('TEST_STATUS', 'TESTING',  '수행중',   2, 'Y'),
+ ('TEST_STATUS', 'ANALYZED', '분석완료', 3, 'Y'),
+ ('TEST_STATUS', 'CLOSED',   '종료',     4, 'Y'),
+ ('TEST_STATUS', 'FAILED',   '실패',     5, 'Y'),
+ ('TEST_TYPE', 'UNIT',        '단위테스트', 1, 'Y'),
+ ('TEST_TYPE', 'INTEGRATION', '통합테스트', 2, 'Y'),
+ ('TEST_TYPE', 'PERFORMANCE', '성능테스트', 3, 'Y'),
+ ('TEST_TYPE', 'ACCEPTANCE',  '인수테스트', 4, 'Y'),
+ ('TEST_ENV', 'DEV', '개발환경', 1, 'Y'),
+ ('TEST_ENV', 'OPS', '운영환경', 2, 'Y'),
+ ('TEST_CASE_RESULT', 'PASS', '성공',     1, 'Y'),
+ ('TEST_CASE_RESULT', 'FAIL', '실패',     2, 'Y'),
+ ('TEST_CASE_RESULT', 'NA',   '해당없음', 3, 'Y'),
+ ('INTF_STATUS', 'REQUESTED', '요청',     1, 'Y'),
+ ('INTF_STATUS', 'REVIEWING', '검토',     2, 'Y'),
+ ('INTF_STATUS', 'PLANNING',  '계획수립', 3, 'Y'),
+ ('INTF_STATUS', 'WORKING',   '작업중',   4, 'Y'),
+ ('INTF_STATUS', 'TESTING',   '연계테스트', 5, 'Y'),
+ ('INTF_STATUS', 'COMPLETED', '완료',     6, 'Y'),
+ ('INTF_STATUS', 'REJECTED',  '반려',     7, 'Y'),
+ ('INTF_TYPE', 'SYNC',  '동기',   1, 'Y'),
+ ('INTF_TYPE', 'ASYNC', '비동기', 2, 'Y'),
+ ('INTF_TYPE', 'BATCH', '배치',   3, 'Y'),
+ ('INTF_TYPE', 'API',   'API',    4, 'Y'),
+ ('CI_STATUS', 'IDENTIFIED',  '식별',       1, 'Y'),
+ ('CI_STATUS', 'BASELINED',   '베이스라인', 2, 'Y'),
+ ('CI_STATUS', 'CHECKED_OUT', '체크아웃',   3, 'Y'),
+ ('CI_STATUS', 'CHECKED_IN',  '체크인',     4, 'Y'),
+ ('CI_TYPE', 'SOURCE',   '소스코드',     1, 'Y'),
+ ('CI_TYPE', 'LIBRARY',  '라이브러리',   2, 'Y'),
+ ('CI_TYPE', 'DOCUMENT', '문서',         3, 'Y'),
+ ('CI_TYPE', 'CONFIG',   '설정파일',     4, 'Y'),
+ ('CI_TYPE', 'DB',       'DB객체',       5, 'Y'),
+ ('CI_CHG_TYPE', 'IDENTIFY', '식별',         1, 'Y'),
+ ('CI_CHG_TYPE', 'CHECKOUT', '체크아웃',     2, 'Y'),
+ ('CI_CHG_TYPE', 'CHECKIN',  '체크인',       3, 'Y'),
+ ('CI_CHG_TYPE', 'BASELINE', '베이스라인설정', 4, 'Y'),
+ ('CI_CHG_TYPE', 'AUDIT',    '형상감사',     5, 'Y'),
+ ('EVENT_STATUS', 'DETECTED',  '감지',     1, 'Y'),
+ ('EVENT_STATUS', 'ANALYZING', '분석중',   2, 'Y'),
+ ('EVENT_STATUS', 'ACTING',    '조치중',   3, 'Y'),
+ ('EVENT_STATUS', 'HANDLED',   '조치완료', 4, 'Y'),
+ ('EVENT_STATUS', 'ESCALATED', '장애전환', 5, 'Y'),
+ ('EVENT_STATUS', 'CLOSED',    '종료',     6, 'Y'),
+ ('EVENT_TYPE', 'CPU',     'CPU',          1, 'Y'),
+ ('EVENT_TYPE', 'MEMORY',  '메모리',       2, 'Y'),
+ ('EVENT_TYPE', 'DISK',    '디스크',       3, 'Y'),
+ ('EVENT_TYPE', 'PROCESS', '프로세스',     4, 'Y'),
+ ('EVENT_TYPE', 'NETWORK', '네트워크',     5, 'Y'),
+ ('EVENT_TYPE', 'APP',     '애플리케이션', 6, 'Y'),
+ ('EVENT_SEVERITY', 'INFO',     '정보', 1, 'Y'),
+ ('EVENT_SEVERITY', 'WARN',     '경고', 2, 'Y'),
+ ('EVENT_SEVERITY', 'CRITICAL', '심각', 3, 'Y'),
+ ('PROBLEM_STATUS', 'REGISTERED', '등록',     1, 'Y'),
+ ('PROBLEM_STATUS', 'ANALYZING',  '분석중',   2, 'Y'),
+ ('PROBLEM_STATUS', 'IDENTIFIED', '원인규명', 3, 'Y'),
+ ('PROBLEM_STATUS', 'RESOLVING',  '해결중',   4, 'Y'),
+ ('PROBLEM_STATUS', 'RESOLVED',   '해결완료', 5, 'Y'),
+ ('PROBLEM_STATUS', 'CLOSED',     '종료',     6, 'Y');
+
 -- 장애관리 데이터 -----------------------------------------------------
 INSERT INTO OPS_INCIDENT (SYS_ID, TITLE, CONTENT, SEVERITY, STATUS, OCCR_DT, RCPT_DT, RESOLVE_DT, CAUSE, ACTION, CHARGER_ID, REG_ID) VALUES
  ('SYS001', '민원신청 화면 응답지연', '민원신청 페이지 로딩이 30초 이상 지연됨', '2', 'CLOSED',
@@ -104,3 +181,77 @@ INSERT INTO OPS_CHECK_ITEM (CHK_ID, ITEM_NM, ITEM_RESULT, ITEM_REMARK) VALUES
  (3, 'WAS 프로세스 기동 상태', 'NORMAL', ''),
  (3, 'DB 접속 상태',          'NORMAL', ''),
  (3, '디스크 사용률(80% 이하)', 'NORMAL', '55%');
+
+-- 확장 모듈 샘플 데이터 (개발/데모) --------------------------------------
+-- ① 요청관리
+INSERT INTO OPS_CSR (SYS_ID, TITLE, CONTENT, CSR_TYPE, PRIORITY, STATUS, REQ_ID, REQ_DT, CHARGER_ID, PROC_CONTENT, PROC_DT) VALUES
+ ('SYS001', '민원조회 화면 항목 추가 요청', '신청일자 컬럼 추가 요청', 'IMPROVE', 'MID', 'PROCESSED',
+   'user01', TIMESTAMP '2026-06-23 10:00:00', 'oper01', '화면 항목 추가 반영', TIMESTAMP '2026-06-23 15:00:00'),
+ ('SYS002', '결재선 지정 오류 문의', '전결 규정 문의', 'INQUIRY', 'LOW', 'CLOSED',
+   'user01', TIMESTAMP '2026-06-24 09:30:00', 'oper02', '업무 안내 완료', TIMESTAMP '2026-06-24 10:10:00'),
+ ('SYS004', '대용량 다운로드 기능 개선 요청', '엑셀 다운로드 속도 개선', 'CHANGE', 'HIGH', 'CLASSIFIED',
+   'user01', TIMESTAMP '2026-06-24 11:00:00', 'oper02', NULL, NULL);
+INSERT INTO OPS_CSR_HIS (CSR_ID, STATUS, CONTENT, PROC_ID) VALUES
+ (1, 'REQUESTED', '요청 등록', 'user01'),
+ (1, 'RECEIVED',  '요청 접수', 'oper01'),
+ (1, 'PROCESSED', '화면 항목 추가 반영', 'oper01'),
+ (2, 'REQUESTED', '요청 등록', 'user01'),
+ (2, 'CLOSED',    '업무 안내 후 종료', 'oper02');
+
+-- ④ 테스트관리
+INSERT INTO OPS_TEST (SYS_ID, CHG_ID, TITLE, TEST_TYPE, TEST_ENV, STATUS, PLAN_DT, TESTER_ID, RESULT_SUMMARY) VALUES
+ ('SYS001', 1, '민원포털 인덱스 적용 성능테스트', 'PERFORMANCE', 'OPS', 'ANALYZED', DATE '2026-06-20', 'oper01', '응답시간 30s→2s 개선 확인'),
+ ('SYS002', NULL, '결재 첨부 업로드 단위테스트', 'UNIT', 'DEV', 'TESTING', DATE '2026-06-25', 'oper02', NULL);
+INSERT INTO OPS_TEST_CASE (TEST_ID, CASE_NM, EXPECTED, CASE_RESULT, REMARK) VALUES
+ (1, '민원목록 조회 응답시간', '2초 이내', 'PASS', '1.8초'),
+ (1, '동시접속 100명 부하', '오류 없음', 'PASS', ''),
+ (2, '10MB 파일 업로드', '정상 업로드', 'FAIL', '용량초과 오류');
+
+-- ⑤ 연계관리
+INSERT INTO OPS_INTERFACE (SYS_ID, TITLE, PARTNER_SYS, IF_TYPE, DATA_DESC, STATUS, REQ_ID, REQ_DT, CHARGER_ID, PLAN_DT) VALUES
+ ('SYS001', '행정정보공동이용 주민정보 연계', '행정정보공동이용센터', 'API', '주민등록 기본정보 조회', 'COMPLETED',
+   'oper01', TIMESTAMP '2026-06-18 09:00:00', 'oper01', DATE '2026-06-19'),
+ ('SYS003', 'SSO 인증 토큰 연계', '통합인증센터', 'SYNC', 'SAML 토큰 교환', 'WORKING',
+   'oper01', TIMESTAMP '2026-06-24 09:00:00', 'oper01', DATE '2026-06-26');
+INSERT INTO OPS_INTERFACE_HIS (INTF_ID, STATUS, CONTENT, PROC_ID) VALUES
+ (1, 'REQUESTED', '연계 요청 등록', 'oper01'),
+ (1, 'COMPLETED', '연계 작업 및 테스트 완료', 'oper01'),
+ (2, 'REQUESTED', '연계 요청 등록', 'oper01'),
+ (2, 'WORKING',   '연계 작업 진행 중', 'oper01');
+
+-- ⑥ 형상관리
+INSERT INTO OPS_CI (SYS_ID, CI_NM, CI_TYPE, VER, CI_STATUS, LOCATION, OWNER_ID, CI_DESC) VALUES
+ ('SYS001', '민원포털 소스코드', 'SOURCE', 'v1.4.2', 'BASELINED', 'git://repo/minwon', 'oper01', '민원포털 전체 소스'),
+ ('SYS001', '민원포털 DB 스키마', 'DB', 'v1.4', 'CHECKED_IN', 'svn://db/minwon', 'oper01', 'DDL 스크립트'),
+ ('SYS003', '통합인증 설정파일', 'CONFIG', 'v2.0', 'IDENTIFIED', '/etc/sso/config', 'oper01', 'SSO 환경설정');
+INSERT INTO OPS_CI_HIS (CI_ID, CHG_TYPE, VER, CONTENT, PROC_ID) VALUES
+ (1, 'IDENTIFY', 'v1.4.1', '형상항목 식별', 'oper01'),
+ (1, 'BASELINE', 'v1.4.2', '배포 v1.4.2 베이스라인 설정', 'oper01'),
+ (2, 'CHECKIN',  'v1.4',   '인덱스 추가 DDL 체크인', 'oper01');
+
+-- ⑦ 운영상태관리 (이벤트)
+INSERT INTO OPS_EVENT (SYS_ID, TITLE, EVT_TYPE, SEVERITY, STATUS, OCCR_DT, CONTENT, ACTION, CHARGER_ID, LINKED_INC_ID) VALUES
+ ('SYS001', 'CPU 사용률 90% 초과', 'CPU', 'WARN', 'HANDLED', TIMESTAMP '2026-06-24 13:00:00', 'WAS 노드 CPU 임계 초과', '스케일아웃 조치', 'oper01', NULL),
+ ('SYS003', '인증 응답시간 임계 초과', 'APP', 'CRITICAL', 'ESCALATED', TIMESTAMP '2026-06-23 14:05:00', '인증 응답 4초 이상', '장애로 전환', 'oper01', 2),
+ ('SYS002', '디스크 사용률 85%', 'DISK', 'WARN', 'DETECTED', TIMESTAMP '2026-06-25 02:00:00', '첨부 스토리지 임계 근접', NULL, NULL, NULL);
+INSERT INTO OPS_EVENT_HIS (EVT_ID, STATUS, CONTENT, PROC_ID) VALUES
+ (1, 'DETECTED', '모니터링 임계 초과 감지', 'oper01'),
+ (1, 'HANDLED',  '스케일아웃 후 정상화', 'oper01'),
+ (2, 'DETECTED', '인증 응답시간 임계 초과 감지', 'oper01'),
+ (2, 'ESCALATED','장애관리로 전환(INC-2)', 'oper01');
+
+-- ⑨ 문제관리
+INSERT INTO OPS_PROBLEM (SYS_ID, TITLE, CONTENT, PRIORITY, STATUS, ROOT_CAUSE, SOLUTION, REG_ID, CHARGER_ID, RESOLVE_DT) VALUES
+ ('SYS003', '통합인증 간헐적 로그인 실패 반복', '동일 유형 장애 반복 발생', 'HIGH', 'RESOLVING',
+   '세션 클러스터 동기화 지연', '세션 동기화 로직 개선(변경요청 연계)', 'admin', 'oper01', NULL),
+ ('SYS001', '민원포털 야간 배치 지연', '월말 배치 지연 반복', 'MID', 'CLOSED',
+   '인덱스 부재로 인한 풀스캔', '대상 테이블 인덱스 추가', 'oper01', 'oper01', TIMESTAMP '2026-06-21 02:00:00');
+INSERT INTO OPS_PROBLEM_HIS (PRB_ID, STATUS, CONTENT, PROC_ID) VALUES
+ (1, 'REGISTERED', '반복 장애 기반 문제 등록', 'admin'),
+ (1, 'ANALYZING',  '근본원인 분석 착수', 'oper01'),
+ (2, 'REGISTERED', '문제 등록', 'oper01'),
+ (2, 'RESOLVED',   '인덱스 추가로 해결', 'oper01'),
+ (2, 'CLOSED',     '재발 없음 확인 후 종료', 'admin');
+INSERT INTO OPS_PROBLEM_INC (PRB_ID, INC_ID) VALUES (1, 2);
+INSERT INTO OPS_KEDB (PRB_ID, TITLE, SYMPTOM, CAUSE, WORKAROUND, SOLUTION) VALUES
+ (2, '야간 배치 지연(풀스캔)', '월말 배치 수행시간 급증', '대상 테이블 인덱스 부재', '배치 시간대 분산', '인덱스 추가 및 실행계획 점검');

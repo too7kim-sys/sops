@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('요청관리')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('csr')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 요청관리</div>
+        <div class="page-head">
+            <div>
+                <div class="page-title">요청관리</div>
+                <div class="page-desc">요청 → 접수 → 분류 → 처리 → 종결 표준 처리절차</div>
+            </div>
+            <div class="toolbar">
+                <a th:href="@{/csr/write}" class="btn btn-primary">＋ 요청 등록</a>
+            </div>
+        </div>
+
+        <form method="get" th:action="@{/csr/list}" class="searchbar">
+            <select name="searchSysId">
+                <option value="">전체 시스템</option>
+                <option th:each="s : ${systemList}" th:value="${s.sysId}" th:text="${s.sysNm}"
+                        th:selected="${s.sysId == searchVO.searchSysId}">시스템</option>
+            </select>
+            <select name="searchStatus">
+                <option value="">전체 상태</option>
+                <option th:each="c : ${statusList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                        th:selected="${c.codeId == searchVO.searchStatus}">상태</option>
+            </select>
+            <input type="text" name="searchKeyword" th:value="${searchVO.searchKeyword}" placeholder="제목 검색"/>
+            <button type="submit" class="btn btn-default">검색</button>
+        </form>
+
+        <div class="panel mb0">
+            <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b th:text="${totalCnt}">0</b>건</p>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th class="center" style="width:70px;">번호</th>
+                    <th style="width:160px;">시스템</th>
+                    <th>제목</th>
+                    <th class="center" style="width:90px;">유형</th>
+                    <th class="center" style="width:90px;">우선순위</th>
+                    <th class="center" style="width:90px;">상태</th>
+                    <th class="center" style="width:110px;">요청자</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${csrList}">
+                    <td class="center" th:text="${c.csrId}">1</td>
+                    <td th:text="${c.sysNm}">시스템</td>
+                    <td><a th:href="@{/csr/detail/{id}(id=${c.csrId})}" th:text="${c.title}">제목</a></td>
+                    <td class="center" th:text="${c.csrTypeNm}">유형</td>
+                    <td class="center" th:text="${c.priorityNm}">우선순위</td>
+                    <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(c.status)}" th:text="${c.statusNm}">상태</span></td>
+                    <td class="center" th:text="${c.reqId}">요청자</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(csrList)}"><td colspan="7" class="empty">등록된 요청이 없습니다.</td></tr>
+                </tbody>
+            </table>
+            <div th:replace="~{fragments/common :: paging(${pageInfo}, '/csr/list')}"></div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

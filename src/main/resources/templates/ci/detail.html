@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('형상항목 상세')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('ci')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 형상관리 &gt; 상세</div>
+        <div class="page-head">
+            <div class="page-title">형상항목 상세 <span style="color:#888;font-weight:400;">(CI-<span th:text="${ci.ciId}">1</span>)</span></div>
+            <div class="toolbar">
+                <a th:href="@{/ci/edit/{id}(id=${ci.ciId})}" class="btn btn-default">수정</a>
+                <form th:action="@{/ci/delete/{id}(id=${ci.ciId})}" method="post"
+                      onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="panel">
+                <h3>형상 정보</h3>
+                <table class="form">
+                    <tr><th>대상 시스템</th><td th:text="${ci.sysNm}">시스템</td></tr>
+                    <tr><th>형상항목명</th><td th:text="${ci.ciNm}">형상항목명</td></tr>
+                    <tr><th>유형 / 버전</th><td><span th:text="${ci.ciTypeNm}">유형</span> / <span th:text="${ci.ver} ?: '-'">버전</span></td></tr>
+                    <tr><th>형상 상태</th><td>
+                        <span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(ci.ciStatus)}" th:text="${ci.ciStatusNm}">상태</span>
+                    </td></tr>
+                    <tr><th>담당자</th><td th:text="${ci.ownerId} ?: '-'">-</td></tr>
+                    <tr><th>저장 위치</th><td th:text="${ci.location} ?: '-'">-</td></tr>
+                    <tr><th>등록 일시</th><td th:text="${ci.regDt}">-</td></tr>
+                    <tr><th>설명</th><td style="white-space:pre-line;" th:text="${ci.ciDesc} ?: '-'">-</td></tr>
+                </table>
+            </div>
+
+            <div>
+                <!-- 형상 통제/감사 -->
+                <div class="panel">
+                    <h3>형상 통제/감사</h3>
+                    <form method="post" th:action="@{/ci/process}">
+                        <input type="hidden" name="ciId" th:value="${ci.ciId}"/>
+                        <table class="form">
+                            <tr><th>변경 유형 <span class="required">*</span></th>
+                                <td>
+                                    <select name="chgType" required>
+                                        <option value="">선택</option>
+                                        <option th:each="c : ${chgTypeList}" th:value="${c.codeId}" th:text="${c.codeNm}">유형</option>
+                                    </select>
+                                </td></tr>
+                            <tr><th>버전</th><td><input type="text" name="ver" th:value="${ci.ver}" placeholder="기준선 시 갱신 버전"/></td></tr>
+                            <tr><th>내용</th><td><textarea name="content" rows="4" placeholder="형상통제/감사 내용"></textarea></td></tr>
+                        </table>
+                        <div class="right" style="margin-top:12px;">
+                            <button type="submit" class="btn btn-success">처리 등록</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 형상 이력 -->
+                <div class="panel">
+                    <h3>형상 이력</h3>
+                    <ul class="history">
+                        <li th:each="h : ${ci.historyList}">
+                            <span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(h.chgType)}" th:text="${h.chgTypeNm}">유형</span>
+                            <span th:if="${h.ver != null and h.ver != ''}" style="color:#888;">[v<span th:text="${h.ver}">1.0</span>]</span>
+                            <span style="white-space:pre-line;" th:text="${h.content}">내용</span>
+                            <div class="h-meta"><span th:text="${h.procId}">처리자</span> · <span th:text="${h.procDt}">일시</span></div>
+                        </li>
+                        <li th:if="${#lists.isEmpty(ci.historyList)}" style="border:none;">이력이 없습니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar"><a th:href="@{/ci/list}" class="btn btn-default">＜ 목록</a></div>
+    </main>
+</div>
+</body>
+</html>

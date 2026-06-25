@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.csr.service.impl.CsrMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND C.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND C.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND C.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectCsrList" parameterType="egovframework.ops.csr.service.CsrVO"
+            resultType="egovframework.ops.csr.service.CsrVO">
+        SELECT C.CSR_ID   AS csrId,
+               C.SYS_ID   AS sysId,
+               S.SYS_NM   AS sysNm,
+               C.TITLE    AS title,
+               C.CSR_TYPE AS csrType,
+               TC.CODE_NM AS csrTypeNm,
+               C.PRIORITY AS priority,
+               PC.CODE_NM AS priorityNm,
+               C.STATUS   AS status,
+               SC.CODE_NM AS statusNm,
+               C.REQ_ID   AS reqId,
+               TO_CHAR(C.REQ_DT, 'YYYY-MM-DD HH24:MI') AS reqDt
+          FROM OPS_CSR C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CSR_STATUS' AND SC.CODE_ID = C.STATUS
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE'   AND TC.CODE_ID = C.CSR_TYPE
+          LEFT JOIN OPS_CODE PC ON PC.CODE_GRP = 'PRIORITY'   AND PC.CODE_ID = C.PRIORITY
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY C.CSR_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectCsrListCnt" parameterType="egovframework.ops.csr.service.CsrVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_CSR C
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectCsr" parameterType="long"
+            resultType="egovframework.ops.csr.service.CsrVO">
+        SELECT C.CSR_ID      AS csrId,
+               C.SYS_ID      AS sysId,
+               S.SYS_NM      AS sysNm,
+               C.TITLE       AS title,
+               C.CONTENT     AS content,
+               C.CSR_TYPE    AS csrType,
+               TC.CODE_NM    AS csrTypeNm,
+               C.PRIORITY    AS priority,
+               PC.CODE_NM    AS priorityNm,
+               C.STATUS      AS status,
+               SC.CODE_NM    AS statusNm,
+               C.REQ_ID      AS reqId,
+               TO_CHAR(C.REQ_DT,  'YYYY-MM-DD HH24:MI') AS reqDt,
+               C.CHARGER_ID  AS chargerId,
+               C.PROC_CONTENT AS procContent,
+               TO_CHAR(C.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt,
+               C.LINKED_TYPE AS linkedType,
+               C.LINKED_ID   AS linkedId,
+               C.SATISFACTION AS satisfaction,
+               TO_CHAR(C.REG_DT,  'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_CSR C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CSR_STATUS' AND SC.CODE_ID = C.STATUS
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE'   AND TC.CODE_ID = C.CSR_TYPE
+          LEFT JOIN OPS_CODE PC ON PC.CODE_GRP = 'PRIORITY'   AND PC.CODE_ID = C.PRIORITY
+         WHERE C.CSR_ID = #{csrId}
+    </select>
+
+    <select id="selectCsrHisList" parameterType="long"
+            resultType="egovframework.ops.csr.service.CsrHisVO">
+        SELECT H.HIS_ID   AS hisId,
+               H.CSR_ID   AS csrId,
+               H.STATUS   AS status,
+               SC.CODE_NM AS statusNm,
+               H.CONTENT  AS content,
+               H.PROC_ID  AS procId,
+               TO_CHAR(H.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt
+          FROM OPS_CSR_HIS H
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CSR_STATUS' AND SC.CODE_ID = H.STATUS
+         WHERE H.CSR_ID = #{csrId}
+         ORDER BY H.HIS_ID
+    </select>
+
+    <insert id="insertCsr" parameterType="egovframework.ops.csr.service.CsrVO"
+            useGeneratedKeys="true" keyProperty="csrId">
+        INSERT INTO OPS_CSR
+            (SYS_ID, TITLE, CONTENT, CSR_TYPE, PRIORITY, STATUS, REQ_ID, REQ_DT,
+             CHARGER_ID, LINKED_TYPE, LINKED_ID, REG_DT)
+        VALUES
+            (#{sysId}, #{title}, #{content}, #{csrType}, #{priority}, #{status},
+             #{reqId}, CURRENT_TIMESTAMP, #{chargerId}, #{linkedType}, #{linkedId},
+             CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateCsr" parameterType="egovframework.ops.csr.service.CsrVO">
+        UPDATE OPS_CSR
+           SET SYS_ID   = #{sysId},
+               TITLE    = #{title},
+               CONTENT  = #{content},
+               CSR_TYPE = #{csrType},
+               PRIORITY = #{priority},
+               CHARGER_ID = #{chargerId}
+         WHERE CSR_ID = #{csrId}
+    </update>
+
+    <update id="updateCsrProcess" parameterType="egovframework.ops.csr.service.CsrVO">
+        UPDATE OPS_CSR
+           SET STATUS      = #{status},
+               PROC_CONTENT = #{procContent},
+               CHARGER_ID  = #{chargerId},
+               PROC_DT     = CURRENT_TIMESTAMP
+         WHERE CSR_ID = #{csrId}
+    </update>
+
+    <insert id="insertCsrHis" parameterType="egovframework.ops.csr.service.CsrHisVO">
+        INSERT INTO OPS_CSR_HIS (CSR_ID, STATUS, CONTENT, PROC_ID, PROC_DT)
+        VALUES (#{csrId}, #{status}, #{content}, #{procId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteCsr" parameterType="long">
+        DELETE FROM OPS_CSR WHERE CSR_ID = #{csrId}
+    </delete>
+
+    <delete id="deleteCsrHis" parameterType="long">
+        DELETE FROM OPS_CSR_HIS WHERE CSR_ID = #{csrId}
+    </delete>
+
+</mapper>

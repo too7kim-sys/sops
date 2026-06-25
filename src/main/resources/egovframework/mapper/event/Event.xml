@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.event.service.impl.EventMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND E.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND E.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND E.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectEventList" parameterType="egovframework.ops.event.service.EventVO"
+            resultType="egovframework.ops.event.service.EventVO">
+        SELECT E.EVT_ID    AS evtId,
+               E.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               E.TITLE     AS title,
+               E.EVT_TYPE  AS evtType,
+               TC.CODE_NM  AS evtTypeNm,
+               E.SEVERITY  AS severity,
+               VC.CODE_NM  AS severityNm,
+               E.STATUS    AS status,
+               SC.CODE_NM  AS statusNm,
+               E.CHARGER_ID AS chargerId,
+               TO_CHAR(E.OCCR_DT, 'YYYY-MM-DD HH24:MI') AS occrDt
+          FROM OPS_EVENT E
+          LEFT JOIN OPS_SYSTEM S ON E.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'EVENT_STATUS'   AND SC.CODE_ID = E.STATUS
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'EVENT_TYPE'     AND TC.CODE_ID = E.EVT_TYPE
+          LEFT JOIN OPS_CODE VC ON VC.CODE_GRP = 'EVENT_SEVERITY' AND VC.CODE_ID = E.SEVERITY
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY E.EVT_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectEventListCnt" parameterType="egovframework.ops.event.service.EventVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_EVENT E
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectEvent" parameterType="long"
+            resultType="egovframework.ops.event.service.EventVO">
+        SELECT E.EVT_ID    AS evtId,
+               E.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               E.TITLE     AS title,
+               E.EVT_TYPE  AS evtType,
+               TC.CODE_NM  AS evtTypeNm,
+               E.SEVERITY  AS severity,
+               VC.CODE_NM  AS severityNm,
+               E.STATUS    AS status,
+               SC.CODE_NM  AS statusNm,
+               TO_CHAR(E.OCCR_DT, 'YYYY-MM-DD HH24:MI') AS occrDt,
+               E.CONTENT   AS content,
+               E.ACTION    AS action,
+               E.CHARGER_ID  AS chargerId,
+               E.LINKED_INC_ID AS linkedIncId,
+               TO_CHAR(E.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_EVENT E
+          LEFT JOIN OPS_SYSTEM S ON E.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'EVENT_STATUS'   AND SC.CODE_ID = E.STATUS
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'EVENT_TYPE'     AND TC.CODE_ID = E.EVT_TYPE
+          LEFT JOIN OPS_CODE VC ON VC.CODE_GRP = 'EVENT_SEVERITY' AND VC.CODE_ID = E.SEVERITY
+         WHERE E.EVT_ID = #{evtId}
+    </select>
+
+    <select id="selectEventHisList" parameterType="long"
+            resultType="egovframework.ops.event.service.EventHisVO">
+        SELECT H.HIS_ID   AS hisId,
+               H.EVT_ID   AS evtId,
+               H.STATUS   AS status,
+               SC.CODE_NM AS statusNm,
+               H.CONTENT  AS content,
+               H.PROC_ID  AS procId,
+               TO_CHAR(H.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt
+          FROM OPS_EVENT_HIS H
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'EVENT_STATUS' AND SC.CODE_ID = H.STATUS
+         WHERE H.EVT_ID = #{evtId}
+         ORDER BY H.HIS_ID
+    </select>
+
+    <insert id="insertEvent" parameterType="egovframework.ops.event.service.EventVO"
+            useGeneratedKeys="true" keyProperty="evtId">
+        INSERT INTO OPS_EVENT
+            (SYS_ID, TITLE, EVT_TYPE, SEVERITY, STATUS, OCCR_DT, CONTENT, ACTION, CHARGER_ID, LINKED_INC_ID, REG_DT)
+        VALUES
+            (#{sysId}, #{title}, #{evtType}, #{severity}, #{status},
+             <choose><when test="occrDt != null and occrDt != ''">TO_TIMESTAMP(REPLACE(#{occrDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when><otherwise>CURRENT_TIMESTAMP</otherwise></choose>,
+             #{content}, #{action}, #{chargerId}, #{linkedIncId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateEventProcess" parameterType="egovframework.ops.event.service.EventVO">
+        UPDATE OPS_EVENT
+           SET STATUS    = #{status},
+               ACTION    = #{action},
+               CHARGER_ID = #{chargerId},
+               LINKED_INC_ID = #{linkedIncId}
+         WHERE EVT_ID = #{evtId}
+    </update>
+
+    <insert id="insertEventHis" parameterType="egovframework.ops.event.service.EventHisVO">
+        INSERT INTO OPS_EVENT_HIS (EVT_ID, STATUS, CONTENT, PROC_ID, PROC_DT)
+        VALUES (#{evtId}, #{status}, #{content}, #{procId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteEvent" parameterType="long">
+        DELETE FROM OPS_EVENT WHERE EVT_ID = #{evtId}
+    </delete>
+
+    <delete id="deleteEventHis" parameterType="long">
+        DELETE FROM OPS_EVENT_HIS WHERE EVT_ID = #{evtId}
+    </delete>
+
+</mapper>

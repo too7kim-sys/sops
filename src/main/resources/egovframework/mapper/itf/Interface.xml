@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.itf.service.impl.InterfaceMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND I.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND I.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND I.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectInterfaceList" parameterType="egovframework.ops.itf.service.InterfaceVO"
+            resultType="egovframework.ops.itf.service.InterfaceVO">
+        SELECT I.INTF_ID     AS intfId,
+               I.SYS_ID       AS sysId,
+               S.SYS_NM       AS sysNm,
+               I.TITLE        AS title,
+               I.PARTNER_SYS  AS partnerSys,
+               I.IF_TYPE      AS ifType,
+               TC.CODE_NM     AS ifTypeNm,
+               I.STATUS       AS status,
+               SC.CODE_NM     AS statusNm,
+               I.CHARGER_ID   AS chargerId
+          FROM OPS_INTERFACE I
+          LEFT JOIN OPS_SYSTEM S ON I.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'INTF_TYPE'   AND TC.CODE_ID = I.IF_TYPE
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INTF_STATUS' AND SC.CODE_ID = I.STATUS
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY I.INTF_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectInterfaceListCnt" parameterType="egovframework.ops.itf.service.InterfaceVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_INTERFACE I
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectInterface" parameterType="long"
+            resultType="egovframework.ops.itf.service.InterfaceVO">
+        SELECT I.INTF_ID     AS intfId,
+               I.SYS_ID       AS sysId,
+               S.SYS_NM       AS sysNm,
+               I.TITLE        AS title,
+               I.PARTNER_SYS  AS partnerSys,
+               I.IF_TYPE      AS ifType,
+               TC.CODE_NM     AS ifTypeNm,
+               I.DATA_DESC    AS dataDesc,
+               I.STATUS       AS status,
+               SC.CODE_NM     AS statusNm,
+               I.REQ_ID       AS reqId,
+               TO_CHAR(I.REQ_DT,      'YYYY-MM-DD HH24:MI') AS reqDt,
+               I.CHARGER_ID   AS chargerId,
+               TO_CHAR(I.PLAN_DT,     'YYYY-MM-DD')          AS planDt,
+               TO_CHAR(I.COMPLETE_DT, 'YYYY-MM-DD HH24:MI') AS completeDt,
+               I.RESULT       AS result,
+               TO_CHAR(I.REG_DT,      'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_INTERFACE I
+          LEFT JOIN OPS_SYSTEM S ON I.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'INTF_TYPE'   AND TC.CODE_ID = I.IF_TYPE
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INTF_STATUS' AND SC.CODE_ID = I.STATUS
+         WHERE I.INTF_ID = #{intfId}
+    </select>
+
+    <select id="selectInterfaceHisList" parameterType="long"
+            resultType="egovframework.ops.itf.service.InterfaceHisVO">
+        SELECT H.HIS_ID   AS hisId,
+               H.INTF_ID  AS intfId,
+               H.STATUS   AS status,
+               SC.CODE_NM AS statusNm,
+               H.CONTENT  AS content,
+               H.PROC_ID  AS procId,
+               TO_CHAR(H.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt
+          FROM OPS_INTERFACE_HIS H
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INTF_STATUS' AND SC.CODE_ID = H.STATUS
+         WHERE H.INTF_ID = #{intfId}
+         ORDER BY H.HIS_ID
+    </select>
+
+    <insert id="insertInterface" parameterType="egovframework.ops.itf.service.InterfaceVO"
+            useGeneratedKeys="true" keyProperty="intfId">
+        INSERT INTO OPS_INTERFACE
+            (SYS_ID, TITLE, PARTNER_SYS, IF_TYPE, DATA_DESC, STATUS, REQ_ID, REQ_DT, CHARGER_ID, PLAN_DT, RESULT, REG_DT)
+        VALUES
+            (#{sysId}, #{title}, #{partnerSys}, #{ifType}, #{dataDesc}, #{status}, #{reqId}, CURRENT_TIMESTAMP, #{chargerId},
+             <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>NULL</otherwise></choose>,
+             #{result}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateInterfaceProcess" parameterType="egovframework.ops.itf.service.InterfaceVO">
+        UPDATE OPS_INTERFACE
+           SET STATUS     = #{status},
+               RESULT     = #{result},
+               CHARGER_ID = #{chargerId}
+               <if test="status == 'COMPLETED'">
+               , COMPLETE_DT = COALESCE(COMPLETE_DT, CURRENT_TIMESTAMP)
+               </if>
+         WHERE INTF_ID = #{intfId}
+    </update>
+
+    <insert id="insertInterfaceHis" parameterType="egovframework.ops.itf.service.InterfaceHisVO">
+        INSERT INTO OPS_INTERFACE_HIS (INTF_ID, STATUS, CONTENT, PROC_ID, PROC_DT)
+        VALUES (#{intfId}, #{status}, #{content}, #{procId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteInterface" parameterType="long">
+        DELETE FROM OPS_INTERFACE WHERE INTF_ID = #{intfId}
+    </delete>
+
+    <delete id="deleteInterfaceHis" parameterType="long">
+        DELETE FROM OPS_INTERFACE_HIS WHERE INTF_ID = #{intfId}
+    </delete>
+
+</mapper>

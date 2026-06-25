@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.problem.service.impl.ProblemMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND P.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND P.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND P.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectProblemList" parameterType="egovframework.ops.problem.service.ProblemVO"
+            resultType="egovframework.ops.problem.service.ProblemVO">
+        SELECT P.PRB_ID    AS prbId,
+               P.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               P.TITLE     AS title,
+               P.PRIORITY  AS priority,
+               PC.CODE_NM  AS priorityNm,
+               P.STATUS    AS status,
+               SC.CODE_NM  AS statusNm,
+               P.CHARGER_ID AS chargerId,
+               TO_CHAR(P.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_PROBLEM P
+          LEFT JOIN OPS_SYSTEM S ON P.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'PROBLEM_STATUS' AND SC.CODE_ID = P.STATUS
+          LEFT JOIN OPS_CODE PC ON PC.CODE_GRP = 'PRIORITY'       AND PC.CODE_ID = P.PRIORITY
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY P.PRB_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectProblemListCnt" parameterType="egovframework.ops.problem.service.ProblemVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_PROBLEM P
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectProblem" parameterType="long"
+            resultType="egovframework.ops.problem.service.ProblemVO">
+        SELECT P.PRB_ID    AS prbId,
+               P.SYS_ID    AS sysId,
+               S.SYS_NM    AS sysNm,
+               P.TITLE     AS title,
+               P.CONTENT   AS content,
+               P.PRIORITY  AS priority,
+               PC.CODE_NM  AS priorityNm,
+               P.STATUS    AS status,
+               SC.CODE_NM  AS statusNm,
+               P.ROOT_CAUSE AS rootCause,
+               P.SOLUTION  AS solution,
+               P.REG_ID    AS regId,
+               TO_CHAR(P.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt,
+               P.CHARGER_ID AS chargerId,
+               TO_CHAR(P.RESOLVE_DT, 'YYYY-MM-DD HH24:MI') AS resolveDt
+          FROM OPS_PROBLEM P
+          LEFT JOIN OPS_SYSTEM S ON P.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'PROBLEM_STATUS' AND SC.CODE_ID = P.STATUS
+          LEFT JOIN OPS_CODE PC ON PC.CODE_GRP = 'PRIORITY'       AND PC.CODE_ID = P.PRIORITY
+         WHERE P.PRB_ID = #{prbId}
+    </select>
+
+    <select id="selectProblemHisList" parameterType="long"
+            resultType="egovframework.ops.problem.service.ProblemHisVO">
+        SELECT H.HIS_ID   AS hisId,
+               H.PRB_ID   AS prbId,
+               H.STATUS   AS status,
+               SC.CODE_NM AS statusNm,
+               H.CONTENT  AS content,
+               H.PROC_ID  AS procId,
+               TO_CHAR(H.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt
+          FROM OPS_PROBLEM_HIS H
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'PROBLEM_STATUS' AND SC.CODE_ID = H.STATUS
+         WHERE H.PRB_ID = #{prbId}
+         ORDER BY H.HIS_ID
+    </select>
+
+    <select id="selectProblemIncList" parameterType="long" resultType="map">
+        SELECT I.INC_ID  AS "incId",
+               I.TITLE   AS "title",
+               SC.CODE_NM AS "statusNm"
+          FROM OPS_PROBLEM_INC PI
+          JOIN OPS_INCIDENT I ON PI.INC_ID = I.INC_ID
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'INCIDENT_STATUS' AND SC.CODE_ID = I.STATUS
+         WHERE PI.PRB_ID = #{prbId}
+         ORDER BY I.INC_ID
+    </select>
+
+    <select id="selectKedbList" parameterType="long"
+            resultType="egovframework.ops.problem.service.KedbVO">
+        SELECT K.KEDB_ID    AS kedbId,
+               K.PRB_ID     AS prbId,
+               K.TITLE      AS title,
+               K.SYMPTOM    AS symptom,
+               K.CAUSE      AS cause,
+               K.WORKAROUND AS workaround,
+               K.SOLUTION   AS solution,
+               TO_CHAR(K.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_KEDB K
+         WHERE K.PRB_ID = #{prbId}
+         ORDER BY K.KEDB_ID
+    </select>
+
+    <select id="selectKedbCnt" parameterType="long" resultType="int">
+        SELECT COUNT(*) FROM OPS_KEDB WHERE PRB_ID = #{prbId}
+    </select>
+
+    <insert id="insertProblem" parameterType="egovframework.ops.problem.service.ProblemVO"
+            useGeneratedKeys="true" keyProperty="prbId">
+        INSERT INTO OPS_PROBLEM
+            (SYS_ID, TITLE, CONTENT, PRIORITY, STATUS, REG_ID, REG_DT)
+        VALUES
+            (#{sysId}, #{title}, #{content}, #{priority}, #{status}, #{regId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateProblemProcess" parameterType="egovframework.ops.problem.service.ProblemVO">
+        UPDATE OPS_PROBLEM
+           SET STATUS    = #{status},
+               ROOT_CAUSE = #{rootCause},
+               SOLUTION  = #{solution},
+               CHARGER_ID = #{chargerId}
+               <if test="status == 'RESOLVED'">
+               , RESOLVE_DT = COALESCE(RESOLVE_DT, CURRENT_TIMESTAMP)
+               </if>
+         WHERE PRB_ID = #{prbId}
+    </update>
+
+    <insert id="insertProblemHis" parameterType="egovframework.ops.problem.service.ProblemHisVO">
+        INSERT INTO OPS_PROBLEM_HIS (PRB_ID, STATUS, CONTENT, PROC_ID, PROC_DT)
+        VALUES (#{prbId}, #{status}, #{content}, #{procId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <insert id="insertProblemInc">
+        INSERT INTO OPS_PROBLEM_INC (PRB_ID, INC_ID)
+        VALUES (#{prbId}, #{incId})
+    </insert>
+
+    <insert id="insertKedb" parameterType="egovframework.ops.problem.service.KedbVO"
+            useGeneratedKeys="true" keyProperty="kedbId">
+        INSERT INTO OPS_KEDB
+            (PRB_ID, TITLE, SYMPTOM, CAUSE, WORKAROUND, SOLUTION, REG_DT)
+        VALUES
+            (#{prbId}, #{title}, #{symptom}, #{cause}, #{workaround}, #{solution}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteProblem" parameterType="long">
+        DELETE FROM OPS_PROBLEM WHERE PRB_ID = #{prbId}
+    </delete>
+
+    <delete id="deleteProblemHis" parameterType="long">
+        DELETE FROM OPS_PROBLEM_HIS WHERE PRB_ID = #{prbId}
+    </delete>
+
+    <delete id="deleteProblemInc" parameterType="long">
+        DELETE FROM OPS_PROBLEM_INC WHERE PRB_ID = #{prbId}
+    </delete>
+
+</mapper>

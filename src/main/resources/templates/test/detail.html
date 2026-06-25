@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('테스트 상세')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('test')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 테스트관리 &gt; 상세</div>
+        <div class="page-head">
+            <div class="page-title">테스트 상세 <span style="color:#888;font-weight:400;">(TEST-<span th:text="${test.testId}">1</span>)</span></div>
+            <div class="toolbar">
+                <form th:action="@{/test/delete/{id}(id=${test.testId})}" method="post"
+                      onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="panel">
+                <h3>테스트 정보</h3>
+                <table class="form">
+                    <tr><th>대상 시스템</th><td th:text="${test.sysNm}">시스템</td></tr>
+                    <tr><th>제목</th><td th:text="${test.title}">제목</td></tr>
+                    <tr><th>유형 / 환경</th><td><span th:text="${test.testTypeNm}">유형</span> / <span th:text="${test.testEnvNm}">환경</span></td></tr>
+                    <tr><th>상태</th><td>
+                        <span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(test.status)}" th:text="${test.statusNm}">상태</span>
+                    </td></tr>
+                    <tr><th>연계 변경 ID</th><td th:text="${test.chgId} ?: '-'">-</td></tr>
+                    <tr><th>예정일</th><td th:text="${test.planDt} ?: '-'">-</td></tr>
+                    <tr><th>테스터</th><td th:text="${test.testerId} ?: '-'">-</td></tr>
+                    <tr><th>등록 일시</th><td th:text="${test.regDt}">-</td></tr>
+                    <tr><th>결과 요약</th><td style="white-space:pre-line;" th:text="${test.resultSummary} ?: '-'">-</td></tr>
+                </table>
+            </div>
+
+            <div>
+                <!-- 테스트 처리 (상태전이) -->
+                <div class="panel" th:if="${test.status != 'CLOSED' and test.status != 'FAILED'}">
+                    <h3>테스트 처리</h3>
+                    <form method="post" th:action="@{/test/process}">
+                        <input type="hidden" name="testId" th:value="${test.testId}"/>
+                        <table class="form">
+                            <tr><th>처리 상태 <span class="required">*</span></th>
+                                <td>
+                                    <select name="status" required>
+                                        <option th:each="c : ${statusList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                                                th:selected="${c.codeId == test.status}">상태</option>
+                                    </select>
+                                </td></tr>
+                            <tr><th>테스터</th><td><input type="text" name="testerId" th:value="${test.testerId}"/></td></tr>
+                            <tr><th>결과 요약</th><td><textarea name="resultSummary" rows="4" th:text="${test.resultSummary}"></textarea></td></tr>
+                        </table>
+                        <div class="right" style="margin-top:12px;">
+                            <button type="submit" class="btn btn-success">처리 등록</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 테스트 케이스 -->
+                <div class="panel">
+                    <h3>테스트 케이스</h3>
+                    <table class="list">
+                        <thead>
+                        <tr>
+                            <th class="center" style="width:50px;">#</th>
+                            <th>케이스명</th>
+                            <th>기대 결과</th>
+                            <th class="center" style="width:90px;">결과</th>
+                            <th>비고</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="c,stat : ${test.caseList}">
+                            <td class="center" th:text="${stat.count}">1</td>
+                            <td th:text="${c.caseNm}">케이스명</td>
+                            <td th:text="${c.expected} ?: '-'">기대결과</td>
+                            <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(c.caseResult)}" th:text="${c.caseResultNm}">결과</span></td>
+                            <td th:text="${c.remark} ?: '-'">비고</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(test.caseList)}"><td colspan="5" class="empty">테스트 케이스가 없습니다.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar"><a th:href="@{/test/list}" class="btn btn-default">＜ 목록</a></div>
+    </main>
+</div>
+</body>
+</html>

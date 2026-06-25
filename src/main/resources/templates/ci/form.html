@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('형상항목 식별/수정')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('ci')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 형상관리 &gt; <span th:text="${ci.ciId == null}?'식별':'수정'">식별</span></div>
+        <div class="page-head">
+            <div class="page-title" th:text="${ci.ciId == null}?'형상항목 식별':'형상항목 수정'">형상항목 식별</div>
+        </div>
+
+        <form method="post" th:action="${ci.ciId == null}?@{/ci/insert}:@{/ci/update}">
+            <input type="hidden" name="ciId" th:value="${ci.ciId}"/>
+            <div class="panel">
+                <h3>형상 정보</h3>
+                <table class="form">
+                    <tr>
+                        <th>대상 시스템 <span class="required">*</span></th>
+                        <td>
+                            <select name="sysId" required>
+                                <option value="">선택</option>
+                                <option th:each="s : ${systemList}" th:value="${s.sysId}" th:text="${s.sysNm}"
+                                        th:selected="${s.sysId == ci.sysId}">시스템</option>
+                            </select>
+                        </td>
+                        <th>유형 <span class="required">*</span></th>
+                        <td>
+                            <select name="ciType" required>
+                                <option value="">선택</option>
+                                <option th:each="c : ${typeList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                                        th:selected="${c.codeId == ci.ciType}">유형</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>형상항목명 <span class="required">*</span></th>
+                        <td colspan="3"><input type="text" name="ciNm" th:value="${ci.ciNm}" required/></td>
+                    </tr>
+                    <tr>
+                        <th>버전</th>
+                        <td><input type="text" name="ver" th:value="${ci.ver}" placeholder="예: 1.0.0"/></td>
+                        <th>담당자</th>
+                        <td><input type="text" name="ownerId" th:value="${ci.ownerId}" placeholder="미입력 시 로그인 사용자"/></td>
+                    </tr>
+                    <tr>
+                        <th>저장 위치</th>
+                        <td colspan="3"><input type="text" name="location" th:value="${ci.location}" placeholder="예: git 저장소 경로, 형상 보관 위치"/></td>
+                    </tr>
+                    <tr>
+                        <th>설명</th>
+                        <td colspan="3"><textarea name="ciDesc" rows="5" th:text="${ci.ciDesc}"></textarea></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="toolbar right" style="justify-content:flex-end;">
+                <a th:href="@{/ci/list}" class="btn btn-default">목록</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+        </form>
+    </main>
+</div>
+</body>
+</html>

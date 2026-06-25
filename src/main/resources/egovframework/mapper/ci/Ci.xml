@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.ci.service.impl.CiMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND C.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND C.CI_STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND C.CI_NM LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectCiList" parameterType="egovframework.ops.ci.service.CiVO"
+            resultType="egovframework.ops.ci.service.CiVO">
+        SELECT C.CI_ID      AS ciId,
+               C.SYS_ID      AS sysId,
+               S.SYS_NM      AS sysNm,
+               C.CI_NM       AS ciNm,
+               C.CI_TYPE     AS ciType,
+               TC.CODE_NM    AS ciTypeNm,
+               C.VER         AS ver,
+               C.CI_STATUS   AS ciStatus,
+               SC.CODE_NM    AS ciStatusNm,
+               C.OWNER_ID    AS ownerId
+          FROM OPS_CI C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CI_TYPE'   AND TC.CODE_ID = C.CI_TYPE
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CI_STATUS' AND SC.CODE_ID = C.CI_STATUS
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY C.CI_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectCiListCnt" parameterType="egovframework.ops.ci.service.CiVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_CI C
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectCi" parameterType="long"
+            resultType="egovframework.ops.ci.service.CiVO">
+        SELECT C.CI_ID      AS ciId,
+               C.SYS_ID      AS sysId,
+               S.SYS_NM      AS sysNm,
+               C.CI_NM       AS ciNm,
+               C.CI_TYPE     AS ciType,
+               TC.CODE_NM    AS ciTypeNm,
+               C.VER         AS ver,
+               C.CI_STATUS   AS ciStatus,
+               SC.CODE_NM    AS ciStatusNm,
+               C.LOCATION    AS location,
+               C.OWNER_ID    AS ownerId,
+               C.CI_DESC     AS ciDesc,
+               TO_CHAR(C.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_CI C
+          LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CI_TYPE'   AND TC.CODE_ID = C.CI_TYPE
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CI_STATUS' AND SC.CODE_ID = C.CI_STATUS
+         WHERE C.CI_ID = #{ciId}
+    </select>
+
+    <select id="selectCiHisList" parameterType="long"
+            resultType="egovframework.ops.ci.service.CiHisVO">
+        SELECT H.HIS_ID    AS hisId,
+               H.CI_ID     AS ciId,
+               H.CHG_TYPE  AS chgType,
+               GC.CODE_NM  AS chgTypeNm,
+               H.VER       AS ver,
+               H.CONTENT   AS content,
+               H.PROC_ID   AS procId,
+               TO_CHAR(H.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt
+          FROM OPS_CI_HIS H
+          LEFT JOIN OPS_CODE GC ON GC.CODE_GRP = 'CI_CHG_TYPE' AND GC.CODE_ID = H.CHG_TYPE
+         WHERE H.CI_ID = #{ciId}
+         ORDER BY H.HIS_ID
+    </select>
+
+    <insert id="insertCi" parameterType="egovframework.ops.ci.service.CiVO"
+            useGeneratedKeys="true" keyProperty="ciId">
+        INSERT INTO OPS_CI
+            (SYS_ID, CI_NM, CI_TYPE, VER, CI_STATUS, LOCATION, OWNER_ID, CI_DESC, REG_DT)
+        VALUES
+            (#{sysId}, #{ciNm}, #{ciType}, #{ver}, #{ciStatus}, #{location}, #{ownerId}, #{ciDesc}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateCi" parameterType="egovframework.ops.ci.service.CiVO">
+        UPDATE OPS_CI
+           SET SYS_ID   = #{sysId},
+               CI_NM    = #{ciNm},
+               CI_TYPE  = #{ciType},
+               VER      = #{ver},
+               LOCATION = #{location},
+               OWNER_ID = #{ownerId},
+               CI_DESC  = #{ciDesc}
+         WHERE CI_ID = #{ciId}
+    </update>
+
+    <update id="updateCiStatus" parameterType="egovframework.ops.ci.service.CiVO">
+        UPDATE OPS_CI
+           SET CI_ID = CI_ID
+               <if test="ciStatus != null and ciStatus != ''">
+               , CI_STATUS = #{ciStatus}
+               </if>
+               <if test="chgType == 'BASELINE' and ver != null and ver != ''">
+               , VER = #{ver}
+               </if>
+         WHERE CI_ID = #{ciId}
+    </update>
+
+    <insert id="insertCiHis" parameterType="egovframework.ops.ci.service.CiHisVO">
+        INSERT INTO OPS_CI_HIS (CI_ID, CHG_TYPE, VER, CONTENT, PROC_ID, PROC_DT)
+        VALUES (#{ciId}, #{chgType}, #{ver}, #{content}, #{procId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteCi" parameterType="long">
+        DELETE FROM OPS_CI WHERE CI_ID = #{ciId}
+    </delete>
+
+    <delete id="deleteCiHis" parameterType="long">
+        DELETE FROM OPS_CI_HIS WHERE CI_ID = #{ciId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('형상관리')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('ci')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 형상관리</div>
+        <div class="page-head">
+            <div>
+                <div class="page-title">형상관리</div>
+                <div class="page-desc">형상식별 → 기준선 → 체크아웃/체크인 → 형상감사 표준 형상통제절차</div>
+            </div>
+            <div class="toolbar">
+                <a th:href="@{/ci/write}" class="btn btn-primary">＋ 형상항목 식별</a>
+            </div>
+        </div>
+
+        <form method="get" th:action="@{/ci/list}" class="searchbar">
+            <select name="searchSysId">
+                <option value="">전체 시스템</option>
+                <option th:each="s : ${systemList}" th:value="${s.sysId}" th:text="${s.sysNm}"
+                        th:selected="${s.sysId == searchVO.searchSysId}">시스템</option>
+            </select>
+            <select name="searchStatus">
+                <option value="">전체 상태</option>
+                <option th:each="c : ${statusList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                        th:selected="${c.codeId == searchVO.searchStatus}">상태</option>
+            </select>
+            <input type="text" name="searchKeyword" th:value="${searchVO.searchKeyword}" placeholder="형상항목명 검색"/>
+            <button type="submit" class="btn btn-default">검색</button>
+        </form>
+
+        <div class="panel mb0">
+            <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b th:text="${totalCnt}">0</b>건</p>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th class="center" style="width:70px;">번호</th>
+                    <th style="width:160px;">시스템</th>
+                    <th>형상항목명</th>
+                    <th class="center" style="width:100px;">유형</th>
+                    <th class="center" style="width:90px;">버전</th>
+                    <th class="center" style="width:110px;">상태</th>
+                    <th class="center" style="width:110px;">담당자</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${ciList}">
+                    <td class="center" th:text="${c.ciId}">1</td>
+                    <td th:text="${c.sysNm}">시스템</td>
+                    <td><a th:href="@{/ci/detail/{id}(id=${c.ciId})}" th:text="${c.ciNm}">형상항목명</a></td>
+                    <td class="center" th:text="${c.ciTypeNm}">유형</td>
+                    <td class="center" th:text="${c.ver} ?: '-'">버전</td>
+                    <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(c.ciStatus)}" th:text="${c.ciStatusNm}">상태</span></td>
+                    <td class="center" th:text="${c.ownerId} ?: '-'">담당자</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(ciList)}"><td colspan="7" class="empty">등록된 형상항목이 없습니다.</td></tr>
+                </tbody>
+            </table>
+            <div th:replace="~{fragments/common :: paging(${pageInfo}, '/ci/list')}"></div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

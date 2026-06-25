@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('테스트관리')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('test')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 테스트관리</div>
+        <div class="page-head">
+            <div>
+                <div class="page-title">테스트관리</div>
+                <div class="page-desc">계획 → 수행 → 분석 → 종결 표준 테스트절차</div>
+            </div>
+            <div class="toolbar">
+                <a th:href="@{/test/write}" class="btn btn-primary">＋ 테스트 등록</a>
+            </div>
+        </div>
+
+        <form method="get" th:action="@{/test/list}" class="searchbar">
+            <select name="searchSysId">
+                <option value="">전체 시스템</option>
+                <option th:each="s : ${systemList}" th:value="${s.sysId}" th:text="${s.sysNm}"
+                        th:selected="${s.sysId == searchVO.searchSysId}">시스템</option>
+            </select>
+            <select name="searchStatus">
+                <option value="">전체 상태</option>
+                <option th:each="c : ${statusList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                        th:selected="${c.codeId == searchVO.searchStatus}">상태</option>
+            </select>
+            <input type="text" name="searchKeyword" th:value="${searchVO.searchKeyword}" placeholder="제목 검색"/>
+            <button type="submit" class="btn btn-default">검색</button>
+        </form>
+
+        <div class="panel mb0">
+            <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b th:text="${totalCnt}">0</b>건</p>
+            <table class="list">
+                <thead>
+                <tr>
+                    <th class="center" style="width:70px;">번호</th>
+                    <th style="width:160px;">시스템</th>
+                    <th>제목</th>
+                    <th class="center" style="width:100px;">유형</th>
+                    <th class="center" style="width:90px;">환경</th>
+                    <th class="center" style="width:90px;">상태</th>
+                    <th class="center" style="width:120px;">예정일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="t : ${testList}">
+                    <td class="center" th:text="${t.testId}">1</td>
+                    <td th:text="${t.sysNm}">시스템</td>
+                    <td><a th:href="@{/test/detail/{id}(id=${t.testId})}" th:text="${t.title}">제목</a></td>
+                    <td class="center" th:text="${t.testTypeNm}">유형</td>
+                    <td class="center" th:text="${t.testEnvNm}">환경</td>
+                    <td class="center"><span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(t.status)}" th:text="${t.statusNm}">상태</span></td>
+                    <td class="center" th:text="${t.planDt} ?: '-'">예정일</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(testList)}"><td colspan="7" class="empty">등록된 테스트가 없습니다.</td></tr>
+                </tbody>
+            </table>
+            <div th:replace="~{fragments/common :: paging(${pageInfo}, '/test/list')}"></div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

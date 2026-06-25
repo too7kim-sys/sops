@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('연계 요청')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('interface')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 연계관리 &gt; 요청</div>
+        <div class="page-head">
+            <div class="page-title">연계 요청</div>
+        </div>
+
+        <form method="post" th:action="@{/interface/insert}">
+            <div class="panel">
+                <h3>연계 정보</h3>
+                <table class="form">
+                    <tr>
+                        <th>대상 시스템 <span class="required">*</span></th>
+                        <td>
+                            <select name="sysId" required>
+                                <option value="">선택</option>
+                                <option th:each="s : ${systemList}" th:value="${s.sysId}" th:text="${s.sysNm}"
+                                        th:selected="${s.sysId == interface.sysId}">시스템</option>
+                            </select>
+                        </td>
+                        <th>연계 유형 <span class="required">*</span></th>
+                        <td>
+                            <select name="ifType" required>
+                                <option value="">선택</option>
+                                <option th:each="c : ${typeList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                                        th:selected="${c.codeId == interface.ifType}">유형</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>제목 <span class="required">*</span></th>
+                        <td colspan="3"><input type="text" name="title" th:value="${interface.title}" required/></td>
+                    </tr>
+                    <tr>
+                        <th>상대 시스템</th>
+                        <td><input type="text" name="partnerSys" th:value="${interface.partnerSys}" placeholder="연계 상대 시스템"/></td>
+                        <th>예정일</th>
+                        <td><input type="date" name="planDt" th:value="${interface.planDt}"/></td>
+                    </tr>
+                    <tr>
+                        <th>연계 데이터</th>
+                        <td colspan="3"><textarea name="dataDesc" rows="5" th:text="${interface.dataDesc}"></textarea></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="toolbar right" style="justify-content:flex-end;">
+                <a th:href="@{/interface/list}" class="btn btn-default">목록</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+        </form>
+    </main>
+</div>
+</body>
+</html>

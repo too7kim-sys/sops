@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('이벤트 상세')}"></head>
+<body>
+<header th:replace="~{fragments/common :: topbar}"></header>
+<div class="layout">
+    <nav th:replace="~{fragments/common :: sidebar('event')}"></nav>
+    <main class="content">
+        <div class="breadcrumb">표준운영절차 &gt; 운영상태관리 &gt; 상세</div>
+        <div class="page-head">
+            <div class="page-title">이벤트 상세 <span style="color:#888;font-weight:400;">(EVT-<span th:text="${event.evtId}">1</span>)</span></div>
+            <div class="toolbar">
+                <form th:action="@{/event/delete/{id}(id=${event.evtId})}" method="post"
+                      onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="panel">
+                <h3>이벤트 정보</h3>
+                <table class="form">
+                    <tr><th>대상 시스템</th><td th:text="${event.sysNm}">시스템</td></tr>
+                    <tr><th>제목</th><td th:text="${event.title}">제목</td></tr>
+                    <tr><th>유형</th><td th:text="${event.evtTypeNm}">유형</td></tr>
+                    <tr><th>심각도 / 상태</th><td>
+                        <span class="badge" th:classappend="'lv-' + ${#strings.toLowerCase(event.severity)}" th:text="${event.severityNm}">심각도</span>
+                        &nbsp;
+                        <span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(event.status)}" th:text="${event.statusNm}">상태</span>
+                    </td></tr>
+                    <tr><th>발생일시</th><td th:text="${event.occrDt} ?: '-'">-</td></tr>
+                    <tr><th>담당자</th><td th:text="${event.chargerId} ?: '-'">-</td></tr>
+                    <tr><th>연계 장애</th><td>
+                        <a th:if="${event.linkedIncId != null}" th:href="@{/incident/detail/{id}(id=${event.linkedIncId})}"
+                           th:text="'INC-' + ${event.linkedIncId}">INC-1</a>
+                        <span th:if="${event.linkedIncId == null}">-</span>
+                    </td></tr>
+                    <tr><th>내용</th><td style="white-space:pre-line;" th:text="${event.content}">내용</td></tr>
+                    <tr><th>조치 내용</th><td style="white-space:pre-line;" th:text="${event.action} ?: '-'">-</td></tr>
+                </table>
+            </div>
+
+            <div>
+                <!-- 이벤트 처리 (상태전이) -->
+                <div class="panel" th:if="${event.status != 'CLOSED'}">
+                    <h3>이벤트 처리</h3>
+                    <form method="post" th:action="@{/event/process}">
+                        <input type="hidden" name="evtId" th:value="${event.evtId}"/>
+                        <table class="form">
+                            <tr><th>처리 상태 <span class="required">*</span></th>
+                                <td>
+                                    <select name="status" required>
+                                        <option th:each="c : ${statusList}" th:value="${c.codeId}" th:text="${c.codeNm}"
+                                                th:selected="${c.codeId == event.status}">상태</option>
+                                    </select>
+                                </td></tr>
+                            <tr><th>담당자</th><td><input type="text" name="chargerId" th:value="${event.chargerId}"/></td></tr>
+                            <tr><th>장애 연계<br/><small style="color:#999;font-weight:400;">(에스컬레이션 시 장애ID)</small></th>
+                                <td><input type="number" name="linkedIncId" th:value="${event.linkedIncId}" placeholder="연계 장애 ID"/></td></tr>
+                            <tr><th>조치 내용</th><td><textarea name="action" rows="3" th:text="${event.action}"></textarea></td></tr>
+                        </table>
+                        <div class="right" style="margin-top:12px;">
+                            <button type="submit" class="btn btn-success">처리 등록</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 처리 이력 -->
+                <div class="panel">
+                    <h3>처리 이력</h3>
+                    <ul class="history">
+                        <li th:each="h : ${event.historyList}">
+                            <span class="badge" th:classappend="'st-' + ${#strings.toLowerCase(h.status)}" th:text="${h.statusNm}">상태</span>
+                            <span style="white-space:pre-line;" th:text="${h.content}">내용</span>
+                            <div class="h-meta"><span th:text="${h.procId}">처리자</span> · <span th:text="${h.procDt}">일시</span></div>
+                        </li>
+                        <li th:if="${#lists.isEmpty(event.historyList)}" style="border:none;">이력이 없습니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar"><a th:href="@{/event/list}" class="btn btn-default">＜ 목록</a></div>
+    </main>
+</div>
+</body>
+</html>

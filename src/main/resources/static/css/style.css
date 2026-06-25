@@ -104,6 +104,15 @@ table.form textarea { resize: vertical; min-height: 70px; }
 .sev-2 { background: #ffe3cc; color: #c4540a; }
 .sev-3 { background: #fff1d6; color: #b3760a; }
 .sev-4 { background: #e7eefb; color: #2e5da8; }
+/* 확장 모듈 상태 배지 */
+.st-classified,.st-planning,.st-detected,.st-registered,.st-baselined,.st-checked_in { background: #e7eefb; color: #2e5da8; }
+.st-in_progress,.st-working,.st-testing,.st-resolving,.st-checked_out { background: #ffe3cc; color: #c4540a; }
+.st-processed,.st-analyzed,.st-handled,.st-identified { background: #d8f3e3; color: #14794a; }
+.st-failed,.st-escalated { background: #fbe0e0; color: #c0392b; }
+/* 이벤트 심각도 */
+.lv-info { background: #e7eefb; color: #2e5da8; }
+.lv-warn { background: #fff1d6; color: #b3760a; }
+.lv-critical { background: #fbe0e0; color: #c0392b; font-weight: 700; }
 
 /* ---------- 페이징 ---------- */
 .paging { text-align: center; margin-top: 18px; }

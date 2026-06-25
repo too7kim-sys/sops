@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.test.service.impl.TestMapper">
+
+    <sql id="searchWhere">
+        <if test="searchSysId != null and searchSysId != ''">
+            AND T.SYS_ID = #{searchSysId}
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND T.STATUS = #{searchStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND T.TITLE LIKE '%' || #{searchKeyword} || '%'
+        </if>
+    </sql>
+
+    <select id="selectTestList" parameterType="egovframework.ops.test.service.TestVO"
+            resultType="egovframework.ops.test.service.TestVO">
+        SELECT T.TEST_ID   AS testId,
+               T.SYS_ID     AS sysId,
+               S.SYS_NM     AS sysNm,
+               T.TITLE      AS title,
+               T.TEST_TYPE  AS testType,
+               TC.CODE_NM   AS testTypeNm,
+               T.TEST_ENV   AS testEnv,
+               EC.CODE_NM   AS testEnvNm,
+               T.STATUS     AS status,
+               SC.CODE_NM   AS statusNm,
+               TO_CHAR(T.PLAN_DT, 'YYYY-MM-DD') AS planDt
+          FROM OPS_TEST T
+          LEFT JOIN OPS_SYSTEM S ON T.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'TEST_TYPE'   AND TC.CODE_ID = T.TEST_TYPE
+          LEFT JOIN OPS_CODE EC ON EC.CODE_GRP = 'TEST_ENV'    AND EC.CODE_ID = T.TEST_ENV
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'TEST_STATUS' AND SC.CODE_ID = T.STATUS
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY T.TEST_ID DESC
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectTestListCnt" parameterType="egovframework.ops.test.service.TestVO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM OPS_TEST T
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectTest" parameterType="long"
+            resultType="egovframework.ops.test.service.TestVO">
+        SELECT T.TEST_ID   AS testId,
+               T.SYS_ID     AS sysId,
+               S.SYS_NM     AS sysNm,
+               T.CHG_ID     AS chgId,
+               T.TITLE      AS title,
+               T.TEST_TYPE  AS testType,
+               TC.CODE_NM   AS testTypeNm,
+               T.TEST_ENV   AS testEnv,
+               EC.CODE_NM   AS testEnvNm,
+               T.STATUS     AS status,
+               SC.CODE_NM   AS statusNm,
+               TO_CHAR(T.PLAN_DT, 'YYYY-MM-DD') AS planDt,
+               T.TESTER_ID      AS testerId,
+               T.RESULT_SUMMARY AS resultSummary,
+               TO_CHAR(T.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_TEST T
+          LEFT JOIN OPS_SYSTEM S ON T.SYS_ID = S.SYS_ID
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'TEST_TYPE'   AND TC.CODE_ID = T.TEST_TYPE
+          LEFT JOIN OPS_CODE EC ON EC.CODE_GRP = 'TEST_ENV'    AND EC.CODE_ID = T.TEST_ENV
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'TEST_STATUS' AND SC.CODE_ID = T.STATUS
+         WHERE T.TEST_ID = #{testId}
+    </select>
+
+    <select id="selectTestCaseList" parameterType="long"
+            resultType="egovframework.ops.test.service.TestCaseVO">
+        SELECT CA.CASE_ID     AS caseId,
+               CA.TEST_ID      AS testId,
+               CA.CASE_NM      AS caseNm,
+               CA.EXPECTED     AS expected,
+               CA.CASE_RESULT  AS caseResult,
+               RC.CODE_NM      AS caseResultNm,
+               CA.REMARK       AS remark
+          FROM OPS_TEST_CASE CA
+          LEFT JOIN OPS_CODE RC ON RC.CODE_GRP = 'TEST_CASE_RESULT' AND RC.CODE_ID = CA.CASE_RESULT
+         WHERE CA.TEST_ID = #{testId}
+         ORDER BY CA.CASE_ID
+    </select>
+
+    <insert id="insertTest" parameterType="egovframework.ops.test.service.TestVO"
+            useGeneratedKeys="true" keyProperty="testId">
+        INSERT INTO OPS_TEST
+            (SYS_ID, CHG_ID, TITLE, TEST_TYPE, TEST_ENV, STATUS, PLAN_DT, TESTER_ID, RESULT_SUMMARY, REG_DT)
+        VALUES
+            (#{sysId}, #{chgId}, #{title}, #{testType}, #{testEnv}, #{status},
+             <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>NULL</otherwise></choose>,
+             #{testerId}, #{resultSummary}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <insert id="insertTestCase" parameterType="egovframework.ops.test.service.TestCaseVO">
+        INSERT INTO OPS_TEST_CASE
+            (TEST_ID, CASE_NM, EXPECTED, CASE_RESULT, REMARK)
+        VALUES
+            (#{testId}, #{caseNm}, #{expected}, #{caseResult}, #{remark})
+    </insert>
+
+    <update id="updateTestProcess" parameterType="egovframework.ops.test.service.TestVO">
+        UPDATE OPS_TEST
+           SET STATUS         = #{status},
+               RESULT_SUMMARY = #{resultSummary},
+               TESTER_ID      = #{testerId}
+         WHERE TEST_ID = #{testId}
+    </update>
+
+    <delete id="deleteTest" parameterType="long">
+        DELETE FROM OPS_TEST WHERE TEST_ID = #{testId}
+    </delete>
+
+    <delete id="deleteTestCase" parameterType="long">
+        DELETE FROM OPS_TEST_CASE WHERE TEST_ID = #{testId}
+    </delete>
+
+</mapper>
