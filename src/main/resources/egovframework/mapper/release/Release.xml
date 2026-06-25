@@ -58,6 +58,9 @@
                TO_CHAR(R.DEPLOY_DT, 'YYYY-MM-DD HH24:MI') AS deployDt,
                R.CHARGER_ID AS chargerId,
                R.RESULT     AS result,
+               R.DEPLOY_REF    AS deployRef,
+               R.DEPLOY_COMMIT AS deployCommit,
+               R.DEPLOY_LOG    AS deployLog,
                TO_CHAR(R.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
           FROM OPS_RELEASE R
           LEFT JOIN OPS_SYSTEM S ON R.SYS_ID = S.SYS_ID

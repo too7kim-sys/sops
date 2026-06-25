@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.deploy.service.impl.DeployMapper">
+
+    <select id="selectDeployHisList" parameterType="long"
+            resultType="egovframework.ops.deploy.service.DeployHisVO">
+        SELECT DEPLOY_ID   AS deployId,
+               REL_ID      AS relId,
+               DEPLOY_REF  AS deployRef,
+               COMMIT_HASH AS commitHash,
+               RESULT      AS result,
+               DEPLOY_TYPE AS deployType,
+               LOG         AS log,
+               EXEC_BY     AS execBy,
+               TO_CHAR(EXEC_DT, 'YYYY-MM-DD HH24:MI:SS') AS execDt
+          FROM OPS_DEPLOY_HIS
+         WHERE REL_ID = #{relId}
+         ORDER BY DEPLOY_ID DESC
+    </select>
+
+    <insert id="insertDeployHis" parameterType="egovframework.ops.deploy.service.DeployHisVO"
+            useGeneratedKeys="true" keyProperty="deployId">
+        INSERT INTO OPS_DEPLOY_HIS
+            (REL_ID, DEPLOY_REF, COMMIT_HASH, RESULT, DEPLOY_TYPE, LOG, EXEC_BY, EXEC_DT)
+        VALUES
+            (#{relId}, #{deployRef}, #{commitHash}, #{result}, #{deployType}, #{log}, #{execBy}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateReleaseDeploy">
+        UPDATE OPS_RELEASE
+           SET DEPLOY_REF    = #{deployRef},
+               DEPLOY_COMMIT = #{commitHash},
+               DEPLOY_LOG    = #{log}
+               <if test="status != null and status != ''">
+               , STATUS = #{status}
+               , DEPLOY_DT = COALESCE(DEPLOY_DT, CURRENT_TIMESTAMP)
+               </if>
+         WHERE REL_ID = #{relId}
+    </update>
+
+</mapper>

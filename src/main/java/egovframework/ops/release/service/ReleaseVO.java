@@ -57,6 +57,15 @@ public class ReleaseVO extends ComDefaultVO {
     /** 배포 결과 */
     private String result;
 
+    /** 배포한 git ref(태그/브랜치/커밋) */
+    private String deployRef;
+
+    /** 배포 커밋 해시 */
+    private String deployCommit;
+
+    /** 최근 배포 실행 로그 */
+    private String deployLog;
+
     /** 등록 일시 */
     private String regDt;
 

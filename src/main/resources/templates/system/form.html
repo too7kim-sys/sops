@@ -53,10 +53,33 @@
                     </tr>
                     <tr>
                         <th>시스템설명</th>
-                        <td colspan="3"><textarea name="sysDesc" rows="5" th:text="${system.sysDesc}"></textarea></td>
+                        <td colspan="3"><textarea name="sysDesc" rows="3" th:text="${system.sysDesc}"></textarea></td>
                     </tr>
                 </table>
             </div>
+
+            <div class="panel">
+                <h3>Git 자동배포 설정</h3>
+                <table class="form">
+                    <tr>
+                        <th>Git 저장소 URL</th>
+                        <td colspan="3"><input type="text" name="gitUrl" th:value="${system.gitUrl}"
+                                placeholder="예) https://git.example.go.kr/app.git 또는 file:///repo/app"/></td>
+                    </tr>
+                    <tr>
+                        <th>기본 브랜치</th>
+                        <td><input type="text" name="gitBranch" th:value="${system.gitBranch}" placeholder="main / master"/></td>
+                        <th>배포 경로</th>
+                        <td><input type="text" name="deployPath" th:value="${system.deployPath}" placeholder="체크아웃 대상 디렉터리(미입력 시 기본 작업영역)"/></td>
+                    </tr>
+                    <tr>
+                        <th>배포 스크립트</th>
+                        <td colspan="3"><textarea name="deployScript" rows="3" th:text="${system.deployScript}"
+                                placeholder="체크아웃 후 실행할 셸 스크립트 (환경변수: $SYS_ID $VER $REF $DEPLOY_PATH $DEPLOY_TYPE)"></textarea></td>
+                    </tr>
+                </table>
+            </div>
+
             <div class="toolbar right" style="justify-content:flex-end;">
                 <a th:href="@{/system/list}" class="btn btn-default">목록</a>
                 <button type="submit" class="btn btn-primary">저장</button>

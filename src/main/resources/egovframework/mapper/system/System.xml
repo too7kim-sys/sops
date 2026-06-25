@@ -42,21 +42,29 @@
     <select id="selectSystem" parameterType="string"
             resultType="egovframework.ops.system.service.SystemVO">
         SELECT SYS_ID AS sysId, SYS_NM AS sysNm, SYS_DESC AS sysDesc,
-               MNGR_NM AS mngrNm, MNGR_DEPT AS mngrDept, GRAD AS grad, USE_AT AS useAt,
+               MNGR_NM AS mngrNm, MNGR_DEPT AS mngrDept, GRAD AS grad,
+               GIT_URL AS gitUrl, GIT_BRANCH AS gitBranch,
+               DEPLOY_PATH AS deployPath, DEPLOY_SCRIPT AS deployScript,
+               USE_AT AS useAt,
                TO_CHAR(REG_DT, 'YYYY-MM-DD') AS regDt
           FROM OPS_SYSTEM
          WHERE SYS_ID = #{sysId}
     </select>
 
     <insert id="insertSystem" parameterType="egovframework.ops.system.service.SystemVO">
-        INSERT INTO OPS_SYSTEM (SYS_ID, SYS_NM, SYS_DESC, MNGR_NM, MNGR_DEPT, GRAD, USE_AT, REG_DT)
-        VALUES (#{sysId}, #{sysNm}, #{sysDesc}, #{mngrNm}, #{mngrDept}, #{grad}, #{useAt}, CURRENT_TIMESTAMP)
+        INSERT INTO OPS_SYSTEM (SYS_ID, SYS_NM, SYS_DESC, MNGR_NM, MNGR_DEPT, GRAD,
+               GIT_URL, GIT_BRANCH, DEPLOY_PATH, DEPLOY_SCRIPT, USE_AT, REG_DT)
+        VALUES (#{sysId}, #{sysNm}, #{sysDesc}, #{mngrNm}, #{mngrDept}, #{grad},
+               #{gitUrl}, #{gitBranch}, #{deployPath}, #{deployScript}, #{useAt}, CURRENT_TIMESTAMP)
     </insert>
 
     <update id="updateSystem" parameterType="egovframework.ops.system.service.SystemVO">
         UPDATE OPS_SYSTEM
            SET SYS_NM = #{sysNm}, SYS_DESC = #{sysDesc}, MNGR_NM = #{mngrNm},
-               MNGR_DEPT = #{mngrDept}, GRAD = #{grad}, USE_AT = #{useAt}
+               MNGR_DEPT = #{mngrDept}, GRAD = #{grad},
+               GIT_URL = #{gitUrl}, GIT_BRANCH = #{gitBranch},
+               DEPLOY_PATH = #{deployPath}, DEPLOY_SCRIPT = #{deployScript},
+               USE_AT = #{useAt}
          WHERE SYS_ID = #{sysId}
     </update>
 

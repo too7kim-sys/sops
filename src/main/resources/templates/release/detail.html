@@ -61,6 +61,80 @@
             </div>
         </div>
 
+        <!-- Git 자동배포 -->
+        <div class="panel">
+            <h3>Git 자동배포</h3>
+            <div th:if="${system == null or system.gitUrl == null or system.gitUrl == ''}" class="empty">
+                대상 시스템에 Git 저장소가 설정되지 않았습니다.
+                <a th:href="@{/system/edit/{id}(id=${release.sysId})}">[응용시스템 Git 설정]</a>
+            </div>
+            <div th:if="${system != null and system.gitUrl != null and system.gitUrl != ''}">
+                <table class="form">
+                    <tr><th>Git 저장소</th><td colspan="3" th:text="${system.gitUrl}">url</td></tr>
+                    <tr>
+                        <th>기본 브랜치</th><td th:text="${system.gitBranch} ?: '-'">-</td>
+                        <th>배포 경로</th><td th:text="${system.deployPath} ?: '(기본 작업영역)'">-</td>
+                    </tr>
+                    <tr><th>최근 배포 ref / 커밋</th>
+                        <td colspan="3">
+                            <span th:text="${release.deployRef} ?: '-'">-</span>
+                            <span th:if="${release.deployCommit != null}"> / </span>
+                            <code th:if="${release.deployCommit != null}" th:text="${#strings.abbreviate(release.deployCommit,12)}">hash</code>
+                        </td>
+                    </tr>
+                </table>
+
+                <form method="post" th:action="@{/release/deploy}" style="margin-top:12px;"
+                      onsubmit="return confirm('Git 체크아웃 및 배포 스크립트를 실행합니다. 진행하시겠습니까?');">
+                    <input type="hidden" name="relId" th:value="${release.relId}"/>
+                    <table class="form">
+                        <tr>
+                            <th>배포 ref</th>
+                            <td><input type="text" name="ref" th:value="${release.ver}" placeholder="태그/브랜치/커밋 (미입력 시 버전 또는 기본 브랜치)"/></td>
+                            <th>실행 구분</th>
+                            <td>
+                                <select name="deployType">
+                                    <option value="DEPLOY">배포(DEPLOY)</option>
+                                    <option value="ROLLBACK">롤백(ROLLBACK)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="right" style="margin-top:12px;">
+                        <button type="submit" class="btn btn-primary">Git 배포 실행</button>
+                    </div>
+                </form>
+
+                <h3 style="margin-top:18px;">배포 실행 이력</h3>
+                <table class="list">
+                    <thead>
+                    <tr>
+                        <th class="center" style="width:60px;">구분</th>
+                        <th class="center" style="width:90px;">결과</th>
+                        <th style="width:120px;">ref</th>
+                        <th style="width:110px;">커밋</th>
+                        <th>로그</th>
+                        <th class="center" style="width:90px;">실행자</th>
+                        <th class="center" style="width:150px;">실행일시</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${deployHisList}">
+                        <td class="center" th:text="${d.deployType}">DEPLOY</td>
+                        <td class="center"><span class="badge"
+                              th:classappend="${d.result == 'SUCCESS'} ? 'sla-ok' : 'sla-viol'" th:text="${d.result}">결과</span></td>
+                        <td th:text="${d.deployRef} ?: '-'">ref</td>
+                        <td><code th:text="${d.commitHash != null} ? ${#strings.abbreviate(d.commitHash,10)} : '-'">hash</code></td>
+                        <td><pre style="white-space:pre-wrap;margin:0;font-size:12px;max-height:160px;overflow:auto;" th:text="${d.log}">로그</pre></td>
+                        <td class="center" th:text="${d.execBy}">실행자</td>
+                        <td class="center" th:text="${d.execDt}">일시</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(deployHisList)}"><td colspan="7" class="empty">배포 실행 이력이 없습니다.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- 배포 항목 -->
         <div class="panel">
             <h3>배포 항목</h3>

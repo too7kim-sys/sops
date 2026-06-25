@@ -3,6 +3,7 @@ package egovframework.ops.release.web;
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
 import egovframework.ops.cmm.code.service.EgovCodeService;
+import egovframework.ops.deploy.service.DeployService;
 import egovframework.ops.release.service.EgovReleaseService;
 import egovframework.ops.release.service.ReleaseItemVO;
 import egovframework.ops.release.service.ReleaseVO;
@@ -24,13 +25,16 @@ public class EgovReleaseController {
     private final EgovReleaseService releaseService;
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
+    private final DeployService deployService;
 
     public EgovReleaseController(EgovReleaseService releaseService,
                                  EgovSystemService systemService,
-                                 EgovCodeService codeService) {
+                                 EgovCodeService codeService,
+                                 DeployService deployService) {
         this.releaseService = releaseService;
         this.systemService = systemService;
         this.codeService = codeService;
+        this.deployService = deployService;
     }
 
     /** 배포 목록 */
@@ -57,11 +61,27 @@ public class EgovReleaseController {
     /** 배포 상세 */
     @GetMapping("/detail/{relId}")
     public String detail(@PathVariable Long relId, Model model) {
-        model.addAttribute("release", releaseService.selectRelease(relId));
+        ReleaseVO release = releaseService.selectRelease(relId);
+        model.addAttribute("release", release);
         model.addAttribute("statusList", codeService.selectCodeList("RELEASE_STATUS"));
         model.addAttribute("itemResultList", codeService.selectCodeList("RELEASE_ITEM_RESULT"));
+        // Git 자동배포 : 대상 시스템 git 설정 및 배포 실행 이력
+        if (release != null) {
+            model.addAttribute("system", systemService.selectSystem(release.getSysId()));
+            model.addAttribute("deployHisList", deployService.selectDeployHisList(relId));
+        }
         model.addAttribute("menu", "release");
         return "release/detail";
+    }
+
+    /** Git 자동배포 실행 */
+    @PostMapping("/deploy")
+    public String deploy(@RequestParam Long relId,
+                         @RequestParam(required = false) String ref,
+                         @RequestParam(required = false, defaultValue = "DEPLOY") String deployType,
+                         @AuthenticationPrincipal LoginUser loginUser) {
+        deployService.deploy(relId, ref, deployType, loginUser.getUsername());
+        return "redirect:/release/detail/" + relId;
     }
 
     /** 배포계획 등록 폼 */

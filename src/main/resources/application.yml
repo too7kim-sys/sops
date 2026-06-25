@@ -42,6 +42,12 @@ mybatis:
     default-fetch-size: 100
     default-statement-timeout: 30
 
+# Git 자동배포 설정
+ops:
+  deploy:
+    workspace: ${DEPLOY_WORKSPACE:${java.io.tmpdir}/egov-ops/deploy}
+    script-timeout-sec: ${DEPLOY_SCRIPT_TIMEOUT:60}
+
 logging:
   level:
     egovframework: DEBUG

@@ -31,6 +31,18 @@ public class SystemVO extends ComDefaultVO {
     /** 중요도 등급 (1~3) */
     private String grad;
 
+    /** 배포 git 저장소 URL */
+    private String gitUrl;
+
+    /** 기본 브랜치 */
+    private String gitBranch;
+
+    /** 배포(체크아웃) 대상 경로 */
+    private String deployPath;
+
+    /** 체크아웃 후 실행 배포 스크립트 */
+    private String deployScript;
+
     /** 사용여부 */
     private String useAt;
 

@@ -82,6 +82,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Git 연동 자동배포 : Eclipse JGit -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>6.10.0.202406032230-r</version>
+        </dependency>
+
         <!-- 테스트 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
