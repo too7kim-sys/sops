@@ -75,6 +75,48 @@
 
 ---
 
+## 5-2. 운영 배포 — 풀어서(Exploded) 배포 (권장)
+
+jar/war 단일 산출물이 아니라 **압축을 푼 디렉터리 그대로** 배포·실행하는 방식입니다.
+외부 톰캣이 필요 없고(내장 톰캣), 기동이 빠르며, 클래스/리소스(예: 매퍼 XML, 템플릿)를 개별 교체하기 쉽습니다.
+
+### 산출물 생성
+```bash
+sh deploy/build-exploded.sh
+#  내부 동작: mvn package → jar 압축해제 → deploy/app/ (BOOT-INF, META-INF, org) + 실행스크립트 복사
+```
+또는 수동으로:
+```bash
+mvn clean package
+mkdir app && cd app && jar -xf ../target/egov-ops.jar      # BOOT-INF / META-INF / org 생성
+```
+
+### 실행
+풀어놓은 디렉터리(`BOOT-INF` 가 있는 위치)에서 실행합니다.
+```bash
+# 개발/데모 (H2, 8085)
+sh deploy/run.sh                       # Windows: run.bat
+
+# 운영 (PostgreSQL)
+DB_URL=jdbc:postgresql://DB:5432/egovops DB_USERNAME=egovops DB_PASSWORD=**** \
+  sh deploy/run.sh --spring.profiles.active=prod
+
+# 포트 변경
+sh deploy/run.sh --server.port=8090
+```
+스크립트 없이 직접 실행해도 됩니다(압축 푼 디렉터리 안에서):
+```bash
+java org.springframework.boot.loader.launch.JarLauncher --server.port=8085
+#  또는 런처 없이 클래스패스로
+java -cp "BOOT-INF/classes:BOOT-INF/lib/*" egovframework.EgovOpsApplication --server.port=8085
+```
+
+- 접속: <http://localhost:8085>
+- 운영 서버 반영 시 `deploy/app/` 디렉터리를 그대로 복사 후 `run.sh` 실행
+- 빠른 패치: `BOOT-INF/classes/...` 의 매퍼 XML·템플릿만 교체 후 재기동
+
+---
+
 ## 5-1. 실행 (외부 톰캣에 WAR 배포) — 선택
 
 기본 패키징은 **JAR**(내장 톰캣)이라 별도 톰캣 없이 바로 실행됩니다(위 5장). 외부 톰캣에 WAR 로

@@ -123,7 +123,19 @@ java -jar target/egov-ops.jar --spring.profiles.active=prod
 - 환경변수: `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_MAX`(기본 20), `SQL_INIT_MODE`(기본 always)
 - **최초 적용 후 `admin` 계정 비밀번호를 반드시 변경할 것.**
 
-### 4.3 이클립스(Eclipse / 전자정부 표준프레임워크 IDE)에서 사용
+### 4.3 운영 배포 — 풀어서(Exploded) 배포
+
+jar/war 단일 산출물이 아니라 **압축을 푼 디렉터리 그대로** 배포·실행한다(외부 톰캣 불필요, 기동 빠름, 파일 개별 교체 용이).
+
+```bash
+sh deploy/build-exploded.sh        # mvn package → jar 해제 → deploy/app/ + 실행스크립트
+cd deploy/app && sh deploy/run.sh  # 또는: java org.springframework.boot.loader.launch.JarLauncher
+#  운영: DB_URL=... DB_USERNAME=... DB_PASSWORD=... sh run.sh --spring.profiles.active=prod
+```
+- 운영 서버엔 `deploy/app/` 디렉터리를 복사 후 `run.sh` 실행 → <http://localhost:8085>
+- 상세: [docs/ECLIPSE.md](docs/ECLIPSE.md) 5-2 절.
+
+### 4.4 이클립스(Eclipse / 전자정부 표준프레임워크 IDE)에서 사용
 
 Maven 프로젝트이므로 **File → Import → Maven → Existing Maven Projects** 로 가져와 실행합니다.
 JDK 21 등록·Lombok 설치·UTF-8 인코딩 등 상세 절차는 **[docs/ECLIPSE.md](docs/ECLIPSE.md)** 참고.
