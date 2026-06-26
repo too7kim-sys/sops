@@ -1,203 +1,106 @@
 # 이클립스(Eclipse / 전자정부 표준프레임워크 IDE)에서 사용하기
 
-본 프로젝트는 **Maven 프로젝트**이므로 이클립스에서 그대로 가져와(Import) 실행할 수 있습니다.
-전자정부 표준프레임워크 개발환경(eGovFrame Eclipse IDE)에서도 동일하게 적용됩니다.
+본 프로젝트는 **전자정부 표준프레임워크 표준 웹 프로젝트 구조**입니다.
+- Spring Framework 5.3 (MVC) + Spring Security 5 (XML 설정)
+- JSP + JSTL 뷰, MyBatis(XML Mapper)
+- **WAR 패키징 / Apache Tomcat 9.x 구동** (Servlet `javax.*` — Tomcat 10+ 아님)
+- Java 17, Maven
 
-> ⚠️ 시작 전 반드시 확인 — 본 프로젝트는 **Spring Boot 3 / Java 21** 기반입니다.
-> 전자정부 표준프레임워크 IDE에 기본 탑재된 JDK(8/11)로는 빌드되지 않으므로 **JDK 21**을 별도 등록해야 하며,
-> `@Data` 등 Lombok 애너테이션 인식을 위해 **Lombok을 이클립스에 설치**해야 합니다. (아래 1·3단계)
-
----
-
-## 1. 사전 준비 (JDK 21 등록)
-
-1. JDK 21 설치 (Temurin/Oracle/OpenJDK 등)
-2. 이클립스 메뉴 **Window → Preferences → Java → Installed JREs → Add** 에서 JDK 21 추가 후 기본값으로 체크
-3. **Window → Preferences → Java → Compiler** 의 *Compiler compliance level* 을 **21** 로 설정
+이클립스에서 `src/main/java`(소스)와 `src/main/webapp`(JSP·WEB-INF)이 표준 구조로 보이며,
+**Run on Server(Tomcat 9)** 로 바로 확인할 수 있습니다.
 
 ---
 
-## 2. 프로젝트 가져오기 (Import)
+## 1. 사전 준비
 
-소스를 받은 뒤(`git clone` 또는 압축 해제) 다음 순서로 가져옵니다.
-
-1. 메뉴 **File → Import...**
-2. **Maven → Existing Maven Projects** 선택 → *Next*
-3. *Root Directory* 에 프로젝트 폴더(`pom.xml` 이 있는 위치) 지정 → `pom.xml` 체크 → *Finish*
-4. 최초 가져오기 시 m2e(Maven Integration)가 의존성을 자동 내려받습니다. (네트워크 필요, 수 분 소요)
-
-> 의존성이 보이지 않으면 프로젝트 우클릭 → **Maven → Update Project...** (Alt+F5) → *Force Update* 체크 후 OK.
+1. **JDK 17** 설치 → **Window → Preferences → Java → Installed JREs** 에 등록, *Compiler compliance level* 17
+2. **Apache Tomcat 9.0** 다운로드(압축 해제) → **Preferences → Server → Runtime Environments → Add → Apache Tomcat v9.0** 에서 설치 경로 지정
+3. **Lombok 설치(필수)** — VO 가 `@Data` 를 사용하므로 미설치 시 편집기에서 getter/setter 오류가 표시됨
+   - `java -jar lombok.jar` 실행 → 이클립스 지정 → Install → 재시작
+4. **Window → Preferences → General → Workspace → Text file encoding → UTF-8**
 
 ---
 
-## 3. Lombok 설치 (필수)
+## 2. 프로젝트 가져오기
 
-본 프로젝트의 VO 는 Lombok `@Data`(getter/setter 자동생성)를 사용합니다.
-**Lombok 미설치 시 이클립스 편집기에서 getter/setter 를 찾지 못해 컴파일 오류**가 표시됩니다.
-(Maven 빌드 자체는 정상이지만 IDE 편집기 인식을 위해 설치가 필요합니다.)
+1. **File → Import… → Maven → Existing Maven Projects**
+2. *Root Directory* 에 `pom.xml` 이 있는 폴더 지정 → `pom.xml` 체크 → **Finish**
+3. 최초 가져오기 시 의존성 자동 다운로드(네트워크 필요)
+4. 안 보이면 프로젝트 우클릭 → **Maven → Update Project (Alt+F5)** → *Force Update*
 
-1. Lombok jar 다운로드 — <https://projectlombok.org/download> 또는 로컬 Maven 저장소의
-   `org.projectlombok:lombok` jar 사용
-2. 설치 실행:
-   ```bash
-   java -jar lombok.jar
-   ```
-3. 설치 관리자에서 사용 중인 이클립스(또는 eGovFrame IDE) 실행파일 경로를 지정 → **Install/Update**
-4. 이클립스 재시작
-
-> 설치가 완료되면 이클립스의 `eclipse.ini` 끝에 `-javaagent:lombok.jar` 항목이 추가됩니다.
+> 소스는 **Project Explorer 의 `Java Resources > src/main/java`** 아래에 표시됩니다.
+> JSP/설정은 `src/main/webapp`( `WEB-INF/jsp`, `WEB-INF/web.xml`, `WEB-INF/config/.../dispatcher-servlet.xml` )에 있습니다.
 
 ---
 
-## 4. 인코딩 설정 (한글 깨짐 방지)
+## 3. Tomcat 으로 실행 (Run on Server)
 
-소스/주석/메시지에 한글이 포함되어 있으므로 워크스페이스 인코딩을 **UTF-8** 로 맞춥니다.
+1. 프로젝트 우클릭 → **Run As → Run on Server**
+2. 등록한 **Tomcat v9.0** 선택 → Finish
+3. 브라우저: <http://localhost:8080/> (톰캣 기본 포트). 로그인 화면으로 이동
+   - 포트 변경: Servers 뷰의 서버 더블클릭 → **Ports** 의 HTTP 포트 수정
+   - 루트(`/`)가 아닌 컨텍스트로 뜨면(예: `/egov-ops`) 해당 경로로 접속하거나, 서버의 *Modules* 에서 Path 를 `/` 로 변경
 
-- **Window → Preferences → General → Workspace → Text file encoding → Other: UTF-8**
+**데모 계정**
 
----
+| 아이디 | 비밀번호 | 권한 |
+|--------|----------|------|
+| `admin` | `admin123!` | 운영관리자(ADMIN) |
+| `oper01` | `oper123!` | 운영자(OPERATOR) |
+| `user01` | `user123!` | 일반사용자(USER) |
 
-## 5. 실행 (개발/데모 · H2)
-
-별도 DB 설치 없이 즉시 실행됩니다.
-
-- **방법 A (자바 애플리케이션):**
-  `src/main/java/egovframework/EgovOpsApplication.java` 우클릭 → **Run As → Java Application**
-- **방법 B (Maven):**
-  프로젝트 우클릭 → **Run As → Maven build...** → *Goals* 에 `spring-boot:run` 입력 → *Run*
-
-기동 후 브라우저에서 접속합니다.
-
-- 주소: <http://localhost:8085>  (내장 톰캣 포트, `application.yml` 의 `server.port`)
-- 데모 계정: `admin` / `admin123!` (운영자 `oper01` / `oper123!`)
-
-> 포트 변경: `application.yml` 의 `server.port` 또는 실행 시 환경변수 `SERVER_PORT` / 인자 `--server.port=8085`.
+> 개발/데모는 H2 In-memory + 샘플 데이터가 기동 시 자동 적재됩니다(`dev` 기본 프로파일).
 
 ---
 
-## 5-2. 운영 배포 — 풀어서(Exploded) 배포 (권장)
+## 4. 명령행 실행 (검증용, 톰캣 설치 없이)
 
-jar/war 단일 산출물이 아니라 **압축을 푼 디렉터리 그대로** 배포·실행하는 방식입니다.
-외부 톰캣이 필요 없고(내장 톰캣), 기동이 빠르며, 클래스/리소스(예: 매퍼 XML, 템플릿)를 개별 교체하기 쉽습니다.
-
-### 산출물 생성
 ```bash
-sh deploy/build-exploded.sh
-#  내부 동작: mvn package → jar 압축해제 → deploy/app/ (BOOT-INF, META-INF, org) + 실행스크립트 복사
+mvn clean package      # target/egov-ops.war
+mvn cargo:run          # Tomcat 9.0 자동 내려받아 8085 포트로 구동 → http://localhost:8085/
 ```
-또는 수동으로:
-```bash
-mvn clean package
-mkdir app && cd app && jar -xf ../target/egov-ops.jar      # BOOT-INF / META-INF / org 생성
-```
-
-### 실행
-풀어놓은 디렉터리(`BOOT-INF` 가 있는 위치)에서 실행합니다.
-```bash
-# 개발/데모 (H2, 8085)
-sh deploy/run.sh                       # Windows: run.bat
-
-# 운영 (PostgreSQL)
-DB_URL=jdbc:postgresql://DB:5432/egovops DB_USERNAME=egovops DB_PASSWORD=**** \
-  sh deploy/run.sh --spring.profiles.active=prod
-
-# 포트 변경
-sh deploy/run.sh --server.port=8090
-```
-스크립트 없이 직접 실행해도 됩니다(압축 푼 디렉터리 안에서):
-```bash
-java org.springframework.boot.loader.launch.JarLauncher --server.port=8085
-#  또는 런처 없이 클래스패스로
-java -cp "BOOT-INF/classes:BOOT-INF/lib/*" egovframework.EgovOpsApplication --server.port=8085
-```
-
-- 접속: <http://localhost:8085>
-- 운영 서버 반영 시 `deploy/app/` 디렉터리를 그대로 복사 후 `run.sh` 실행
-- 빠른 패치: `BOOT-INF/classes/...` 의 매퍼 XML·템플릿만 교체 후 재기동
 
 ---
 
-## 5-1. 실행 (외부 톰캣에 WAR 배포) — 선택
+## 5. 운영(PostgreSQL) 배포
 
-기본 패키징은 **JAR**(내장 톰캣)이라 별도 톰캣 없이 바로 실행됩니다(위 5장). 외부 톰캣에 WAR 로
-배포하려면 아래처럼 **패키징을 war 로 전환**한 뒤 빌드합니다.
+WAR(`target/egov-ops.war`)를 톰캣 9 `webapps/` 에 배포하고, 톰캣 기동 시 프로파일/접속정보를 주입합니다.
 
-```xml
-<!-- pom.xml -->
-<packaging>war</packaging>            <!-- jar → war 로 변경 -->
-<!-- 그리고 spring-boot-starter-tomcat(provided) 의존성 주석을 해제 -->
-```
-
-> ⚠️ **톰캣 버전 필수 확인** — Spring Boot 3 은 Jakarta EE 9+(`jakarta.*`) 기반이므로
-> 외부 톰캣은 반드시 **Apache Tomcat 10.1 이상**이어야 합니다.
-> **Tomcat 8.5 / 9.x 에서는 동작하지 않습니다**(`javax.*` ↔ `jakarta.*` 네임스페이스 불일치).
-> 구버전 eGovFrame IDE 번들 톰캣을 쓰는 경우 Tomcat 10.1+ 를 별도 설치하거나, 위 *5장*의 내장 실행을 사용하세요.
-
-### (A) 이클립스 'Run on Server'
-1. **Window → Preferences → Server → Runtime Environments → Add** 에서 **Tomcat 10.1** 등록
-2. 프로젝트 우클릭 → **Run As → Run on Server** → 등록한 Tomcat 10.1 선택
-3. 컨텍스트 경로는 기본적으로 프로젝트명(`/egov-ops`) 입니다 → 접속: `http://localhost:8085/egov-ops/`
-   - 톰캣 커넥터 포트가 8085 가 아니면 Servers 뷰의 서버 더블클릭 → **Ports** 에서 HTTP 포트를 8085 로 변경
-   - 루트(`http://localhost:8085/`)로 접속하려면 서버 설정에서 **모듈의 Path 를 `/`** 로 변경
-
-### (B) 독립 톰캣(webapps)에 배포
 ```bash
-mvn clean package          # target/egov-ops.war 생성
-# 컨텍스트 /egov-ops 로 배포 → http://localhost:8085/egov-ops/
-cp target/egov-ops.war  $CATALINA_HOME/webapps/
-# 또는 루트(/)로 배포 → http://localhost:8085/
-cp target/egov-ops.war  $CATALINA_HOME/webapps/ROOT.war
+# $CATALINA_BASE/bin/setenv.sh (예)
+export JAVA_OPTS="$JAVA_OPTS -Dspring.profiles.active=prod \
+  -DDB_URL=jdbc:postgresql://DB:5432/egovops -DDB_USERNAME=egovops -DDB_PASSWORD=********"
 ```
-- 톰캣 포트는 `$CATALINA_HOME/conf/server.xml` 의 `<Connector port="8085" .../>` 로 지정
-- 외부 톰캣 배포 시 `application.yml` 의 `server.port` 는 무시되고 톰캣 커넥터 포트를 따릅니다
-- 운영(PostgreSQL) 프로파일/DB 접속정보는 톰캣 기동 시 시스템속성/환경변수로 전달
-  (예: `setenv.sh` 에 `export SPRING_PROFILES_ACTIVE=prod DB_URL=... DB_USERNAME=... DB_PASSWORD=...`)
-
-> **`http://localhost:8085/` 가 404 가 나는 이유**: 외부 톰캣에 컨텍스트 경로(`/egov-ops`)로 배포된 경우
-> 루트(`/`)에는 앱이 없어 톰캣 기본 404 가 표시됩니다. `http://localhost:8085/egov-ops/` 로 접속하거나
-> `ROOT.war` 로 배포(또는 모듈 Path 를 `/` 로 설정)하세요.
+- 스키마/기준데이터는 비파괴적·멱등 적용. 자동 적재 끄기: `-DSQL_INIT_ENABLED=false`
+- 이클립스에서 운영 프로파일로 띄우려면 서버 실행설정(VM arguments)에 `-Dspring.profiles.active=prod` 와 DB 시스템속성 추가
 
 ---
 
-## 6. 실행 (운영 · PostgreSQL)
+## 6. 구조 / 설정 파일
 
-운영 프로파일(`prod`)로 실행하려면 **Run → Run Configurations...** 에서 위 *방법 A* 실행항목을 선택하고:
-
-- **Arguments 탭 → Program arguments:**
-  ```
-  --spring.profiles.active=prod
-  ```
-- **Environment 탭 → New** 로 접속정보 등록:
-  | 변수 | 예시 |
-  |------|------|
-  | `DB_URL` | `jdbc:postgresql://localhost:5432/egovops` |
-  | `DB_USERNAME` | `egovops` |
-  | `DB_PASSWORD` | `********` |
-
-PostgreSQL 사전 준비(최초 1회):
-```sql
-CREATE ROLE egovops LOGIN PASSWORD '********';
-CREATE DATABASE egovops OWNER egovops;
 ```
-스키마/기준데이터는 기동 시 자동(멱등) 적용됩니다. (상세: `README.md` 4.2 운영 절)
+src/main/java/egovframework/                 # Controller / Service / ServiceImpl / Mapper / VO
+src/main/resources/
+  egovframework/spring/context-*.xml         # 루트 컨텍스트(공통/DataSource/MyBatis/Tx/Security)
+  egovframework/mapper/**/*.xml              # MyBatis 매퍼
+  egovframework/globals.properties           # 전역 프로퍼티
+  db/ , db/postgresql/                       # 스키마/초기데이터
+  logback.xml
+src/main/webapp/
+  WEB-INF/web.xml                            # ContextLoaderListener / DispatcherServlet / Security 필터
+  WEB-INF/config/egovframework/springmvc/dispatcher-servlet.xml
+  WEB-INF/jsp/**/*.jsp                        # 화면(JSP)
+  css/
+```
 
 ---
 
-## 7. 자주 묻는 문제 (Troubleshooting)
+## 7. 자주 묻는 문제
 
-| 증상 | 원인 / 해결 |
-|------|-------------|
-| getter/setter 를 못 찾는다는 컴파일 오류 | Lombok 미설치 → **3단계** 수행 후 이클립스 재시작 |
-| `Unsupported class file major version` / 빌드 실패 | JDK 21 미적용 → **1단계** 및 프로젝트 우클릭 → Properties → Java Build Path/Compiler 21 확인 |
-| 의존성(빨간 X) 미해결 | **Maven → Update Project (Force Update)**, 네트워크/프록시 확인 |
-| 한글 주석·화면 깨짐 | 워크스페이스 인코딩 UTF-8 (**4단계**) |
-| 포트 8080 사용 중 | `src/main/resources/application.yml` 의 `server.port` 변경 |
-| 운영 기동 시 DB 접속 오류 | `DB_URL/DB_USERNAME/DB_PASSWORD` 환경변수 및 PostgreSQL 기동 여부 확인 |
-
----
-
-## 8. 참고
-
-- 빌드 산출물: `mvn clean package` → `target/egov-ops.jar` (실행형 Jar, `java -jar` 로 단독 구동 가능)
-- 이클립스는 내장 Maven(m2e)을 사용하므로 별도 Maven 설치 없이도 빌드/실행됩니다.
-- JSP 가 아닌 Thymeleaf 뷰를 사용하므로 WAS(톰캣) 별도 설치 없이 내장 톰캣으로 실행됩니다.
+| 증상 | 해결 |
+|------|------|
+| getter/setter 컴파일 오류 | Lombok 미설치 → 1-3 단계 후 재시작 |
+| `src/main/java` 안 보임 | **Maven → Update Project (Force)**, `Java Resources` 노드 확인 |
+| 톰캣 배포 후 404/오류 | **Tomcat 9.x** 인지 확인(10+ 는 `javax`→`jakarta` 불일치로 미동작) |
+| 한글 깨짐 | 워크스페이스 인코딩 UTF-8 |
+| 포트 충돌 | Servers 뷰 → 서버 → Ports 변경, 또는 cargo `cargo.servlet.port` |

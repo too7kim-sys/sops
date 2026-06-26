@@ -1,13 +1,12 @@
 package egovframework.com.config;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,13 +18,11 @@ import java.nio.file.Files;
  *
  * <p>외부 인프라 없이 자동배포 기능을 즉시 검증할 수 있도록, 로컬 파일시스템에
  * 데모 git 저장소(태그 v1.0.0 / v1.4.2 포함)를 생성하고 응용시스템(SYS001)에
- * git 설정(URL/브랜치/배포경로/스크립트)을 연결한다. 운영(prod) 프로파일에서는
- * 동작하지 않으며, 관리자가 화면에서 사내 git 저장소를 직접 설정한다.</p>
+ * git 설정을 연결한다. 운영(prod) 프로파일에서는 동작하지 않는다.</p>
  */
 @Component
 @Profile("!prod")
-@Order(20)
-public class DeployDemoBootstrap implements CommandLineRunner {
+public class DeployDemoBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(DeployDemoBootstrap.class);
 
@@ -39,7 +36,10 @@ public class DeployDemoBootstrap implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        if (event.getApplicationContext().getParent() != null) {
+            return;
+        }
         try {
             File base = new File(workspace);
             base.mkdirs();
@@ -49,8 +49,6 @@ public class DeployDemoBootstrap implements CommandLineRunner {
             if (!new File(demoSrc, ".git").exists()) {
                 demoSrc.mkdirs();
                 try (Git git = Git.init().setDirectory(demoSrc).call()) {
-                    // 환경 전역 git 설정(gpg.format=ssh, commit.gpgsign)으로 인한 커밋 실패 방지:
-                    // 로컬 저장소 설정으로 서명 비활성화 및 식별정보 지정
                     org.eclipse.jgit.lib.StoredConfig cfg = git.getRepository().getConfig();
                     cfg.setBoolean("commit", null, "gpgsign", false);
                     cfg.setBoolean("tag", null, "gpgsign", false);
@@ -84,12 +82,11 @@ public class DeployDemoBootstrap implements CommandLineRunner {
                 }
             }
 
-            // SYS001 에 git 설정이 비어있으면 데모 저장소로 연결
             Integer cnt = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM OPS_SYSTEM WHERE SYS_ID = 'SYS001' AND (GIT_URL IS NULL OR GIT_URL = '')",
                     Integer.class);
             if (cnt != null && cnt > 0) {
-                String gitUrl = demoSrc.toURI().toString(); // file:/... URL
+                String gitUrl = demoSrc.toURI().toString();
                 String deployPath = new File(base, "SYS001").getAbsolutePath();
                 String script = "echo \"[deploy] $SYS_ID ver=$VER ref=$REF type=$DEPLOY_TYPE\"; "
                         + "echo '--- 배포 산출물 ---'; cat app.txt 2>/dev/null; echo '[deploy] 완료'";

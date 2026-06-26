@@ -24,23 +24,25 @@
 
 ## 2. 기술 스택
 
-전자정부 표준프레임워크 4.x 호환 계층구조를 Spring Boot 기반으로 구성하였습니다.
+전자정부 표준프레임워크 **표준 웹 프로젝트 구조**(Spring 5 + XML 설정 + JSP + WAR)로 구성하였습니다.
 
 | 계층 | 기술 |
 |------|------|
-| Presentation | Spring MVC (`@Controller`), Thymeleaf |
+| Presentation | Spring MVC 5.3 (`@Controller`), **JSP + JSTL** |
 | Business Logic | Service / ServiceImpl (`EgovAbstractServiceImpl` 상속) |
-| Persistence | MyBatis (XML Mapper), `@Mapper` |
-| Security | Spring Security (폼 로그인, 권한기반 접근통제, BCrypt) |
+| Persistence | MyBatis (XML Mapper) + mybatis-spring |
+| Security | Spring Security 5 (XML 설정, 폼 로그인, 권한기반 접근통제, BCrypt) |
 | DB | **운영: PostgreSQL** / 개발·데모: H2 (In-memory) |
-| Build / Runtime | Maven, Java 21 |
+| 설정 | XML (web.xml, `context-*.xml`, `dispatcher-servlet.xml`) + `globals.properties` |
+| 패키징 / 실행 | **WAR** / **Apache Tomcat 9+** (이클립스 *Run on Server* / `mvn cargo:run`) / Java 17 |
 
-> 프로파일 분리: 기본(dev) 프로파일은 H2 In-memory 로 즉시 구동되며, 운영(`prod`) 프로파일은
-> PostgreSQL 에 연결된다. 매퍼 SQL 은 양쪽 모두 호환되도록 표준 함수(`COALESCE`, `TO_CHAR`,
-> `TO_TIMESTAMP`, `OFFSET … FETCH NEXT …`)로 작성되어 있다.
+> 프로파일 분리: 기본(`dev`) 프로파일은 H2 In-memory 로 즉시 구동되며, 운영(`prod`) 프로파일은
+> PostgreSQL 에 연결된다(`-Dspring.profiles.active=prod`). 매퍼 SQL 은 양쪽 모두 호환되도록
+> 표준 함수(`COALESCE`, `TO_CHAR`, `TO_TIMESTAMP`, `OFFSET … FETCH NEXT …`)로 작성되어 있다.
 
 > 표준프레임워크 실행환경(egovframework-rte) 의존성을 외부 저장소에서 받지 않고도 빌드/실행할 수 있도록,
 > `egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl` 등 핵심 기반 클래스를 동등하게 자체 포함하였습니다.
+> (Servlet `javax.*` 기반이므로 외부 톰캣은 **Tomcat 9.x** 를 사용한다 — Tomcat 10+ 아님.)
 
 ---
 
@@ -78,64 +80,44 @@ egovframework
 
 ## 4. 실행 방법
 
-### 4.1 개발/데모 (H2 In-memory) — 기본 프로파일
+WAR 로 패키징되어 **Apache Tomcat 9.x** 에서 구동된다. (Servlet `javax.*` 기반 — Tomcat 10+ 아님)
+
+### 4.1 이클립스에서 Tomcat 으로 실행 (권장)
+
+1. **File → Import → Maven → Existing Maven Projects** 로 `pom.xml` 가져오기
+2. **Window → Preferences → Server → Runtime Environments** 에 **Apache Tomcat 9.0** 등록
+3. 프로젝트 우클릭 → **Run As → Run on Server** → Tomcat 9 선택
+4. 접속: <http://localhost:8080/> (또는 톰캣 포트). 컨텍스트 루트(`/`) 로 띄우면 로그인 화면으로 이동
+
+> `src/main/java`(소스) 와 `src/main/webapp`(JSP·WEB-INF) 가 표준 eGovFrame 웹 프로젝트 구조로 보이며, 소스 수정 후 서버 재시작으로 바로 확인된다.
+
+### 4.2 명령행에서 즉시 실행 (내장 Tomcat 9, 검증용)
 
 ```bash
-mvn clean package
-java -jar target/egov-ops.jar    # 내장 톰캣 실행형 JAR (기본)
-#  또는
-mvn spring-boot:run
+mvn clean package          # target/egov-ops.war
+mvn cargo:run              # Tomcat 9.0 자동 내려받아 8085 포트로 구동
 ```
+- 접속: <http://localhost:8085/> · 데모 계정 `admin / admin123!`
+- 개발/데모는 H2 In-memory + 샘플 데이터 자동 적재(`dev` 기본 프로파일)
 
-- 접속: <http://localhost:8085>  (포트는 `application.yml` 의 `server.port`, 환경변수 `SERVER_PORT` 로 변경)
-- H2 콘솔: <http://localhost:8085/h2-console> (JDBC URL `jdbc:h2:mem:egovops`, user `sa`)
-- 데모용 샘플 거래데이터(장애/변경/배포/점검)가 자동 적재된다.
-
-> **외부 톰캣 배포(선택)**: 기본 패키징은 **JAR**(내장 톰캣) 이라 이클립스에서 평범한 자바 프로젝트로
-> 보이고 바로 실행된다. 외부 톰캣에 WAR 로 배포하려면 `pom.xml` 에서 `packaging` 을 `war` 로 바꾸고
-> `spring-boot-starter-tomcat`(provided) 주석을 해제한 뒤 `mvn clean package` 한다.
-> 단, Spring Boot 3(Jakarta EE) 기반이므로 외부 톰캣은 **Tomcat 10.1 이상**이어야 한다(8.5/9.x 미지원).
-> 상세: [docs/ECLIPSE.md](docs/ECLIPSE.md) 5-1 절.
-
-### 4.2 운영 (PostgreSQL) — `prod` 프로파일
-
-PostgreSQL 데이터베이스/계정을 준비한다.
+### 4.3 운영 (PostgreSQL) — `prod` 프로파일
 
 ```sql
 CREATE ROLE egovops LOGIN PASSWORD 'egovops';
 CREATE DATABASE egovops OWNER egovops;
 ```
-
-접속정보를 환경변수로 주입하고 `prod` 프로파일로 기동한다.
-
+WAR 를 톰캣 9 `webapps/` 에 배포하고, 톰캣 기동 시 시스템속성/환경변수로 접속정보를 주입한다.
 ```bash
-export DB_URL=jdbc:postgresql://DB호스트:5432/egovops
-export DB_USERNAME=egovops
-export DB_PASSWORD=********
-
-java -jar target/egov-ops.jar --spring.profiles.active=prod
+# 예: $CATALINA_BASE/bin/setenv.sh
+export JAVA_OPTS="$JAVA_OPTS -Dspring.profiles.active=prod \
+  -DDB_URL=jdbc:postgresql://DB호스트:5432/egovops -DDB_USERNAME=egovops -DDB_PASSWORD=********"
 ```
-
-- 스키마/기준데이터는 비파괴적(`CREATE TABLE IF NOT EXISTS`, `ON CONFLICT DO NOTHING`)으로
-  기동 시 멱등 적용된다. 운영에는 샘플 거래데이터를 적재하지 않고 **기준정보(사용자/응용시스템/공통코드)** 만 시딩한다.
-- DBA 가 스키마를 직접 관리하려면 `SQL_INIT_MODE=never` 로 자동 적재를 끈다.
-  (DDL/시드 스크립트: `src/main/resources/db/postgresql/`)
-- 환경변수: `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_MAX`(기본 20), `SQL_INIT_MODE`(기본 always)
+- 스키마/기준데이터는 비파괴적(`CREATE TABLE IF NOT EXISTS`, `ON CONFLICT DO NOTHING`)으로 기동 시 멱등 적용.
+  운영에는 샘플 거래데이터를 적재하지 않고 **기준정보(사용자/응용시스템/공통코드)** 만 시딩한다.
+- 자동 적재를 끄려면 `-DSQL_INIT_ENABLED=false` (DDL/시드: `src/main/resources/db/postgresql/`)
 - **최초 적용 후 `admin` 계정 비밀번호를 반드시 변경할 것.**
 
-### 4.3 운영 배포 — 풀어서(Exploded) 배포
-
-jar/war 단일 산출물이 아니라 **압축을 푼 디렉터리 그대로** 배포·실행한다(외부 톰캣 불필요, 기동 빠름, 파일 개별 교체 용이).
-
-```bash
-sh deploy/build-exploded.sh        # mvn package → jar 해제 → deploy/app/ + 실행스크립트
-cd deploy/app && sh deploy/run.sh  # 또는: java org.springframework.boot.loader.launch.JarLauncher
-#  운영: DB_URL=... DB_USERNAME=... DB_PASSWORD=... sh run.sh --spring.profiles.active=prod
-```
-- 운영 서버엔 `deploy/app/` 디렉터리를 복사 후 `run.sh` 실행 → <http://localhost:8085>
-- 상세: [docs/ECLIPSE.md](docs/ECLIPSE.md) 5-2 절.
-
-### 4.4 이클립스(Eclipse / 전자정부 표준프레임워크 IDE)에서 사용
+### 4.4 이클립스(Eclipse / 전자정부 표준프레임워크 IDE) 상세
 
 Maven 프로젝트이므로 **File → Import → Maven → Existing Maven Projects** 로 가져와 실행합니다.
 JDK 21 등록·Lombok 설치·UTF-8 인코딩 등 상세 절차는 **[docs/ECLIPSE.md](docs/ECLIPSE.md)** 참고.

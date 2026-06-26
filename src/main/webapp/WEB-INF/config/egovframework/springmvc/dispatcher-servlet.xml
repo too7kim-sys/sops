@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans   https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context  https://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/mvc      https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- Presentation 계층 : Controller 만 스캔 -->
+    <context:component-scan base-package="egovframework" use-default-filters="false">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <mvc:annotation-driven>
+        <!-- @AuthenticationPrincipal 지원 (XML 기반 Spring MVC + Security) -->
+        <mvc:argument-resolvers>
+            <bean class="org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver"/>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
+    <!-- 정적 자원 -->
+    <mvc:resources mapping="/css/**"    location="/css/"/>
+    <mvc:resources mapping="/js/**"     location="/js/"/>
+    <mvc:resources mapping="/images/**" location="/images/"/>
+
+    <!-- JSP View Resolver : prefix /WEB-INF/jsp/ + suffix .jsp -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+</beans>
