@@ -7,9 +7,9 @@
 
 <div class="breadcrumb">표준운영절차 &gt; 연계관리 &gt; 상세</div>
 <div class="page-head">
-    <div class="page-title">연계 상세 <span style="color:#888;font-weight:400;">(INTF-${interface.intfId})</span></div>
+    <div class="page-title">연계 상세 <span style="color:#888;font-weight:400;">(INTF-${itf.intfId})</span></div>
     <div class="toolbar">
-        <form action="${ctx}/interface/delete/${interface.intfId}" method="post"
+        <form action="${ctx}/interface/delete/${itf.intfId}" method="post"
               onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
             <button type="submit" class="btn btn-danger">삭제</button>
         </form>
@@ -20,39 +20,39 @@
     <div class="panel">
         <h3>연계 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${interface.sysNm}</td></tr>
-            <tr><th>제목</th><td>${interface.title}</td></tr>
-            <tr><th>상대 시스템</th><td>${empty interface.partnerSys ? '-' : interface.partnerSys}</td></tr>
+            <tr><th>대상 시스템</th><td>${itf.sysNm}</td></tr>
+            <tr><th>제목</th><td>${itf.title}</td></tr>
+            <tr><th>상대 시스템</th><td>${empty itf.partnerSys ? '-' : itf.partnerSys}</td></tr>
             <tr><th>연계 유형 / 상태</th><td>
-                <span>${interface.ifTypeNm}</span>
+                <span>${itf.ifTypeNm}</span>
                 &nbsp;
-                <span class="badge st-${fn:toLowerCase(interface.status)}">${interface.statusNm}</span>
+                <span class="badge st-${fn:toLowerCase(itf.status)}">${itf.statusNm}</span>
             </td></tr>
-            <tr><th>요청자 / 요청일시</th><td><span>${interface.reqId}</span> / <span>${interface.reqDt}</span></td></tr>
-            <tr><th>담당자</th><td>${empty interface.chargerId ? '-' : interface.chargerId}</td></tr>
-            <tr><th>예정일 / 완료일시</th><td><span>${empty interface.planDt ? '-' : interface.planDt}</span> / <span>${empty interface.completeDt ? '-' : interface.completeDt}</span></td></tr>
-            <tr><th>연계 데이터</th><td style="white-space:pre-line;">${empty interface.dataDesc ? '-' : interface.dataDesc}</td></tr>
-            <tr><th>처리 결과</th><td style="white-space:pre-line;">${empty interface.result ? '-' : interface.result}</td></tr>
+            <tr><th>요청자 / 요청일시</th><td><span>${itf.reqId}</span> / <span>${itf.reqDt}</span></td></tr>
+            <tr><th>담당자</th><td>${empty itf.chargerId ? '-' : itf.chargerId}</td></tr>
+            <tr><th>예정일 / 완료일시</th><td><span>${empty itf.planDt ? '-' : itf.planDt}</span> / <span>${empty itf.completeDt ? '-' : itf.completeDt}</span></td></tr>
+            <tr><th>연계 데이터</th><td style="white-space:pre-line;">${empty itf.dataDesc ? '-' : itf.dataDesc}</td></tr>
+            <tr><th>처리 결과</th><td style="white-space:pre-line;">${empty itf.result ? '-' : itf.result}</td></tr>
         </table>
     </div>
 
     <div>
-        <c:if test="${interface.status != 'COMPLETED' and interface.status != 'REJECTED'}">
+        <c:if test="${itf.status != 'COMPLETED' and itf.status != 'REJECTED'}">
         <div class="panel">
             <h3>연계 처리</h3>
             <form method="post" action="${ctx}/interface/process">
-                <input type="hidden" name="intfId" value="${interface.intfId}"/>
+                <input type="hidden" name="intfId" value="${itf.intfId}"/>
                 <table class="form">
                     <tr><th>처리 상태 <span class="required">*</span></th>
                         <td>
                             <select name="status" required>
                                 <c:forEach var="cd" items="${statusList}">
-                                    <option value="${cd.codeId}" ${cd.codeId == interface.status ? 'selected' : ''}>${cd.codeNm}</option>
+                                    <option value="${cd.codeId}" ${cd.codeId == itf.status ? 'selected' : ''}>${cd.codeNm}</option>
                                 </c:forEach>
                             </select>
                         </td></tr>
-                    <tr><th>담당자</th><td><input type="text" name="chargerId" value="${interface.chargerId}"/></td></tr>
-                    <tr><th>처리 결과</th><td><textarea name="result" rows="4">${interface.result}</textarea></td></tr>
+                    <tr><th>담당자</th><td><input type="text" name="chargerId" value="${itf.chargerId}"/></td></tr>
+                    <tr><th>처리 결과</th><td><textarea name="result" rows="4">${itf.result}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -64,14 +64,14 @@
         <div class="panel">
             <h3>처리 이력</h3>
             <ul class="history">
-                <c:forEach var="h" items="${interface.historyList}">
+                <c:forEach var="h" items="${itf.historyList}">
                     <li>
                         <span class="badge st-${fn:toLowerCase(h.status)}">${h.statusNm}</span>
                         <span style="white-space:pre-line;">${h.content}</span>
                         <div class="h-meta"><span>${h.procId}</span> · <span>${h.procDt}</span></div>
                     </li>
                 </c:forEach>
-                <c:if test="${empty interface.historyList}"><li style="border:none;">이력이 없습니다.</li></c:if>
+                <c:if test="${empty itf.historyList}"><li style="border:none;">이력이 없습니다.</li></c:if>
             </ul>
         </div>
     </div>

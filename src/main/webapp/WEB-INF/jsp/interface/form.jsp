@@ -20,7 +20,7 @@
                     <select name="sysId" required>
                         <option value="">선택</option>
                         <c:forEach var="s" items="${systemList}">
-                            <option value="${s.sysId}" ${s.sysId == interface.sysId ? 'selected' : ''}>${s.sysNm}</option>
+                            <option value="${s.sysId}" ${s.sysId == itf.sysId ? 'selected' : ''}>${s.sysNm}</option>
                         </c:forEach>
                     </select>
                 </td>
@@ -29,24 +29,24 @@
                     <select name="ifType" required>
                         <option value="">선택</option>
                         <c:forEach var="cd" items="${typeList}">
-                            <option value="${cd.codeId}" ${cd.codeId == interface.ifType ? 'selected' : ''}>${cd.codeNm}</option>
+                            <option value="${cd.codeId}" ${cd.codeId == itf.ifType ? 'selected' : ''}>${cd.codeNm}</option>
                         </c:forEach>
                     </select>
                 </td>
             </tr>
             <tr>
                 <th>제목 <span class="required">*</span></th>
-                <td colspan="3"><input type="text" name="title" value="${interface.title}" required/></td>
+                <td colspan="3"><input type="text" name="title" value="${itf.title}" required/></td>
             </tr>
             <tr>
                 <th>상대 시스템</th>
-                <td><input type="text" name="partnerSys" value="${interface.partnerSys}" placeholder="연계 상대 시스템"/></td>
+                <td><input type="text" name="partnerSys" value="${itf.partnerSys}" placeholder="연계 상대 시스템"/></td>
                 <th>예정일</th>
-                <td><input type="date" name="planDt" value="${interface.planDt}"/></td>
+                <td><input type="date" name="planDt" value="${itf.planDt}"/></td>
             </tr>
             <tr>
                 <th>연계 데이터</th>
-                <td colspan="3"><textarea name="dataDesc" rows="5">${interface.dataDesc}</textarea></td>
+                <td colspan="3"><textarea name="dataDesc" rows="5">${itf.dataDesc}</textarea></td>
             </tr>
         </table>
     </div>

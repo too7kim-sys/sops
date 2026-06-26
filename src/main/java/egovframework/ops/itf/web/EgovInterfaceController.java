@@ -56,7 +56,7 @@ public class EgovInterfaceController {
     /** 연계 상세 */
     @GetMapping("/detail/{intfId}")
     public String detail(@PathVariable Long intfId, Model model) {
-        model.addAttribute("interface", interfaceService.selectInterface(intfId));
+        model.addAttribute("itf", interfaceService.selectInterface(intfId));
         model.addAttribute("statusList", codeService.selectCodeList("INTF_STATUS"));
         model.addAttribute("menu", "interface");
         return "interface/detail";
@@ -65,7 +65,7 @@ public class EgovInterfaceController {
     /** 연계 요청(등록) 폼 */
     @GetMapping("/write")
     public String writeForm(Model model) {
-        model.addAttribute("interface", new InterfaceVO());
+        model.addAttribute("itf", new InterfaceVO());
         model.addAttribute("systemList", systemService.selectSystemAll());
         model.addAttribute("typeList", codeService.selectCodeList("INTF_TYPE"));
         model.addAttribute("menu", "interface");
