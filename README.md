@@ -82,7 +82,7 @@ egovframework
 
 ```bash
 mvn clean package
-java -jar target/egov-ops.war   # WAR 도 실행형(내장 톰캣)
+java -jar target/egov-ops.jar    # 내장 톰캣 실행형 JAR (기본)
 #  또는
 mvn spring-boot:run
 ```
@@ -91,9 +91,10 @@ mvn spring-boot:run
 - H2 콘솔: <http://localhost:8085/h2-console> (JDBC URL `jdbc:h2:mem:egovops`, user `sa`)
 - 데모용 샘플 거래데이터(장애/변경/배포/점검)가 자동 적재된다.
 
-> **외부 톰캣 배포**: 본 프로젝트는 **WAR** 로 패키징되어 외부 톰캣 배포도 지원한다.
-> 단, Spring Boot 3(Jakarta EE) 기반이므로 **Tomcat 10.1 이상**이 필요하다(8.5/9.x 미지원).
-> `target/egov-ops.war` 를 톰캣 `webapps/` 에 배포(컨텍스트 `/egov-ops`) 하거나 `ROOT.war` 로 배포(루트 `/`).
+> **외부 톰캣 배포(선택)**: 기본 패키징은 **JAR**(내장 톰캣) 이라 이클립스에서 평범한 자바 프로젝트로
+> 보이고 바로 실행된다. 외부 톰캣에 WAR 로 배포하려면 `pom.xml` 에서 `packaging` 을 `war` 로 바꾸고
+> `spring-boot-starter-tomcat`(provided) 주석을 해제한 뒤 `mvn clean package` 한다.
+> 단, Spring Boot 3(Jakarta EE) 기반이므로 외부 톰캣은 **Tomcat 10.1 이상**이어야 한다(8.5/9.x 미지원).
 > 상세: [docs/ECLIPSE.md](docs/ECLIPSE.md) 5-1 절.
 
 ### 4.2 운영 (PostgreSQL) — `prod` 프로파일

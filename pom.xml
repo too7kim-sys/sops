@@ -14,8 +14,10 @@
     <groupId>egovframework.ops</groupId>
     <artifactId>egov-ops</artifactId>
     <version>1.0.0</version>
-    <!-- 외부 톰캣(Tomcat 10.1+) 배포 및 내장 실행 모두 지원 -->
-    <packaging>war</packaging>
+    <!-- 기본: 내장 톰캣 실행형 JAR (이클립스에서 평범한 자바 프로젝트로 인식).
+         외부 톰캣(Tomcat 10.1+) 배포가 필요하면 아래를 war 로 바꾸고
+         spring-boot-starter-tomcat 의 주석(provided)을 해제한다. (docs/ECLIPSE.md 5-1 참고) -->
+    <packaging>jar</packaging>
 
     <name>egov-ops</name>
     <description>범정부 응용프로그램 운영관리시스템 (전자정부 표준프레임워크 기반 표준운영절차 구현)</description>
@@ -33,12 +35,14 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 외부 톰캣 배포 시 톰캣은 컨테이너가 제공(provided). 내장 실행(java -jar)도 그대로 동작 -->
+        <!-- 외부 톰캣(Tomcat 10.1+) 배포 시에만: 아래 주석을 해제하고 packaging 을 war 로 변경.
+             (내장 실행/JAR 에서는 starter-web 의 내장 톰캣을 사용하므로 비활성)
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
         </dependency>
+        -->
 
         <!-- View : Thymeleaf -->
         <dependency>

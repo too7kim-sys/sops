@@ -75,9 +75,16 @@
 
 ---
 
-## 5-1. 실행 (외부 톰캣에 WAR 배포)
+## 5-1. 실행 (외부 톰캣에 WAR 배포) — 선택
 
-본 프로젝트는 **WAR** 로 패키징되어 내장 실행과 외부 톰캣 배포를 모두 지원합니다.
+기본 패키징은 **JAR**(내장 톰캣)이라 별도 톰캣 없이 바로 실행됩니다(위 5장). 외부 톰캣에 WAR 로
+배포하려면 아래처럼 **패키징을 war 로 전환**한 뒤 빌드합니다.
+
+```xml
+<!-- pom.xml -->
+<packaging>war</packaging>            <!-- jar → war 로 변경 -->
+<!-- 그리고 spring-boot-starter-tomcat(provided) 의존성 주석을 해제 -->
+```
 
 > ⚠️ **톰캣 버전 필수 확인** — Spring Boot 3 은 Jakarta EE 9+(`jakarta.*`) 기반이므로
 > 외부 톰캣은 반드시 **Apache Tomcat 10.1 이상**이어야 합니다.
