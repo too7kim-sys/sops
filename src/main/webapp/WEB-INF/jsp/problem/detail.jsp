@@ -29,9 +29,9 @@
             </td></tr>
             <tr><th>담당자</th><td>${empty problem.chargerId ? '-' : problem.chargerId}</td></tr>
             <tr><th>등록 / 해결</th><td>${problem.regDt} / ${empty problem.resolveDt ? '-' : problem.resolveDt}</td></tr>
-            <tr><th>문제 내용</th><td style="white-space:pre-line;">${problem.content}</td></tr>
-            <tr><th>근본 원인</th><td style="white-space:pre-line;">${empty problem.rootCause ? '-' : problem.rootCause}</td></tr>
-            <tr><th>해결책</th><td style="white-space:pre-line;">${empty problem.solution ? '-' : problem.solution}</td></tr>
+            <tr><th>문제 내용</th><td><div class="rte-view">${problem.content}</div></td></tr>
+            <tr><th>근본 원인</th><td><div class="rte-view">${empty problem.rootCause ? '-' : problem.rootCause}</div></td></tr>
+            <tr><th>해결책</th><td><div class="rte-view">${empty problem.solution ? '-' : problem.solution}</div></td></tr>
         </table>
     </div>
 
@@ -51,8 +51,8 @@
                             </select>
                         </td></tr>
                     <tr><th>담당자</th><td><input type="text" name="chargerId" value="${problem.chargerId}"/></td></tr>
-                    <tr><th>근본 원인</th><td><textarea name="rootCause" rows="3">${problem.rootCause}</textarea></td></tr>
-                    <tr><th>해결책</th><td><textarea name="solution" rows="3">${problem.solution}</textarea></td></tr>
+                    <tr><th>근본 원인</th><td><textarea class="wysiwyg" name="rootCause" rows="3">${problem.rootCause}</textarea></td></tr>
+                    <tr><th>해결책</th><td><textarea class="wysiwyg" name="solution" rows="3">${problem.solution}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -149,4 +149,5 @@
 
 <div class="toolbar"><a href="${ctx}/problem/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

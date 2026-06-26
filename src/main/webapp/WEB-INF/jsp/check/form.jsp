@@ -42,7 +42,7 @@
             </tr>
             <tr>
                 <th>비고</th>
-                <td colspan="3"><textarea name="remark" rows="3">${check.remark}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" name="remark" rows="3">${check.remark}</textarea></td>
             </tr>
         </table>
     </div>
@@ -113,4 +113,5 @@
     });
 </script>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

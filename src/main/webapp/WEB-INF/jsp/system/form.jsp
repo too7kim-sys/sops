@@ -56,7 +56,7 @@
             </tr>
             <tr>
                 <th>시스템설명</th>
-                <td colspan="3"><textarea name="sysDesc" rows="3">${system.sysDesc}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" name="sysDesc" rows="3">${system.sysDesc}</textarea></td>
             </tr>
         </table>
     </div>
@@ -89,4 +89,5 @@
     </div>
 </form>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

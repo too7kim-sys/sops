@@ -36,8 +36,8 @@
                     <c:otherwise>-</c:otherwise>
                 </c:choose>
             </td></tr>
-            <tr><th>내용</th><td style="white-space:pre-line;">${event.content}</td></tr>
-            <tr><th>조치 내용</th><td style="white-space:pre-line;">${empty event.action ? '-' : event.action}</td></tr>
+            <tr><th>내용</th><td><div class="rte-view">${event.content}</div></td></tr>
+            <tr><th>조치 내용</th><td><div class="rte-view">${empty event.action ? '-' : event.action}</div></td></tr>
         </table>
     </div>
 
@@ -59,7 +59,7 @@
                     <tr><th>담당자</th><td><input type="text" name="chargerId" value="${event.chargerId}"/></td></tr>
                     <tr><th>장애 연계<br/><small style="color:#999;font-weight:400;">(에스컬레이션 시 장애ID)</small></th>
                         <td><input type="number" name="linkedIncId" value="${event.linkedIncId}" placeholder="연계 장애 ID"/></td></tr>
-                    <tr><th>조치 내용</th><td><textarea name="action" rows="3">${event.action}</textarea></td></tr>
+                    <tr><th>조치 내용</th><td><textarea class="wysiwyg" name="action" rows="3">${event.action}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -86,4 +86,5 @@
 
 <div class="toolbar"><a href="${ctx}/event/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

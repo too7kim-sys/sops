@@ -46,7 +46,7 @@
             </tr>
             <tr>
                 <th>장애 내용</th>
-                <td colspan="3"><textarea name="content" rows="5">${incident.content}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" name="content" rows="5">${incident.content}</textarea></td>
             </tr>
         </table>
     </div>
@@ -56,4 +56,5 @@
     </div>
 </form>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

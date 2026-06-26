@@ -30,7 +30,7 @@
             <tr><th>담당자</th><td>${empty ci.ownerId ? '-' : ci.ownerId}</td></tr>
             <tr><th>저장 위치</th><td>${empty ci.location ? '-' : ci.location}</td></tr>
             <tr><th>등록 일시</th><td>${ci.regDt}</td></tr>
-            <tr><th>설명</th><td style="white-space:pre-line;">${empty ci.ciDesc ? '-' : ci.ciDesc}</td></tr>
+            <tr><th>설명</th><td><div class="rte-view">${empty ci.ciDesc ? '-' : ci.ciDesc}</div></td></tr>
         </table>
     </div>
 
@@ -50,7 +50,7 @@
                             </select>
                         </td></tr>
                     <tr><th>버전</th><td><input type="text" name="ver" value="${ci.ver}" placeholder="기준선 시 갱신 버전"/></td></tr>
-                    <tr><th>내용</th><td><textarea name="content" rows="4" placeholder="형상통제/감사 내용"></textarea></td></tr>
+                    <tr><th>내용</th><td><textarea class="wysiwyg" name="content" rows="4" placeholder="형상통제/감사 내용"></textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -77,4 +77,5 @@
 
 <div class="toolbar"><a href="${ctx}/ci/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

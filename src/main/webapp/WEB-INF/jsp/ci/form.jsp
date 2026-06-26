@@ -52,7 +52,7 @@
             </tr>
             <tr>
                 <th>설명</th>
-                <td colspan="3"><textarea name="ciDesc" rows="5">${ci.ciDesc}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" name="ciDesc" rows="5">${ci.ciDesc}</textarea></td>
             </tr>
         </table>
     </div>
@@ -62,4 +62,5 @@
     </div>
 </form>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

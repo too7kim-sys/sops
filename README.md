@@ -28,13 +28,20 @@
 
 | 계층 | 기술 |
 |------|------|
-| Presentation | Spring MVC 5.3 (`@Controller`), **JSP + JSTL** |
+| Presentation | Spring MVC 5.3 (`@Controller`), **JSP + JSTL**, 무료 웹에디터(**Summernote Lite**, MIT·로컬호스팅) |
 | Business Logic | Service / ServiceImpl (`EgovAbstractServiceImpl` 상속) |
 | Persistence | MyBatis (XML Mapper) + mybatis-spring |
 | Security | Spring Security 5 (XML 설정, 폼 로그인, 권한기반 접근통제, BCrypt) |
 | DB | **운영: PostgreSQL** / 개발·데모: H2 (In-memory) |
 | 설정 | XML (web.xml, `context-*.xml`, `dispatcher-servlet.xml`) + `globals.properties` |
 | 패키징 / 실행 | **WAR** / **Apache Tomcat 9+** (이클립스 *Run on Server* / `mvn cargo:run`) / Java 17 |
+
+> 웹에디터: 요청내용·처리내용·장애원인/조치·변경내용 등 본문 입력란에 무료 WYSIWYG
+> 에디터(Summernote Lite)를 적용했다. 자산(JS/CSS/폰트)은 외부 CDN 없이 `webapp/js/editor`,
+> `webapp/css/editor` 에 **로컬 호스팅**하여 망분리 환경에서도 동작한다. 본문은 HTML 로 저장되며
+> 해당 컬럼은 `VARCHAR(8000)`(본문)/`VARCHAR(4000)`(부가)로 확장하였다.
+> 입력 주체는 인증된 운영자이지만, 외부 입력을 다룰 경우 저장 전 HTML 정제(예: jsoup 화이트리스트)를
+> 적용할 것을 권장한다.
 
 > 프로파일 분리: 기본(`dev`) 프로파일은 H2 In-memory 로 즉시 구동되며, 운영(`prod`) 프로파일은
 > PostgreSQL 에 연결된다(`-Dspring.profiles.active=prod`). 매퍼 SQL 은 양쪽 모두 호환되도록

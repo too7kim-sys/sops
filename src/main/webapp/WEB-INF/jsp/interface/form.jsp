@@ -46,7 +46,7 @@
             </tr>
             <tr>
                 <th>연계 데이터</th>
-                <td colspan="3"><textarea name="dataDesc" rows="5">${itf.dataDesc}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" name="dataDesc" rows="5">${itf.dataDesc}</textarea></td>
             </tr>
         </table>
     </div>
@@ -56,4 +56,5 @@
     </div>
 </form>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

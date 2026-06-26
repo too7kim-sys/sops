@@ -37,9 +37,9 @@
             <tr><th>조치완료</th><td>${empty incident.resolveDt ? '-' : incident.resolveDt}</td></tr>
             <tr><th>연계 문제</th><td><c:choose><c:when test="${incident.refPrbId != null}">PRB-${incident.refPrbId}</c:when><c:otherwise>-</c:otherwise></c:choose></td></tr>
             <tr><th>담당자</th><td>${empty incident.chargerId ? '-' : incident.chargerId}</td></tr>
-            <tr><th>장애 내용</th><td style="white-space:pre-line;">${incident.content}</td></tr>
-            <tr><th>장애 원인</th><td style="white-space:pre-line;">${empty incident.cause ? '-' : incident.cause}</td></tr>
-            <tr><th>조치 내용</th><td style="white-space:pre-line;">${empty incident.action ? '-' : incident.action}</td></tr>
+            <tr><th>장애 내용</th><td><div class="rte-view">${incident.content}</div></td></tr>
+            <tr><th>장애 원인</th><td><div class="rte-view">${empty incident.cause ? '-' : incident.cause}</div></td></tr>
+            <tr><th>조치 내용</th><td><div class="rte-view">${empty incident.action ? '-' : incident.action}</div></td></tr>
         </table>
     </div>
 
@@ -60,8 +60,8 @@
                         </td></tr>
                     <tr><th>담당자</th><td><input type="text" name="chargerId" value="${incident.chargerId}"/></td></tr>
                     <tr><th>연계 문제</th><td><input type="number" name="refPrbId" value="${incident.refPrbId}" placeholder="연계 문제 ID (선택)"/></td></tr>
-                    <tr><th>장애 원인</th><td><textarea name="cause" rows="3">${incident.cause}</textarea></td></tr>
-                    <tr><th>조치 내용</th><td><textarea name="action" rows="3">${incident.action}</textarea></td></tr>
+                    <tr><th>장애 원인</th><td><textarea class="wysiwyg" name="cause" rows="3">${incident.cause}</textarea></td></tr>
+                    <tr><th>조치 내용</th><td><textarea class="wysiwyg" name="action" rows="3">${incident.action}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;"><button type="submit" class="btn btn-success">처리 등록</button></div>
             </form>
@@ -118,4 +118,5 @@
 
 <div class="toolbar"><a href="${ctx}/incident/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

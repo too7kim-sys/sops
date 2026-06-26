@@ -30,7 +30,7 @@
             <tr><th>예정일</th><td>${empty test.planDt ? '-' : test.planDt}</td></tr>
             <tr><th>테스터</th><td>${empty test.testerId ? '-' : test.testerId}</td></tr>
             <tr><th>등록 일시</th><td>${test.regDt}</td></tr>
-            <tr><th>결과 요약</th><td style="white-space:pre-line;">${empty test.resultSummary ? '-' : test.resultSummary}</td></tr>
+            <tr><th>결과 요약</th><td><div class="rte-view">${empty test.resultSummary ? '-' : test.resultSummary}</div></td></tr>
         </table>
     </div>
 
@@ -50,7 +50,7 @@
                             </select>
                         </td></tr>
                     <tr><th>테스터</th><td><input type="text" name="testerId" value="${test.testerId}"/></td></tr>
-                    <tr><th>결과 요약</th><td><textarea name="resultSummary" rows="4">${test.resultSummary}</textarea></td></tr>
+                    <tr><th>결과 요약</th><td><textarea class="wysiwyg" name="resultSummary" rows="4">${test.resultSummary}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -90,4 +90,5 @@
 
 <div class="toolbar"><a href="${ctx}/test/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

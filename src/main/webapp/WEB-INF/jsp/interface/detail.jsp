@@ -31,8 +31,8 @@
             <tr><th>요청자 / 요청일시</th><td><span>${itf.reqId}</span> / <span>${itf.reqDt}</span></td></tr>
             <tr><th>담당자</th><td>${empty itf.chargerId ? '-' : itf.chargerId}</td></tr>
             <tr><th>예정일 / 완료일시</th><td><span>${empty itf.planDt ? '-' : itf.planDt}</span> / <span>${empty itf.completeDt ? '-' : itf.completeDt}</span></td></tr>
-            <tr><th>연계 데이터</th><td style="white-space:pre-line;">${empty itf.dataDesc ? '-' : itf.dataDesc}</td></tr>
-            <tr><th>처리 결과</th><td style="white-space:pre-line;">${empty itf.result ? '-' : itf.result}</td></tr>
+            <tr><th>연계 데이터</th><td><div class="rte-view">${empty itf.dataDesc ? '-' : itf.dataDesc}</div></td></tr>
+            <tr><th>처리 결과</th><td><div class="rte-view">${empty itf.result ? '-' : itf.result}</div></td></tr>
         </table>
     </div>
 
@@ -52,7 +52,7 @@
                             </select>
                         </td></tr>
                     <tr><th>담당자</th><td><input type="text" name="chargerId" value="${itf.chargerId}"/></td></tr>
-                    <tr><th>처리 결과</th><td><textarea name="result" rows="4">${itf.result}</textarea></td></tr>
+                    <tr><th>처리 결과</th><td><textarea class="wysiwyg" name="result" rows="4">${itf.result}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -79,4 +79,5 @@
 
 <div class="toolbar"><a href="${ctx}/interface/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

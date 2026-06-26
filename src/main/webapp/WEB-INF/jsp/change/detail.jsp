@@ -31,10 +31,10 @@
             <tr><th>요청자 / 요청일시</th><td>${empty change.reqId ? '-' : change.reqId} / ${empty change.reqDt ? '-' : change.reqDt}</td></tr>
             <tr><th>적용 예정일</th><td>${empty change.planDt ? '-' : change.planDt}</td></tr>
             <tr><th>적용 일시</th><td>${empty change.applyDt ? '-' : change.applyDt}</td></tr>
-            <tr><th>변경 사유</th><td style="white-space:pre-line;">${empty change.reason ? '-' : change.reason}</td></tr>
-            <tr><th>변경 내용</th><td style="white-space:pre-line;">${empty change.content ? '-' : change.content}</td></tr>
+            <tr><th>변경 사유</th><td><div class="rte-view">${empty change.reason ? '-' : change.reason}</div></td></tr>
+            <tr><th>변경 내용</th><td><div class="rte-view">${empty change.content ? '-' : change.content}</div></td></tr>
             <tr><th>심의자 / 심의일시</th><td>${empty change.apprId ? '-' : change.apprId} / ${empty change.apprDt ? '-' : change.apprDt}</td></tr>
-            <tr><th>심의 의견</th><td style="white-space:pre-line;">${empty change.apprOpinion ? '-' : change.apprOpinion}</td></tr>
+            <tr><th>심의 의견</th><td><div class="rte-view">${empty change.apprOpinion ? '-' : change.apprOpinion}</div></td></tr>
         </table>
     </div>
 
@@ -54,7 +54,7 @@
                                 <option value="REJECTED">반려</option>
                             </select>
                         </td></tr>
-                    <tr><th>심의 의견</th><td><textarea name="apprOpinion" rows="3">${change.apprOpinion}</textarea></td></tr>
+                    <tr><th>심의 의견</th><td><textarea class="wysiwyg" name="apprOpinion" rows="3">${change.apprOpinion}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">심의 등록</button>
@@ -104,7 +104,7 @@
         <c:forEach var="cab" items="${change.cabList}">
             <tr>
                 <td><span class="badge st-${fn:toLowerCase(cab.decision)}">${empty cab.decisionNm ? cab.decision : cab.decisionNm}</span></td>
-                <td style="white-space:pre-line;">${empty cab.opinion ? '-' : cab.opinion}</td>
+                <td><div class="rte-view">${empty cab.opinion ? '-' : cab.opinion}</div></td>
                 <td>${empty cab.reviewer ? '-' : cab.reviewer}</td>
                 <td>${empty cab.cabDt ? '-' : cab.cabDt}</td>
             </tr>
@@ -124,7 +124,7 @@
                         </c:forEach>
                     </select>
                 </td></tr>
-            <tr><th>심의 의견</th><td><textarea name="opinion" rows="3"></textarea></td></tr>
+            <tr><th>심의 의견</th><td><textarea class="wysiwyg" name="opinion" rows="3"></textarea></td></tr>
             <tr><th>심의위원</th><td><input type="text" name="reviewer" placeholder="미입력 시 로그인 사용자"/></td></tr>
         </table>
         <div class="right" style="margin-top:12px;">
@@ -139,13 +139,13 @@
     <h3>이행후검토(PIR)</h3>
     <table class="form">
         <tr><th>검토 일시</th><td>${empty change.pirDt ? '-' : change.pirDt}</td></tr>
-        <tr><th>검토 내용</th><td style="white-space:pre-line;">${empty change.pirContent ? '-' : change.pirContent}</td></tr>
+        <tr><th>검토 내용</th><td><div class="rte-view">${empty change.pirContent ? '-' : change.pirContent}</div></td></tr>
     </table>
     <form method="post" action="${ctx}/change/pir" style="margin-top:12px;">
         <input type="hidden" name="chgId" value="${change.chgId}"/>
         <table class="form">
             <tr><th>이행후검토 내용 <span class="required">*</span></th>
-                <td><textarea name="pirContent" rows="4" required>${change.pirContent}</textarea></td></tr>
+                <td><textarea class="wysiwyg" name="pirContent" rows="4">${change.pirContent}</textarea></td></tr>
         </table>
         <div class="right" style="margin-top:12px;">
             <button type="submit" class="btn btn-primary">PIR 기록</button>
@@ -156,4 +156,5 @@
 
 <div class="toolbar"><a href="${ctx}/change/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

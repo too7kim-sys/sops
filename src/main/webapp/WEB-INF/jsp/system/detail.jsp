@@ -33,7 +33,7 @@
         <tr><th>운영부서</th><td>${empty system.mngrDept ? '-' : system.mngrDept}</td></tr>
         <tr><th>사용여부</th><td>${system.useAt == 'Y' ? '사용' : '미사용'}</td></tr>
         <tr><th>등록일</th><td>${empty system.regDt ? '-' : system.regDt}</td></tr>
-        <tr><th>시스템설명</th><td style="white-space:pre-line;">${empty system.sysDesc ? '-' : system.sysDesc}</td></tr>
+        <tr><th>시스템설명</th><td><div class="rte-view">${empty system.sysDesc ? '-' : system.sysDesc}</div></td></tr>
     </table>
 </div>
 

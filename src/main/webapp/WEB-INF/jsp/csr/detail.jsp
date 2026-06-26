@@ -34,8 +34,8 @@
             <tr><th>요청자 / 요청일시</th><td><span>${empty csr.reqId ? '-' : csr.reqId}</span> / <span>${empty csr.reqDt ? '-' : csr.reqDt}</span></td></tr>
             <tr><th>담당자</th><td>${empty csr.chargerId ? '-' : csr.chargerId}</td></tr>
             <tr><th>처리일시</th><td>${empty csr.procDt ? '-' : csr.procDt}</td></tr>
-            <tr><th>요청 내용</th><td style="white-space:pre-line;">${csr.content}</td></tr>
-            <tr><th>처리 내용</th><td style="white-space:pre-line;">${empty csr.procContent ? '-' : csr.procContent}</td></tr>
+            <tr><th>요청 내용</th><td><div class="rte-view">${csr.content}</div></td></tr>
+            <tr><th>처리 내용</th><td><div class="rte-view">${empty csr.procContent ? '-' : csr.procContent}</div></td></tr>
         </table>
     </div>
 
@@ -55,7 +55,7 @@
                             </select>
                         </td></tr>
                     <tr><th>담당자</th><td><input type="text" name="chargerId" value="${csr.chargerId}"/></td></tr>
-                    <tr><th>처리 내용</th><td><textarea name="procContent" rows="4">${csr.procContent}</textarea></td></tr>
+                    <tr><th>처리 내용</th><td><textarea class="wysiwyg" name="procContent" rows="4">${csr.procContent}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -82,4 +82,5 @@
 
 <div class="toolbar"><a href="${ctx}/csr/list" class="btn btn-default">＜ 목록</a></div>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

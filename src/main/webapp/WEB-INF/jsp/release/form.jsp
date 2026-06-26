@@ -40,7 +40,7 @@
             </tr>
             <tr>
                 <th>배포 내용</th>
-                <td colspan="3"><textarea name="content" rows="5">${release.content}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" name="content" rows="5">${release.content}</textarea></td>
             </tr>
         </table>
     </div>
@@ -50,4 +50,5 @@
     </div>
 </form>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

@@ -52,7 +52,7 @@
             </tr>
             <tr>
                 <th>요청 내용</th>
-                <td colspan="3"><textarea name="content" rows="5">${csr.content}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" name="content" rows="5">${csr.content}</textarea></td>
             </tr>
         </table>
     </div>
@@ -62,4 +62,5 @@
     </div>
 </form>
 
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>
