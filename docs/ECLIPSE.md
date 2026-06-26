@@ -102,5 +102,6 @@ src/main/webapp/
 | getter/setter 컴파일 오류 | Lombok 미설치 → 1-3 단계 후 재시작 |
 | `src/main/java` 안 보임 | **Maven → Update Project (Force)**, `Java Resources` 노드 확인 |
 | 톰캣 배포 후 404/오류 | **Tomcat 9.x** 인지 확인(10+ 는 `javax`→`jakarta` 불일치로 미동작) |
+| JSP 에 `HttpServletRequest cannot be resolved to a type` | 프로젝트에 톰캣 런타임 미연결 → **Properties → Targeted Runtimes** 에서 **Apache Tomcat v9.0** 체크(서블릿 API 가 JSP 검증 클래스패스에 추가됨). 우회: **Properties → Validation** 에서 JSP Validator 끄기 |
 | 한글 깨짐 | 워크스페이스 인코딩 UTF-8 |
 | 포트 충돌 | Servers 뷰 → 서버 → Ports 변경, 또는 cargo `cargo.servlet.port` |
