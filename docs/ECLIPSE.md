@@ -68,8 +68,45 @@
 
 기동 후 브라우저에서 접속합니다.
 
-- 주소: <http://localhost:8080>
+- 주소: <http://localhost:8085>  (내장 톰캣 포트, `application.yml` 의 `server.port`)
 - 데모 계정: `admin` / `admin123!` (운영자 `oper01` / `oper123!`)
+
+> 포트 변경: `application.yml` 의 `server.port` 또는 실행 시 환경변수 `SERVER_PORT` / 인자 `--server.port=8085`.
+
+---
+
+## 5-1. 실행 (외부 톰캣에 WAR 배포)
+
+본 프로젝트는 **WAR** 로 패키징되어 내장 실행과 외부 톰캣 배포를 모두 지원합니다.
+
+> ⚠️ **톰캣 버전 필수 확인** — Spring Boot 3 은 Jakarta EE 9+(`jakarta.*`) 기반이므로
+> 외부 톰캣은 반드시 **Apache Tomcat 10.1 이상**이어야 합니다.
+> **Tomcat 8.5 / 9.x 에서는 동작하지 않습니다**(`javax.*` ↔ `jakarta.*` 네임스페이스 불일치).
+> 구버전 eGovFrame IDE 번들 톰캣을 쓰는 경우 Tomcat 10.1+ 를 별도 설치하거나, 위 *5장*의 내장 실행을 사용하세요.
+
+### (A) 이클립스 'Run on Server'
+1. **Window → Preferences → Server → Runtime Environments → Add** 에서 **Tomcat 10.1** 등록
+2. 프로젝트 우클릭 → **Run As → Run on Server** → 등록한 Tomcat 10.1 선택
+3. 컨텍스트 경로는 기본적으로 프로젝트명(`/egov-ops`) 입니다 → 접속: `http://localhost:8085/egov-ops/`
+   - 톰캣 커넥터 포트가 8085 가 아니면 Servers 뷰의 서버 더블클릭 → **Ports** 에서 HTTP 포트를 8085 로 변경
+   - 루트(`http://localhost:8085/`)로 접속하려면 서버 설정에서 **모듈의 Path 를 `/`** 로 변경
+
+### (B) 독립 톰캣(webapps)에 배포
+```bash
+mvn clean package          # target/egov-ops.war 생성
+# 컨텍스트 /egov-ops 로 배포 → http://localhost:8085/egov-ops/
+cp target/egov-ops.war  $CATALINA_HOME/webapps/
+# 또는 루트(/)로 배포 → http://localhost:8085/
+cp target/egov-ops.war  $CATALINA_HOME/webapps/ROOT.war
+```
+- 톰캣 포트는 `$CATALINA_HOME/conf/server.xml` 의 `<Connector port="8085" .../>` 로 지정
+- 외부 톰캣 배포 시 `application.yml` 의 `server.port` 는 무시되고 톰캣 커넥터 포트를 따릅니다
+- 운영(PostgreSQL) 프로파일/DB 접속정보는 톰캣 기동 시 시스템속성/환경변수로 전달
+  (예: `setenv.sh` 에 `export SPRING_PROFILES_ACTIVE=prod DB_URL=... DB_USERNAME=... DB_PASSWORD=...`)
+
+> **`http://localhost:8085/` 가 404 가 나는 이유**: 외부 톰캣에 컨텍스트 경로(`/egov-ops`)로 배포된 경우
+> 루트(`/`)에는 앱이 없어 톰캣 기본 404 가 표시됩니다. `http://localhost:8085/egov-ops/` 로 접속하거나
+> `ROOT.war` 로 배포(또는 모듈 Path 를 `/` 로 설정)하세요.
 
 ---
 

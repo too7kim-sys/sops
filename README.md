@@ -82,14 +82,19 @@ egovframework
 
 ```bash
 mvn clean package
-java -jar target/egov-ops.jar
+java -jar target/egov-ops.war   # WAR 도 실행형(내장 톰캣)
 #  또는
 mvn spring-boot:run
 ```
 
-- 접속: <http://localhost:8080>
-- H2 콘솔: <http://localhost:8080/h2-console> (JDBC URL `jdbc:h2:mem:egovops`, user `sa`)
+- 접속: <http://localhost:8085>  (포트는 `application.yml` 의 `server.port`, 환경변수 `SERVER_PORT` 로 변경)
+- H2 콘솔: <http://localhost:8085/h2-console> (JDBC URL `jdbc:h2:mem:egovops`, user `sa`)
 - 데모용 샘플 거래데이터(장애/변경/배포/점검)가 자동 적재된다.
+
+> **외부 톰캣 배포**: 본 프로젝트는 **WAR** 로 패키징되어 외부 톰캣 배포도 지원한다.
+> 단, Spring Boot 3(Jakarta EE) 기반이므로 **Tomcat 10.1 이상**이 필요하다(8.5/9.x 미지원).
+> `target/egov-ops.war` 를 톰캣 `webapps/` 에 배포(컨텍스트 `/egov-ops`) 하거나 `ROOT.war` 로 배포(루트 `/`).
+> 상세: [docs/ECLIPSE.md](docs/ECLIPSE.md) 5-1 절.
 
 ### 4.2 운영 (PostgreSQL) — `prod` 프로파일
 

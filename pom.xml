@@ -14,7 +14,8 @@
     <groupId>egovframework.ops</groupId>
     <artifactId>egov-ops</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    <!-- 외부 톰캣(Tomcat 10.1+) 배포 및 내장 실행 모두 지원 -->
+    <packaging>war</packaging>
 
     <name>egov-ops</name>
     <description>범정부 응용프로그램 운영관리시스템 (전자정부 표준프레임워크 기반 표준운영절차 구현)</description>
@@ -30,6 +31,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 외부 톰캣 배포 시 톰캣은 컨테이너가 제공(provided). 내장 실행(java -jar)도 그대로 동작 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- View : Thymeleaf -->

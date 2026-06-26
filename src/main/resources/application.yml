@@ -1,5 +1,6 @@
 server:
-  port: 8080
+  # 내장 톰캣 실행 시 사용 포트. 외부 톰캣 배포 시에는 톰캣 server.xml 의 커넥터 포트를 따른다.
+  port: ${SERVER_PORT:8085}
   servlet:
     encoding:
       charset: UTF-8
