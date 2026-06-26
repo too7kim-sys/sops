@@ -39,6 +39,8 @@ public class EgovWebSecurityConfig {
                     new AntPathRequestMatcher("/error")
                 ).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/sys/**")).hasRole("ADMIN")
+                // Git 자동배포 실행은 운영관리자/운영자만 가능
+                .requestMatchers(new AntPathRequestMatcher("/release/deploy", "POST")).hasAnyRole("ADMIN", "OPERATOR")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

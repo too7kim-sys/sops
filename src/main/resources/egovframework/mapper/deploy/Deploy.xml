@@ -27,6 +27,14 @@
             (#{relId}, #{deployRef}, #{commitHash}, #{result}, #{deployType}, #{log}, #{execBy}, CURRENT_TIMESTAMP)
     </insert>
 
+    <update id="updateDeployHis" parameterType="egovframework.ops.deploy.service.DeployHisVO">
+        UPDATE OPS_DEPLOY_HIS
+           SET RESULT = #{result},
+               COMMIT_HASH = #{commitHash},
+               LOG = #{log}
+         WHERE DEPLOY_ID = #{deployId}
+    </update>
+
     <update id="updateReleaseDeploy">
         UPDATE OPS_RELEASE
            SET DEPLOY_REF    = #{deployRef},

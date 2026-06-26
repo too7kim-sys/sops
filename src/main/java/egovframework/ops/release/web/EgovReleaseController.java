@@ -74,13 +74,22 @@ public class EgovReleaseController {
         return "release/detail";
     }
 
-    /** Git 자동배포 실행 */
+    /** Git 자동배포 실행 (비동기) */
     @PostMapping("/deploy")
     public String deploy(@RequestParam Long relId,
                          @RequestParam(required = false) String ref,
                          @RequestParam(required = false, defaultValue = "DEPLOY") String deployType,
-                         @AuthenticationPrincipal LoginUser loginUser) {
-        deployService.deploy(relId, ref, deployType, loginUser.getUsername());
+                         @AuthenticationPrincipal LoginUser loginUser,
+                         org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
+        egovframework.ops.deploy.service.DeployHisVO his =
+                deployService.deploy(relId, ref, deployType, loginUser.getUsername());
+        if (his != null && "BLOCKED".equals(his.getResult())) {
+            ra.addFlashAttribute("deployMsg", "[배포 차단] " + his.getLog());
+            ra.addFlashAttribute("deployMsgType", "error");
+        } else {
+            ra.addFlashAttribute("deployMsg", "Git 배포를 시작했습니다. 잠시 후 새로고침하여 결과를 확인하세요.");
+            ra.addFlashAttribute("deployMsgType", "info");
+        }
         return "redirect:/release/detail/" + relId;
     }
 
