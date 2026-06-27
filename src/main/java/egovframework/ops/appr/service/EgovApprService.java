@@ -63,4 +63,26 @@ public interface EgovApprService {
 
     /** 결재선/공유 지정 후보(활성 사용자) */
     List<UserVO> selectAssigneeCandidates();
+
+    /* ---------- 대상 전개(부서/요청자/전체) ---------- */
+
+    /** 부서 목록 */
+    List<String> selectDeptList();
+
+    /**
+     * 대상 유형을 실제 사용자 ID 목록으로 전개한다.
+     * USER→해당 사용자, DEPT→부서원 전체, REQUESTER→요청자, ALL→전체 활성 사용자.
+     */
+    List<String> resolveTargets(String bizType, Long bizId, String targetType, String targetValue);
+
+    /* ---------- 관리별 기본 템플릿 ---------- */
+
+    List<ApprTemplateVO> selectTemplateList(String bizType);
+
+    void insertTemplate(ApprTemplateVO vo);
+
+    void deleteTemplate(Long tplId);
+
+    /** 업무 구분별 기본 템플릿을 해당 레코드에 전개·적용(생성 건수 반환) */
+    int applyTemplate(String bizType, Long bizId, String actorId);
 }

@@ -7,6 +7,22 @@
 <div class="panel appr-panel">
     <h3>결재선 / 공유
         <span class="badge ov-${fn:toLowerCase(overallKey)}" style="margin-left:8px;">${overallNm}</span>
+        <c:if test="${isManager}">
+            <span style="float:right;font-weight:400;">
+                <c:if test="${hasTemplate}">
+                <form method="post" action="${ctx}/appr/applyTemplate" style="display:inline;"
+                      onsubmit="return confirm('이 업무의 기본 결재선/공유를 적용할까요?');">
+                    <input type="hidden" name="bizType" value="${bizType}"/>
+                    <input type="hidden" name="bizId" value="${bizId}"/>
+                    <input type="hidden" name="returnUrl" value="${returnUrl}"/>
+                    <button type="submit" class="btn btn-default btn-sm">기본 결재선/공유 적용</button>
+                </form>
+                </c:if>
+                <c:if test="${isAdmin}">
+                    <a href="${ctx}/appr/template?bizType=${bizType}" class="btn btn-ghost btn-sm" style="color:#1b3a6b;border-color:#cbd5e2;">기본 설정 관리</a>
+                </c:if>
+            </span>
+        </c:if>
     </h3>
 
     <div class="statbar" style="margin-bottom:10px;">
@@ -90,7 +106,7 @@
     </table>
 
     <c:if test="${isManager}">
-    <form method="post" action="${ctx}/appr/line/add" class="appr-add">
+    <form method="post" action="${ctx}/appr/line/add" class="appr-add" data-target-form>
         <input type="hidden" name="bizType" value="${bizType}"/>
         <input type="hidden" name="bizId" value="${bizId}"/>
         <input type="hidden" name="returnUrl" value="${returnUrl}"/>
@@ -105,16 +121,28 @@
             <label>단계
                 <input type="number" name="stepNo" value="1" min="1" style="width:60px;" title="같은 단계 = 병렬 처리"/>
             </label>
-            <label>대상자(복수 = 병렬)
-                <select name="assigneeId" multiple size="3" required style="min-width:200px;">
+            <label>대상 유형
+                <select name="targetType" class="target-type">
+                    <c:forEach var="tt" items="${targetTypeList}">
+                        <option value="${tt.codeId}">${tt.codeNm}</option>
+                    </c:forEach>
+                </select>
+            </label>
+            <label class="tgt-user">대상자(복수 = 병렬)
+                <select name="assigneeId" multiple size="3" style="min-width:200px;">
                     <c:forEach var="u" items="${candidates}">
                         <option value="${u.userId}">${u.userNm} (${u.userId}<c:if test="${not empty u.deptNm}">·${u.deptNm}</c:if>)</option>
                     </c:forEach>
                 </select>
             </label>
+            <label class="tgt-dept" style="display:none;">부서
+                <select name="targetValue">
+                    <c:forEach var="d" items="${deptList}"><option value="${d}">${d}</option></c:forEach>
+                </select>
+            </label>
             <button type="submit" class="btn btn-primary btn-sm">결재선 추가</button>
         </div>
-        <div class="h-meta">※ 같은 <b>단계</b> 번호로 여러 대상자를 지정하면 <b>병렬</b>로 검토·승인합니다.</div>
+        <div class="h-meta">※ 같은 <b>단계</b>는 <b>병렬</b> 처리. 대상 유형을 <b>부서/요청자/전체</b>로 지정하면 해당 사용자들로 자동 전개됩니다.</div>
     </form>
     </c:if>
 
@@ -156,16 +184,28 @@
         </tbody>
     </table>
 
-    <form method="post" action="${ctx}/appr/share/add" class="appr-add">
+    <form method="post" action="${ctx}/appr/share/add" class="appr-add" data-target-form>
         <input type="hidden" name="bizType" value="${bizType}"/>
         <input type="hidden" name="bizId" value="${bizId}"/>
         <input type="hidden" name="returnUrl" value="${returnUrl}"/>
         <div class="appr-add-row">
-            <label>공유 대상자(복수 선택)
-                <select name="userId" multiple size="3" required style="min-width:200px;">
+            <label>대상 유형
+                <select name="targetType" class="target-type">
+                    <c:forEach var="tt" items="${targetTypeList}">
+                        <option value="${tt.codeId}">${tt.codeNm}</option>
+                    </c:forEach>
+                </select>
+            </label>
+            <label class="tgt-user">공유 대상자(복수 선택)
+                <select name="userId" multiple size="3" style="min-width:200px;">
                     <c:forEach var="u" items="${candidates}">
                         <option value="${u.userId}">${u.userNm} (${u.userId}<c:if test="${not empty u.deptNm}">·${u.deptNm}</c:if>)</option>
                     </c:forEach>
+                </select>
+            </label>
+            <label class="tgt-dept" style="display:none;">부서
+                <select name="targetValue">
+                    <c:forEach var="d" items="${deptList}"><option value="${d}">${d}</option></c:forEach>
                 </select>
             </label>
             <label style="flex:1;">메모
@@ -175,3 +215,31 @@
         </div>
     </form>
 </div>
+
+<script>
+/* 대상 유형(사용자/부서/요청자/전체)에 따라 입력 표시 전환 — jQuery 비의존(vanilla) */
+(function () {
+    function sync(form) {
+        var t = form.querySelector('.target-type');
+        if (!t) return;
+        var v = t.value;
+        var u = form.querySelector('.tgt-user'), d = form.querySelector('.tgt-dept');
+        if (u) {
+            u.style.display = (v === 'USER') ? '' : 'none';
+            var us = u.querySelector('select'); if (us) us.disabled = (v !== 'USER');
+        }
+        if (d) {
+            d.style.display = (v === 'DEPT') ? '' : 'none';
+            var ds = d.querySelector('select'); if (ds) ds.disabled = (v !== 'DEPT');
+        }
+    }
+    var forms = document.querySelectorAll('form[data-target-form]');
+    for (var i = 0; i < forms.length; i++) {
+        (function (f) {
+            var t = f.querySelector('.target-type');
+            if (t) t.addEventListener('change', function () { sync(f); });
+            sync(f);
+        })(forms[i]);
+    }
+})();
+</script>

@@ -151,3 +151,11 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('APPR_STATUS', 'REJECTED', '반려',     4, 'Y'),
  ('APPR_STATUS', 'DONE',     '처리완료', 5, 'Y')
 ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;
+
+-- 결재 대상유형 코드 (운영: 기준코드만)
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
+ ('TARGET_TYPE', 'USER',      '사용자', 1, 'Y'),
+ ('TARGET_TYPE', 'DEPT',      '부서',   2, 'Y'),
+ ('TARGET_TYPE', 'REQUESTER', '요청자', 3, 'Y'),
+ ('TARGET_TYPE', 'ALL',       '전체',   4, 'Y')
+ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;

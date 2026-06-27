@@ -1,6 +1,7 @@
 package egovframework.ops.appr.service.impl;
 
 import egovframework.ops.appr.service.ApprLineVO;
+import egovframework.ops.appr.service.ApprTemplateVO;
 import egovframework.ops.appr.service.ShareVO;
 import egovframework.ops.sys.user.service.UserVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -58,4 +59,29 @@ public interface ApprMapper {
     int selectSharedUnreadCnt(String userId);
 
     List<UserVO> selectAssigneeCandidates();
+
+    /* ---------- 대상 전개(부서/요청자/전체) ---------- */
+
+    /** 부서 목록(중복 제거) */
+    List<String> selectDeptList();
+
+    /** 특정 부서 활성 사용자 ID */
+    List<String> selectUserIdsByDept(String deptNm);
+
+    /** 전체 활성 사용자 ID */
+    List<String> selectAllActiveUserIds();
+
+    /** 업무 레코드의 요청자/담당자 ID (컬럼은 내부 화이트리스트 값) */
+    String selectBizRequester(@Param("table") String table,
+                              @Param("idCol") String idCol,
+                              @Param("reqCol") String reqCol,
+                              @Param("bizId") Long bizId);
+
+    /* ---------- 기본 템플릿 ---------- */
+
+    List<ApprTemplateVO> selectTemplateList(String bizType);
+
+    void insertTemplate(ApprTemplateVO vo);
+
+    void deleteTemplate(Long tplId);
 }

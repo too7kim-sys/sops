@@ -49,6 +49,7 @@
             <sec:authorize access="hasRole('ADMIN')">
             <li><a href="${ctx}/sys/user/list"  class="${menu=='user' ? 'active' : ''}">사용자관리</a></li>
             <li><a href="${ctx}/sys/code/list"  class="${menu=='code' ? 'active' : ''}">공통코드</a></li>
+            <li><a href="${ctx}/appr/template"  class="${menu=='apprTpl' ? 'active' : ''}">결재 기본설정</a></li>
             </sec:authorize>
         </ul>
         <div class="sidebar-foot">전자정부 표준프레임워크 기반</div>

@@ -2,6 +2,7 @@ package egovframework.ops.appr.service.impl;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.ops.appr.service.ApprLineVO;
+import egovframework.ops.appr.service.ApprTemplateVO;
 import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.appr.service.ShareVO;
 import egovframework.ops.sys.user.service.UserVO;
@@ -159,5 +160,110 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
     @Override
     public List<UserVO> selectAssigneeCandidates() {
         return apprMapper.selectAssigneeCandidates();
+    }
+
+    /**
+     * 요청자/담당자 컬럼 규칙(내부 화이트리스트). {table, idCol, reqCol}.
+     */
+    private static final Map<String, String[]> REQUESTER_RULE = new LinkedHashMap<>();
+    static {
+        REQUESTER_RULE.put("CHANGE",    new String[]{"OPS_CHANGE",    "CHG_ID",  "REQ_ID"});
+        REQUESTER_RULE.put("RELEASE",   new String[]{"OPS_RELEASE",   "REL_ID",  "CHARGER_ID"});
+        REQUESTER_RULE.put("CSR",       new String[]{"OPS_CSR",       "CSR_ID",  "REQ_ID"});
+        REQUESTER_RULE.put("INCIDENT",  new String[]{"OPS_INCIDENT",  "INC_ID",  "REG_ID"});
+        REQUESTER_RULE.put("PROBLEM",   new String[]{"OPS_PROBLEM",   "PRB_ID",  "REG_ID"});
+        REQUESTER_RULE.put("TEST",      new String[]{"OPS_TEST",      "TEST_ID", "TESTER_ID"});
+        REQUESTER_RULE.put("INTERFACE", new String[]{"OPS_INTERFACE", "INTF_ID", "REQ_ID"});
+        REQUESTER_RULE.put("CI",        new String[]{"OPS_CI",        "CI_ID",   "OWNER_ID"});
+        REQUESTER_RULE.put("EVENT",     new String[]{"OPS_EVENT",     "EVT_ID",  "CHARGER_ID"});
+    }
+
+    @Override
+    public List<String> selectDeptList() {
+        return apprMapper.selectDeptList();
+    }
+
+    @Override
+    public List<String> resolveTargets(String bizType, Long bizId, String targetType, String targetValue) {
+        if (targetType == null) {
+            return java.util.Collections.emptyList();
+        }
+        switch (targetType) {
+            case "USER":
+                return (targetValue == null || targetValue.isBlank())
+                        ? java.util.Collections.emptyList()
+                        : java.util.List.of(targetValue);
+            case "DEPT":
+                return (targetValue == null || targetValue.isBlank())
+                        ? java.util.Collections.emptyList()
+                        : apprMapper.selectUserIdsByDept(targetValue);
+            case "ALL":
+                return apprMapper.selectAllActiveUserIds();
+            case "REQUESTER": {
+                String[] r = REQUESTER_RULE.get(bizType);
+                if (r == null) {
+                    return java.util.Collections.emptyList();
+                }
+                String req = apprMapper.selectBizRequester(r[0], r[1], r[2], bizId);
+                return (req == null || req.isBlank())
+                        ? java.util.Collections.emptyList()
+                        : java.util.List.of(req);
+            }
+            default:
+                return java.util.Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<ApprTemplateVO> selectTemplateList(String bizType) {
+        return apprMapper.selectTemplateList(bizType);
+    }
+
+    @Override
+    public void insertTemplate(ApprTemplateVO vo) {
+        apprMapper.insertTemplate(vo);
+    }
+
+    @Override
+    public void deleteTemplate(Long tplId) {
+        apprMapper.deleteTemplate(tplId);
+    }
+
+    @Override
+    @Transactional
+    public int applyTemplate(String bizType, Long bizId, String actorId) {
+        int created = 0;
+        for (ApprTemplateVO t : apprMapper.selectTemplateList(bizType)) {
+            List<String> ids = resolveTargets(bizType, bizId, t.getTargetType(), t.getTargetValue());
+            int sort = 1;
+            java.util.Set<String> seen = new java.util.LinkedHashSet<>(ids);
+            for (String uid : seen) {
+                if (uid == null || uid.isBlank()) {
+                    continue;
+                }
+                if ("SHARE".equals(t.getKind())) {
+                    ShareVO sv = new ShareVO();
+                    sv.setBizType(bizType);
+                    sv.setBizId(bizId);
+                    sv.setUserId(uid);
+                    sv.setShareMemo(t.getMemo());
+                    sv.setSharedBy(actorId);
+                    apprMapper.insertShare(sv);
+                } else {
+                    ApprLineVO lv = new ApprLineVO();
+                    lv.setBizType(bizType);
+                    lv.setBizId(bizId);
+                    lv.setLineType(t.getLineType());
+                    lv.setStepNo(t.getStepNo());
+                    lv.setSortNo(sort++);
+                    lv.setAssigneeId(uid);
+                    lv.setStatus("PENDING");
+                    lv.setRegId(actorId);
+                    apprMapper.insertLine(lv);
+                }
+                created++;
+            }
+        }
+        return created;
     }
 }

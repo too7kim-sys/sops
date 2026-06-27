@@ -167,4 +167,57 @@
          ORDER BY CASE ROLE WHEN 'ADMIN' THEN 1 WHEN 'OPERATOR' THEN 2 ELSE 3 END, USER_NM
     </select>
 
+    <!-- ===================== 대상 전개 ===================== -->
+
+    <select id="selectDeptList" resultType="string">
+        SELECT DISTINCT DEPT_NM FROM OPS_USER
+         WHERE USE_AT = 'Y' AND DEPT_NM IS NOT NULL AND DEPT_NM &lt;&gt; ''
+         ORDER BY DEPT_NM
+    </select>
+
+    <select id="selectUserIdsByDept" parameterType="string" resultType="string">
+        SELECT USER_ID FROM OPS_USER WHERE USE_AT = 'Y' AND DEPT_NM = #{deptNm} ORDER BY USER_ID
+    </select>
+
+    <select id="selectAllActiveUserIds" resultType="string">
+        SELECT USER_ID FROM OPS_USER WHERE USE_AT = 'Y' ORDER BY USER_ID
+    </select>
+
+    <select id="selectBizRequester" resultType="string">
+        SELECT ${reqCol} FROM ${table} WHERE ${idCol} = #{bizId}
+    </select>
+
+    <!-- ===================== 기본 템플릿 ===================== -->
+
+    <select id="selectTemplateList" parameterType="string"
+            resultType="egovframework.ops.appr.service.ApprTemplateVO">
+        SELECT T.TPL_ID      AS tplId,
+               T.BIZ_TYPE    AS bizType,
+               T.KIND        AS kind,
+               T.LINE_TYPE   AS lineType,
+               LC.CODE_NM    AS lineTypeNm,
+               T.STEP_NO     AS stepNo,
+               T.SORT_NO     AS sortNo,
+               T.TARGET_TYPE AS targetType,
+               TC.CODE_NM    AS targetTypeNm,
+               T.TARGET_VALUE AS targetValue,
+               T.MEMO        AS memo
+          FROM OPS_APPR_TEMPLATE T
+          LEFT JOIN OPS_CODE LC ON LC.CODE_GRP = 'LINE_TYPE'   AND LC.CODE_ID = T.LINE_TYPE
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'TARGET_TYPE' AND TC.CODE_ID = T.TARGET_TYPE
+         WHERE T.BIZ_TYPE = #{bizType}
+         ORDER BY T.KIND DESC, T.STEP_NO, T.SORT_NO, T.TPL_ID
+    </select>
+
+    <insert id="insertTemplate" parameterType="egovframework.ops.appr.service.ApprTemplateVO">
+        INSERT INTO OPS_APPR_TEMPLATE
+            (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO, REG_DT)
+        VALUES
+            (#{bizType}, #{kind}, #{lineType}, #{stepNo}, #{sortNo}, #{targetType}, #{targetValue}, #{memo}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteTemplate" parameterType="long">
+        DELETE FROM OPS_APPR_TEMPLATE WHERE TPL_ID = #{tplId}
+    </delete>
+
 </mapper>

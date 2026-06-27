@@ -16,6 +16,9 @@
 
         <!-- 사용자/공통코드 관리 : 운영관리자 -->
         <intercept-url pattern="/sys/**"       access="hasRole('ADMIN')"/>
+        <!-- 결재선/공유 기본설정(템플릿) 관리 : 운영관리자 -->
+        <intercept-url pattern="/appr/template/**" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/appr/template"    access="hasRole('ADMIN')"/>
         <!-- Git 자동배포 실행 : 운영관리자/운영자 -->
         <intercept-url pattern="/release/deploy" method="POST" access="hasAnyRole('ADMIN','OPERATOR')"/>
 

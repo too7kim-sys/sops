@@ -2,6 +2,7 @@ package egovframework.ops.appr.web;
 
 import egovframework.com.config.LoginUser;
 import egovframework.ops.appr.service.ApprLineVO;
+import egovframework.ops.appr.service.ApprTemplateVO;
 import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.appr.service.ShareVO;
 import egovframework.ops.cmm.code.service.EgovCodeService;
@@ -124,8 +125,12 @@ public class EgovApprController {
         model.addAttribute("shares", shares);
         model.addAttribute("candidates", apprService.selectAssigneeCandidates());
         model.addAttribute("lineTypeList", codeService.selectCodeList("LINE_TYPE"));
+        model.addAttribute("targetTypeList", codeService.selectCodeList("TARGET_TYPE"));
+        model.addAttribute("deptList", apprService.selectDeptList());
+        model.addAttribute("hasTemplate", !apprService.selectTemplateList(bizType).isEmpty());
         model.addAttribute("loginId", loginId);
         model.addAttribute("isManager", isManager(loginUser));
+        model.addAttribute("isAdmin", "ADMIN".equals(loginUser.getUser().getRole()));
         model.addAttribute("approveTotal", approveTotal);
         model.addAttribute("approveDone", approveDone);
         model.addAttribute("reviewTotal", reviewTotal);
@@ -140,20 +145,20 @@ public class EgovApprController {
 
     /* ============================ 결재선 ============================ */
 
-    /** 결재선 추가 (선택 대상자마다 1건, 동일 단계 = 병렬) */
+    /** 결재선 추가 — 대상 유형(사용자/부서/요청자/전체)을 실제 사용자로 전개, 동일 단계 = 병렬 */
     @PostMapping("/line/add")
     public String addLine(@RequestParam String bizType,
                           @RequestParam Long bizId,
                           @RequestParam String lineType,
                           @RequestParam(defaultValue = "1") Integer stepNo,
+                          @RequestParam(defaultValue = "USER") String targetType,
                           @RequestParam(name = "assigneeId", required = false) List<String> assigneeIds,
+                          @RequestParam(required = false) String targetValue,
                           @RequestParam(required = false) String returnUrl,
                           @AuthenticationPrincipal LoginUser loginUser) {
-        String ctx = ctx();
-        if (isManager(loginUser) && assigneeIds != null) {
+        if (isManager(loginUser)) {
             int sort = 1;
-            for (String aid : assigneeIds) {
-                if (aid == null || aid.isBlank()) continue;
+            for (String aid : resolveAssignees(bizType, bizId, targetType, assigneeIds, targetValue)) {
                 ApprLineVO vo = new ApprLineVO();
                 vo.setBizType(bizType);
                 vo.setBizId(bizId);
@@ -166,7 +171,7 @@ public class EgovApprController {
                 apprService.insertLine(vo);
             }
         }
-        return "redirect:" + safeReturn(returnUrl, ctx, bizType, bizId);
+        return "redirect:" + safeReturn(returnUrl, ctx(), bizType, bizId);
     }
 
     /** 결재선 삭제 */
@@ -218,27 +223,103 @@ public class EgovApprController {
 
     /* ============================ 공유 ============================ */
 
-    /** 공유 추가 (선택 대상자마다 1건) */
+    /** 공유 추가 — 대상 유형(사용자/부서/요청자/전체)을 실제 사용자로 전개 */
     @PostMapping("/share/add")
     public String addShare(@RequestParam String bizType,
                            @RequestParam Long bizId,
+                           @RequestParam(defaultValue = "USER") String targetType,
                            @RequestParam(name = "userId", required = false) List<String> userIds,
+                           @RequestParam(required = false) String targetValue,
                            @RequestParam(required = false) String shareMemo,
                            @RequestParam(required = false) String returnUrl,
                            @AuthenticationPrincipal LoginUser loginUser) {
-        if (userIds != null) {
-            for (String uid : userIds) {
-                if (uid == null || uid.isBlank()) continue;
-                ShareVO vo = new ShareVO();
-                vo.setBizType(bizType);
-                vo.setBizId(bizId);
-                vo.setUserId(uid);
-                vo.setShareMemo(shareMemo);
-                vo.setSharedBy(loginUser.getUsername());
-                apprService.insertShare(vo);
-            }
+        for (String uid : resolveAssignees(bizType, bizId, targetType, userIds, targetValue)) {
+            ShareVO vo = new ShareVO();
+            vo.setBizType(bizType);
+            vo.setBizId(bizId);
+            vo.setUserId(uid);
+            vo.setShareMemo(shareMemo);
+            vo.setSharedBy(loginUser.getUsername());
+            apprService.insertShare(vo);
         }
         return "redirect:" + safeReturn(returnUrl, ctx(), bizType, bizId);
+    }
+
+    /**
+     * 대상 유형을 실제 사용자 ID 목록(중복 제거)으로 전개.
+     * USER 는 다중 선택값(userIds), 그 외는 서비스 전개 규칙을 사용한다.
+     */
+    private List<String> resolveAssignees(String bizType, Long bizId, String targetType,
+                                          List<String> userIds, String targetValue) {
+        List<String> ids;
+        if (targetType == null || "USER".equals(targetType)) {
+            ids = (userIds == null) ? List.of() : userIds;
+        } else {
+            ids = apprService.resolveTargets(bizType, bizId, targetType, targetValue);
+        }
+        java.util.LinkedHashSet<String> set = new java.util.LinkedHashSet<>();
+        for (String id : ids) {
+            if (id != null && !id.isBlank()) {
+                set.add(id);
+            }
+        }
+        return new java.util.ArrayList<>(set);
+    }
+
+    /* ============================ 기본 템플릿 ============================ */
+
+    /** 업무 구분별 기본 템플릿을 현재 레코드에 적용(전개) */
+    @PostMapping("/applyTemplate")
+    public String applyTemplate(@RequestParam String bizType,
+                                @RequestParam Long bizId,
+                                @RequestParam(required = false) String returnUrl,
+                                @AuthenticationPrincipal LoginUser loginUser) {
+        if (isManager(loginUser)) {
+            apprService.applyTemplate(bizType, bizId, loginUser.getUsername());
+        }
+        return "redirect:" + safeReturn(returnUrl, ctx(), bizType, bizId);
+    }
+
+    /** 기본 설정(템플릿) 관리 화면 — 운영관리자 */
+    @GetMapping("/template")
+    public String templateAdmin(@RequestParam(required = false) String bizType, Model model) {
+        String sel = (bizType == null || bizType.isBlank()) ? "CHANGE" : bizType;
+        model.addAttribute("bizType", sel);
+        model.addAttribute("bizTypeNm", bizTypeNm(sel));
+        model.addAttribute("bizTypes", BIZ.keySet());
+        model.addAttribute("templateList", apprService.selectTemplateList(sel));
+        model.addAttribute("lineTypeList", codeService.selectCodeList("LINE_TYPE"));
+        model.addAttribute("targetTypeList", codeService.selectCodeList("TARGET_TYPE"));
+        model.addAttribute("deptList", apprService.selectDeptList());
+        model.addAttribute("candidates", apprService.selectAssigneeCandidates());
+        model.addAttribute("menu", "apprTpl");
+        return "appr/template";
+    }
+
+    /** 템플릿 행 추가 */
+    @PostMapping("/template/add")
+    public String addTemplate(@ModelAttribute ApprTemplateVO vo,
+                              @AuthenticationPrincipal LoginUser loginUser) {
+        if ("ADMIN".equals(loginUser.getUser().getRole())) {
+            if ("SHARE".equals(vo.getKind())) {
+                vo.setLineType(null);
+            }
+            if (vo.getStepNo() == null) vo.setStepNo(1);
+            if (vo.getSortNo() == null) vo.setSortNo(1);
+            apprService.insertTemplate(vo);
+        }
+        return "redirect:" + ctx() + "/appr/template?bizType=" + vo.getBizType();
+    }
+
+    /** 템플릿 행 삭제 */
+    @PostMapping("/template/delete")
+    public String deleteTemplate(@RequestParam Long tplId,
+                                 @RequestParam String bizType,
+                                 @AuthenticationPrincipal LoginUser loginUser) {
+        if ("ADMIN".equals(loginUser.getUser().getRole())) {
+            apprService.deleteTemplate(tplId);
+        }
+        return "redirect:" + ctx() + "/appr/template?bizType=" + bizType;
     }
 
     /** 공유 삭제 */

@@ -311,3 +311,16 @@ INSERT INTO OPS_APPR_LINE (BIZ_TYPE, BIZ_ID, LINE_TYPE, STEP_NO, SORT_NO, ASSIGN
 -- 공유 데모
 INSERT INTO OPS_SHARE (BIZ_TYPE, BIZ_ID, USER_ID, SHARE_MEMO, READ_AT, SHARED_BY) VALUES
  ('CHANGE', 1, 'user01', '변경 일정 참고 바랍니다.', 'N', 'admin');
+
+-- 결재 대상유형 코드 + 변경관리 기본 템플릿 데모
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
+ ('TARGET_TYPE', 'USER',      '사용자', 1, 'Y'),
+ ('TARGET_TYPE', 'DEPT',      '부서',   2, 'Y'),
+ ('TARGET_TYPE', 'REQUESTER', '요청자', 3, 'Y'),
+ ('TARGET_TYPE', 'ALL',       '전체',   4, 'Y');
+
+INSERT INTO OPS_APPR_TEMPLATE (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO) VALUES
+ ('CHANGE', 'LINE',  'REVIEW',  1, 1, 'DEPT',      '응용운영부', NULL),
+ ('CHANGE', 'LINE',  'APPROVE', 2, 1, 'USER',      'admin',      NULL),
+ ('CHANGE', 'LINE',  'HANDLE',  3, 1, 'REQUESTER', NULL,         NULL),
+ ('CHANGE', 'SHARE', NULL,      1, 1, 'DEPT',      '시스템운영부', '변경 공유');
