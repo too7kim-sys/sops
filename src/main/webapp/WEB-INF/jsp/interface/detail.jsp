@@ -26,7 +26,7 @@
     </jsp:include>
 </div>
 
-<div class="grid-2">
+<div class="detail-stack">
     <div class="panel">
         <h3>연계 정보</h3>
         <table class="form">
