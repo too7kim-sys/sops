@@ -34,9 +34,10 @@ public interface EgovApprService {
      *
      * <p>승인 라인 전원 승인 → 모듈 승인상태, 1건이라도 반려 → 모듈 반려상태로 전이한다.
      * 승인 게이트가 정의된 모듈(변경/배포/요청)만 동작하며, 변경된 상태값을 반환(없으면 null).
-     * 승인 확정 시 승인자/승인일시 컬럼이 정의된 모듈(변경)은 처리자({@code actorId})와 현재시각을 기록한다.</p>
+     * 승인 확정 시 승인자/승인일시 컬럼이 정의된 모듈(변경)은 처리자({@code actorId})와 현재시각을 기록하고,
+     * 변경 처리이력(CAB)에 승인/반려 단계를 한 건 남긴다.</p>
      */
-    String applyModuleOutcome(String bizType, Long bizId, String actorId);
+    String applyModuleOutcome(String bizType, Long bizId, String actorId, String actorNm, String opinion);
 
     /* ---------- 공유 ---------- */
 

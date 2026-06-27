@@ -83,6 +83,12 @@
          WHERE ${idCol} = #{bizId}
     </update>
 
+    <!-- 변경 처리이력(CAB 심의이력)에 결재선 승인/반려 단계 기록 -->
+    <insert id="insertChangeCabHistory">
+        INSERT INTO OPS_CHANGE_CAB (CHG_ID, DECISION, OPINION, REVIEWER, CAB_DT)
+        VALUES (#{chgId}, #{decision}, #{opinion}, #{reviewer}, CURRENT_TIMESTAMP)
+    </insert>
+
     <!-- ===================== 공유 ===================== -->
 
     <select id="selectShareList" parameterType="egovframework.ops.appr.service.ShareVO"

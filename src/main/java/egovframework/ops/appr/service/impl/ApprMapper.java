@@ -39,6 +39,12 @@ public interface ApprMapper {
                            @Param("bizId") Long bizId,
                            @Param("apprId") String apprId);
 
+    /** 변경 처리이력(CAB 심의이력)에 결재선 승인/반려 단계 기록 */
+    void insertChangeCabHistory(@Param("chgId") Long chgId,
+                                @Param("decision") String decision,
+                                @Param("opinion") String opinion,
+                                @Param("reviewer") String reviewer);
+
     List<ShareVO> selectShareList(ShareVO param);
 
     void insertShare(ShareVO vo);

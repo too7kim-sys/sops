@@ -73,7 +73,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     @Override
     @Transactional
-    public String applyModuleOutcome(String bizType, Long bizId, String actorId) {
+    public String applyModuleOutcome(String bizType, Long bizId, String actorId, String actorNm, String opinion) {
         String[] rule = STATUS_RULE.get(bizType);
         if (rule == null) {
             return null; // 승인 게이트 미정의 모듈 — 협업 레이어로만 동작
@@ -104,6 +104,15 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
             // 승인 확정 시 승인자/승인일시 기록(컬럼이 정의된 모듈: 변경)
             if (isApproved && rule[5] != null) {
                 apprMapper.updateBizApprover(rule[0], rule[1], rule[5], rule[6], bizId, actorId);
+            }
+            // 변경 처리이력(CAB)에 결재선 승인/반려 단계 기록
+            if ("CHANGE".equals(bizType)) {
+                String decision = isApproved ? "APPROVED" : "REJECTED";
+                String note = (opinion != null && !opinion.isBlank())
+                        ? opinion
+                        : (isApproved ? "결재선 승인 확정" : "결재선 반려");
+                String reviewer = (actorNm != null && !actorNm.isBlank()) ? actorNm : actorId;
+                apprMapper.insertChangeCabHistory(bizId, decision, "[결재선] " + note, reviewer);
             }
         }
         return target;
