@@ -42,7 +42,7 @@
             <th style="width:160px;">시스템</th>
             <th>제목</th>
             <th class="center" style="width:100px;">유형</th>
-            <th class="center" style="width:90px;">상태</th>
+            <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:90px;">요청자</th>
             <th class="center" style="width:130px;">요청일시</th>
         </tr>
@@ -54,7 +54,14 @@
                 <td>${c.sysNm}</td>
                 <td><a href="${ctx}/change/detail/${c.chgId}">${c.title}</a></td>
                 <td class="center">${c.chgTypeNm}</td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(c.status)}">${c.statusNm}</span></td>
+                <td>
+                    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+                        <jsp:param name="type" value="CHANGE"/>
+                        <jsp:param name="status" value="${c.status}"/>
+                        <jsp:param name="statusNm" value="${c.statusNm}"/>
+                        <jsp:param name="mode" value="mini"/>
+                    </jsp:include>
+                </td>
                 <td class="center">${c.reqId}</td>
                 <td class="center">${c.reqDt}</td>
             </tr>

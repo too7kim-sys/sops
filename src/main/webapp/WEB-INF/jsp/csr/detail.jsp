@@ -19,8 +19,10 @@
 
 <div class="panel">
     <h3>진행 단계 <span class="badge st-${fn:toLowerCase(csr.status)}" style="margin-left:6px;">${csr.statusNm}</span></h3>
-    <jsp:include page="/WEB-INF/jsp/include/csr-stage.jsp">
+    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+        <jsp:param name="type" value="CSR"/>
         <jsp:param name="status" value="${csr.status}"/>
+        <jsp:param name="statusNm" value="${csr.statusNm}"/>
         <jsp:param name="mode" value="full"/>
     </jsp:include>
 </div>

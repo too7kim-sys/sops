@@ -43,7 +43,7 @@
             <th>제목</th>
             <th class="center" style="width:100px;">유형</th>
             <th class="center" style="width:90px;">환경</th>
-            <th class="center" style="width:90px;">상태</th>
+            <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:120px;">예정일</th>
         </tr>
         </thead>
@@ -55,7 +55,14 @@
                 <td><a href="${ctx}/test/detail/${t.testId}">${t.title}</a></td>
                 <td class="center">${t.testTypeNm}</td>
                 <td class="center">${t.testEnvNm}</td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(t.status)}">${t.statusNm}</span></td>
+                <td>
+                    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+                        <jsp:param name="type" value="TEST"/>
+                        <jsp:param name="status" value="${t.status}"/>
+                        <jsp:param name="statusNm" value="${t.statusNm}"/>
+                        <jsp:param name="mode" value="mini"/>
+                    </jsp:include>
+                </td>
                 <td class="center">${empty t.planDt ? '-' : t.planDt}</td>
             </tr>
         </c:forEach>

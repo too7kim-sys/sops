@@ -56,8 +56,10 @@
                 <td class="center">${c.csrTypeNm}</td>
                 <td class="center">${c.priorityNm}</td>
                 <td>
-                    <jsp:include page="/WEB-INF/jsp/include/csr-stage.jsp">
+                    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+                        <jsp:param name="type" value="CSR"/>
                         <jsp:param name="status" value="${c.status}"/>
+                        <jsp:param name="statusNm" value="${c.statusNm}"/>
                         <jsp:param name="mode" value="mini"/>
                     </jsp:include>
                 </td>

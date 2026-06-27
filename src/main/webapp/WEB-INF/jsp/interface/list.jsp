@@ -43,7 +43,7 @@
             <th>제목</th>
             <th style="width:160px;">상대시스템</th>
             <th class="center" style="width:90px;">유형</th>
-            <th class="center" style="width:100px;">상태</th>
+            <th class="center" style="width:210px;">현재 단계</th>
         </tr>
         </thead>
         <tbody>
@@ -54,7 +54,14 @@
                 <td><a href="${ctx}/interface/detail/${i.intfId}">${i.title}</a></td>
                 <td>${empty i.partnerSys ? '-' : i.partnerSys}</td>
                 <td class="center">${i.ifTypeNm}</td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(i.status)}">${i.statusNm}</span></td>
+                <td>
+                    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+                        <jsp:param name="type" value="INTERFACE"/>
+                        <jsp:param name="status" value="${i.status}"/>
+                        <jsp:param name="statusNm" value="${i.statusNm}"/>
+                        <jsp:param name="mode" value="mini"/>
+                    </jsp:include>
+                </td>
             </tr>
         </c:forEach>
         <c:if test="${empty interfaceList}"><tr><td colspan="6" class="empty">등록된 연계가 없습니다.</td></tr></c:if>

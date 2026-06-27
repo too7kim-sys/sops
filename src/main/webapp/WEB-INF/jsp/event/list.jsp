@@ -43,7 +43,7 @@
             <th>제목</th>
             <th class="center" style="width:90px;">유형</th>
             <th class="center" style="width:90px;">심각도</th>
-            <th class="center" style="width:90px;">상태</th>
+            <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:130px;">발생일시</th>
         </tr>
         </thead>
@@ -55,7 +55,14 @@
                 <td><a href="${ctx}/event/detail/${e.evtId}">${e.title}</a></td>
                 <td class="center">${e.evtTypeNm}</td>
                 <td class="center"><span class="badge lv-${fn:toLowerCase(e.severity)}">${e.severityNm}</span></td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(e.status)}">${e.statusNm}</span></td>
+                <td>
+                    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+                        <jsp:param name="type" value="EVENT"/>
+                        <jsp:param name="status" value="${e.status}"/>
+                        <jsp:param name="statusNm" value="${e.statusNm}"/>
+                        <jsp:param name="mode" value="mini"/>
+                    </jsp:include>
+                </td>
                 <td class="center">${e.occrDt}</td>
             </tr>
         </c:forEach>

@@ -43,7 +43,7 @@
             <th>형상항목명</th>
             <th class="center" style="width:100px;">유형</th>
             <th class="center" style="width:90px;">버전</th>
-            <th class="center" style="width:110px;">상태</th>
+            <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:110px;">담당자</th>
         </tr>
         </thead>
@@ -55,7 +55,14 @@
                 <td><a href="${ctx}/ci/detail/${c.ciId}">${c.ciNm}</a></td>
                 <td class="center">${c.ciTypeNm}</td>
                 <td class="center">${empty c.ver ? '-' : c.ver}</td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(c.ciStatus)}">${c.ciStatusNm}</span></td>
+                <td>
+                    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+                        <jsp:param name="type" value="CI"/>
+                        <jsp:param name="status" value="${c.ciStatus}"/>
+                        <jsp:param name="statusNm" value="${c.ciStatusNm}"/>
+                        <jsp:param name="mode" value="mini"/>
+                    </jsp:include>
+                </td>
                 <td class="center">${empty c.ownerId ? '-' : c.ownerId}</td>
             </tr>
         </c:forEach>

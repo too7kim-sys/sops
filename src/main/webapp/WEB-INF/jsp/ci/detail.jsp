@@ -17,6 +17,16 @@
     </div>
 </div>
 
+<div class="panel">
+    <h3>진행 단계 <span class="badge st-${fn:toLowerCase(ci.ciStatus)}" style="margin-left:6px;">${ci.ciStatusNm}</span></h3>
+    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+        <jsp:param name="type" value="CI"/>
+        <jsp:param name="status" value="${ci.ciStatus}"/>
+        <jsp:param name="statusNm" value="${ci.ciStatusNm}"/>
+        <jsp:param name="mode" value="full"/>
+    </jsp:include>
+</div>
+
 <div class="grid-2">
     <div class="panel">
         <h3>형상 정보</h3>

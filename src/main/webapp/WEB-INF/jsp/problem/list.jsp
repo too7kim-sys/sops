@@ -42,7 +42,7 @@
             <th style="width:160px;">시스템</th>
             <th>제목</th>
             <th class="center" style="width:90px;">우선순위</th>
-            <th class="center" style="width:90px;">상태</th>
+            <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:90px;">담당자</th>
         </tr>
         </thead>
@@ -53,7 +53,14 @@
                 <td>${p.sysNm}</td>
                 <td><a href="${ctx}/problem/detail/${p.prbId}">${p.title}</a></td>
                 <td class="center"><span class="badge lv-${fn:toLowerCase(p.priority)}">${p.priorityNm}</span></td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(p.status)}">${p.statusNm}</span></td>
+                <td>
+                    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+                        <jsp:param name="type" value="PROBLEM"/>
+                        <jsp:param name="status" value="${p.status}"/>
+                        <jsp:param name="statusNm" value="${p.statusNm}"/>
+                        <jsp:param name="mode" value="mini"/>
+                    </jsp:include>
+                </td>
                 <td class="center">${p.chargerId}</td>
             </tr>
         </c:forEach>

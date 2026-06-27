@@ -17,6 +17,16 @@
     </div>
 </div>
 
+<div class="panel">
+    <h3>진행 단계 <span class="badge st-${fn:toLowerCase(release.status)}" style="margin-left:6px;">${release.statusNm}</span></h3>
+    <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
+        <jsp:param name="type" value="RELEASE"/>
+        <jsp:param name="status" value="${release.status}"/>
+        <jsp:param name="statusNm" value="${release.statusNm}"/>
+        <jsp:param name="mode" value="full"/>
+    </jsp:include>
+</div>
+
 <div class="grid-2">
     <div class="panel">
         <h3>배포 정보</h3>
