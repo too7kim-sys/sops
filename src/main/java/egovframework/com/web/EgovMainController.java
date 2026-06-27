@@ -31,6 +31,13 @@ public class EgovMainController {
         return "login";
     }
 
+    /** 접근권한 없음 안내 */
+    @GetMapping("/denied")
+    public String denied(Model model) {
+        model.addAttribute("menu", "");
+        return "error/denied";
+    }
+
     /** 운영현황 대시보드 */
     @GetMapping("/main")
     public String main(Model model) {

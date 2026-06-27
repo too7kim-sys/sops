@@ -46,6 +46,15 @@ public interface ApprMapper {
                                 @Param("opinion") String opinion,
                                 @Param("reviewer") String reviewer);
 
+    /** 접근권한 판정: 요청자/처리자 + 결재선 대상자 + 공유 대상자 일치 건수 */
+    int countAccess(@Param("table") String table,
+                    @Param("idCol") String idCol,
+                    @Param("reqCol") String reqCol,
+                    @Param("chargerCol") String chargerCol,
+                    @Param("bizType") String bizType,
+                    @Param("bizId") Long bizId,
+                    @Param("userId") String userId);
+
     List<ShareVO> selectShareList(ShareVO param);
 
     void insertShare(ShareVO vo);

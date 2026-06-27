@@ -26,6 +26,21 @@
     <mvc:resources mapping="/js/**"     location="/js/"/>
     <mvc:resources mapping="/images/**" location="/images/"/>
 
+    <!-- 업무 레코드 접근통제 : 운영관리자 외에는 관계자(요청/처리/검토/승인/심의/공유)만 접근 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/images/**"/>
+            <mvc:exclude-mapping path="/login"/>
+            <mvc:exclude-mapping path="/denied"/>
+            <bean class="egovframework.com.config.AccessInterceptor">
+                <constructor-arg ref="egovApprService"/>
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
     <!-- JSP View Resolver : prefix /WEB-INF/jsp/ + suffix .jsp -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>

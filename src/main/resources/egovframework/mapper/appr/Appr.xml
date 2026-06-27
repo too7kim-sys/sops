@@ -89,6 +89,21 @@
         VALUES (#{chgId}, #{decision}, #{opinion}, #{reviewer}, CURRENT_TIMESTAMP)
     </insert>
 
+    <!-- 접근권한 판정. table/idCol/reqCol/chargerCol 은 서비스 내부 화이트리스트 값(주입 무관) -->
+    <select id="countAccess" resultType="int">
+        SELECT COUNT(*) FROM (
+            SELECT 1 AS C FROM ${table}
+             WHERE ${idCol} = #{bizId}
+               AND (${reqCol} = #{userId}<if test="chargerCol != null"> OR ${chargerCol} = #{userId}</if>)
+            UNION ALL
+            SELECT 1 FROM OPS_APPR_LINE
+             WHERE BIZ_TYPE = #{bizType} AND BIZ_ID = #{bizId} AND ASSIGNEE_ID = #{userId}
+            UNION ALL
+            SELECT 1 FROM OPS_SHARE
+             WHERE BIZ_TYPE = #{bizType} AND BIZ_ID = #{bizId} AND USER_ID = #{userId}
+        ) T
+    </select>
+
     <!-- ===================== 공유 ===================== -->
 
     <select id="selectShareList" parameterType="egovframework.ops.appr.service.ShareVO"

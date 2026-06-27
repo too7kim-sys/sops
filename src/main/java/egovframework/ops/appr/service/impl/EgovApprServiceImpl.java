@@ -178,6 +178,31 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
         REQUESTER_RULE.put("EVENT",     new String[]{"OPS_EVENT",     "EVT_ID",  "CHARGER_ID"});
     }
 
+    /**
+     * 접근권한 판정 규칙(내부 화이트리스트). {table, idCol, reqCol, chargerCol(nullable)}.
+     */
+    private static final Map<String, String[]> ACCESS_RULE = new LinkedHashMap<>();
+    static {
+        ACCESS_RULE.put("CHANGE",    new String[]{"OPS_CHANGE",    "CHG_ID",  "REQ_ID",     "APPR_ID"});
+        ACCESS_RULE.put("RELEASE",   new String[]{"OPS_RELEASE",   "REL_ID",  "CHARGER_ID", null});
+        ACCESS_RULE.put("CSR",       new String[]{"OPS_CSR",       "CSR_ID",  "REQ_ID",     "CHARGER_ID"});
+        ACCESS_RULE.put("INCIDENT",  new String[]{"OPS_INCIDENT",  "INC_ID",  "REG_ID",     "CHARGER_ID"});
+        ACCESS_RULE.put("PROBLEM",   new String[]{"OPS_PROBLEM",   "PRB_ID",  "REG_ID",     "CHARGER_ID"});
+        ACCESS_RULE.put("TEST",      new String[]{"OPS_TEST",      "TEST_ID", "TESTER_ID",  null});
+        ACCESS_RULE.put("INTERFACE", new String[]{"OPS_INTERFACE", "INTF_ID", "REQ_ID",     "CHARGER_ID"});
+        ACCESS_RULE.put("CI",        new String[]{"OPS_CI",        "CI_ID",   "OWNER_ID",   null});
+        ACCESS_RULE.put("EVENT",     new String[]{"OPS_EVENT",     "EVT_ID",  "CHARGER_ID", null});
+    }
+
+    @Override
+    public boolean canAccess(String bizType, Long bizId, String userId) {
+        String[] r = ACCESS_RULE.get(bizType);
+        if (r == null || bizId == null || userId == null) {
+            return true; // 정의되지 않은 대상/식별 불가 → 차단하지 않음
+        }
+        return apprMapper.countAccess(r[0], r[1], r[2], r[3], bizType, bizId, userId) > 0;
+    }
+
     @Override
     public List<String> selectDeptList() {
         return apprMapper.selectDeptList();

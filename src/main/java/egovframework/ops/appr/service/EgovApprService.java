@@ -85,4 +85,10 @@ public interface EgovApprService {
 
     /** 업무 구분별 기본 템플릿을 해당 레코드에 전개·적용(생성 건수 반환) */
     int applyTemplate(String bizType, Long bizId, String actorId);
+
+    /**
+     * 업무 레코드 접근권한 판정(운영관리자 제외).
+     * 요청자/처리자/결재선 대상자(검토/승인/처리/심의)/공유 대상자 중 하나면 true.
+     */
+    boolean canAccess(String bizType, Long bizId, String userId);
 }
