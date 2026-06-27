@@ -48,9 +48,11 @@
             <tr>
                 <th>부서</th>
                 <td>
-                    <input type="text" name="deptNm" id="userDept_nm" class="dept-search-disp" data-prefix="userDept"
-                           value="${user.deptNm}" placeholder="부서명 입력 후 Enter 또는 검색" autocomplete="off"/>
-                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('userDept')">검색</button>
+                    <span class="dept-search">
+                        <input type="text" name="deptNm" id="userDept_nm" class="dept-search-disp" data-prefix="userDept"
+                               value="${user.deptNm}" placeholder="부서명 입력 후 Enter" autocomplete="off"/>
+                        <button type="button" class="dept-search-btn" onclick="openDeptPopup('userDept')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
+                    </span>
                 </td>
                 <th>연락처</th>
                 <td><input type="text" name="telno" value="${user.telno}"/></td>

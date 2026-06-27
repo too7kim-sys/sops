@@ -206,3 +206,24 @@ table.form .note-editor { margin: 0; max-width: 100%; }
 .stepper-mini .step .lbl { display: none; margin-top: 3px; font-size: 11px; line-height: 1.1; }
 .stepper-mini .step.current .lbl { display: block; }
 .stepper-mini .step::before { top: 7px !important; }
+
+/* ---------- 부서 팝업 검색 input-group ---------- */
+.dept-search { display: inline-flex; align-items: stretch; width: 100%; max-width: 360px; vertical-align: middle; }
+.dept-search .dept-search-disp {
+    flex: 1 1 auto; width: auto !important; min-width: 0;
+    padding: 7px 9px; border: 1px solid #cfd5dd; border-radius: 4px; font-size: 13px; font-family: inherit;
+    border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; border-right: none !important;
+    background: #fff; cursor: pointer;
+}
+.dept-search .dept-search-btn {
+    flex: 0 0 auto; border: 1px solid #1b3a6b; background: #1b3a6b; color: #fff;
+    padding: 0 13px; border-radius: 0 4px 4px 0; cursor: pointer; font-size: 13px; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: background .15s;
+}
+.dept-search .dept-search-btn:hover { background: #142d54; }
+.dept-search .dept-search-btn svg { width: 13px; height: 13px; }
+.dept-search .dept-search-alt {
+    flex: 0 0 auto; margin-left: 6px; border: 1px solid #cfd5dd; background: #fff; color: #556;
+    padding: 0 11px; border-radius: 4px; cursor: pointer; font-size: 12px; font-family: inherit; white-space: nowrap;
+}
+.dept-search .dept-search-alt:hover { background: #f1f3f6; }

@@ -23,11 +23,13 @@
             <tr>
                 <th>상위부서</th>
                 <td>
-                    <input type="text" id="upper_nm" class="dept-search-disp" data-prefix="upper"
-                           value="${dept.upperNm}" placeholder="부서 검색(클릭/Enter)" readonly
-                           onclick="openDeptPopup('upper')"/>
-                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('upper')">검색</button>
-                    <button type="button" class="btn btn-default btn-sm" onclick="clearDept('upper')">최상위</button>
+                    <span class="dept-search">
+                        <input type="text" id="upper_nm" class="dept-search-disp" data-prefix="upper"
+                               value="${dept.upperNm}" placeholder="부서 검색(클릭/Enter)" readonly
+                               onclick="openDeptPopup('upper')"/>
+                        <button type="button" class="dept-search-btn" onclick="openDeptPopup('upper')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
+                        <button type="button" class="dept-search-alt" onclick="clearDept('upper')">최상위</button>
+                    </span>
                     <input type="hidden" name="upperId" id="upper_val" data-dept-bind="id" value="${dept.upperId}"/>
                 </td>
                 <th>부서장</th>

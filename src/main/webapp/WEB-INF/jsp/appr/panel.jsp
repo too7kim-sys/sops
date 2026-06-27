@@ -136,10 +136,10 @@
                 </select>
             </label>
             <label class="tgt-dept" style="display:none;">부서
-                <span style="display:flex;gap:4px;">
+                <span class="dept-search" style="max-width:240px;">
                     <input type="text" name="targetValue" id="lineDept_nm" class="dept-search-disp" data-prefix="lineDept"
-                           placeholder="부서명 입력 후 Enter" autocomplete="off" readonly onclick="openDeptPopup('lineDept')" style="min-width:140px;"/>
-                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('lineDept')">검색</button>
+                           placeholder="부서 검색" autocomplete="off" readonly onclick="openDeptPopup('lineDept')"/>
+                    <button type="button" class="dept-search-btn" onclick="openDeptPopup('lineDept')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
                 </span>
             </label>
             <button type="submit" class="btn btn-primary btn-sm">결재선 추가</button>
@@ -206,10 +206,10 @@
                 </select>
             </label>
             <label class="tgt-dept" style="display:none;">부서
-                <span style="display:flex;gap:4px;">
+                <span class="dept-search" style="max-width:240px;">
                     <input type="text" name="targetValue" id="shareDept_nm" class="dept-search-disp" data-prefix="shareDept"
-                           placeholder="부서명 입력 후 Enter" autocomplete="off" readonly onclick="openDeptPopup('shareDept')" style="min-width:140px;"/>
-                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('shareDept')">검색</button>
+                           placeholder="부서 검색" autocomplete="off" readonly onclick="openDeptPopup('shareDept')"/>
+                    <button type="button" class="dept-search-btn" onclick="openDeptPopup('shareDept')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
                 </span>
             </label>
             <label style="flex:1;">메모
