@@ -170,9 +170,9 @@
     <!-- ===================== 대상 전개 ===================== -->
 
     <select id="selectDeptList" resultType="string">
-        SELECT DISTINCT DEPT_NM FROM OPS_USER
-         WHERE USE_AT = 'Y' AND DEPT_NM IS NOT NULL AND DEPT_NM &lt;&gt; ''
-         ORDER BY DEPT_NM
+        SELECT DEPT_NM FROM OPS_DEPT
+         WHERE USE_AT = 'Y' AND DEPT_NM IS NOT NULL
+         ORDER BY SORT_ORDR, DEPT_ID
     </select>
 
     <select id="selectUserIdsByDept" parameterType="string" resultType="string">

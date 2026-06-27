@@ -159,3 +159,11 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('TARGET_TYPE', 'REQUESTER', '요청자', 3, 'Y'),
  ('TARGET_TYPE', 'ALL',       '전체',   4, 'Y')
 ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;
+
+-- 부서 마스터 (운영 기준정보)
+INSERT INTO OPS_DEPT (DEPT_CD, DEPT_NM, UPPER_ID, MNGR_ID, SORT_ORDR, DEPT_DESC, USE_AT) VALUES
+ ('D100', '정보화운영팀', NULL, 'admin',  1, '정보화 운영 총괄', 'Y'),
+ ('D110', '시스템운영부', 1,    'oper01', 2, '인프라/시스템 운영', 'Y'),
+ ('D120', '응용운영부',   1,    'oper02', 3, '응용프로그램 운영', 'Y'),
+ ('D130', '민원지원과',   1,    NULL,     4, '대민 민원 지원', 'Y')
+ON CONFLICT (DEPT_CD) DO NOTHING;

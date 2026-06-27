@@ -47,7 +47,14 @@
             </tr>
             <tr>
                 <th>부서</th>
-                <td><input type="text" name="deptNm" value="${user.deptNm}"/></td>
+                <td>
+                    <select name="deptNm">
+                        <option value="">미지정</option>
+                        <c:forEach var="d" items="${deptComboList}">
+                            <option value="${d.deptNm}" ${d.deptNm == user.deptNm ? 'selected' : ''}>${d.deptNm}</option>
+                        </c:forEach>
+                    </select>
+                </td>
                 <th>연락처</th>
                 <td><input type="text" name="telno" value="${user.telno}"/></td>
             </tr>

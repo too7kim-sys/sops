@@ -1,6 +1,7 @@
 package egovframework.ops.sys.user.web;
 
 import egovframework.com.cmm.PaginationInfo;
+import egovframework.ops.sys.dept.service.EgovDeptService;
 import egovframework.ops.sys.user.service.EgovUserService;
 import egovframework.ops.sys.user.service.UserVO;
 import org.springframework.stereotype.Controller;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class EgovUserController {
 
     private final EgovUserService userService;
+    private final EgovDeptService deptService;
 
-    public EgovUserController(EgovUserService userService) {
+    public EgovUserController(EgovUserService userService, EgovDeptService deptService) {
         this.userService = userService;
+        this.deptService = deptService;
     }
 
     /** 사용자 목록 */
@@ -46,6 +49,7 @@ public class EgovUserController {
     @GetMapping("/write")
     public String writeForm(Model model) {
         model.addAttribute("user", new UserVO());
+        model.addAttribute("deptComboList", deptService.selectDeptComboList());
         model.addAttribute("menu", "user");
         return "sys/user/form";
     }
@@ -61,6 +65,7 @@ public class EgovUserController {
     @GetMapping("/edit/{userId}")
     public String editForm(@PathVariable String userId, Model model) {
         model.addAttribute("user", userService.selectUser(userId));
+        model.addAttribute("deptComboList", deptService.selectDeptComboList());
         model.addAttribute("menu", "user");
         return "sys/user/form";
     }

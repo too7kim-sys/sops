@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.sys.dept.service.impl.DeptMapper">
+
+    <sql id="searchWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (D.DEPT_NM LIKE '%' || #{searchKeyword} || '%' OR D.DEPT_CD LIKE '%' || #{searchKeyword} || '%')
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND D.USE_AT = #{searchStatus}
+        </if>
+    </sql>
+
+    <select id="selectDeptList" parameterType="egovframework.ops.sys.dept.service.DeptVO"
+            resultType="egovframework.ops.sys.dept.service.DeptVO">
+        SELECT D.DEPT_ID    AS deptId,
+               D.DEPT_CD    AS deptCd,
+               D.DEPT_NM    AS deptNm,
+               D.UPPER_ID   AS upperId,
+               P.DEPT_NM    AS upperNm,
+               D.MNGR_ID    AS mngrId,
+               M.USER_NM    AS mngrNm,
+               D.SORT_ORDR  AS sortOrdr,
+               D.DEPT_DESC  AS deptDesc,
+               D.USE_AT     AS useAt,
+               (SELECT COUNT(*) FROM OPS_USER U WHERE U.DEPT_NM = D.DEPT_NM) AS userCnt
+          FROM OPS_DEPT D
+          LEFT JOIN OPS_DEPT P ON P.DEPT_ID = D.UPPER_ID
+          LEFT JOIN OPS_USER M ON M.USER_ID = D.MNGR_ID
+         WHERE 1 = 1
+        <include refid="searchWhere"/>
+         ORDER BY D.SORT_ORDR, D.DEPT_ID
+         OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectDeptListCnt" parameterType="egovframework.ops.sys.dept.service.DeptVO"
+            resultType="int">
+        SELECT COUNT(*) FROM OPS_DEPT D WHERE 1 = 1
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectDept" parameterType="long"
+            resultType="egovframework.ops.sys.dept.service.DeptVO">
+        SELECT D.DEPT_ID    AS deptId,
+               D.DEPT_CD    AS deptCd,
+               D.DEPT_NM    AS deptNm,
+               D.UPPER_ID   AS upperId,
+               P.DEPT_NM    AS upperNm,
+               D.MNGR_ID    AS mngrId,
+               M.USER_NM    AS mngrNm,
+               D.SORT_ORDR  AS sortOrdr,
+               D.DEPT_DESC  AS deptDesc,
+               D.USE_AT     AS useAt,
+               TO_CHAR(D.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_DEPT D
+          LEFT JOIN OPS_DEPT P ON P.DEPT_ID = D.UPPER_ID
+          LEFT JOIN OPS_USER M ON M.USER_ID = D.MNGR_ID
+         WHERE D.DEPT_ID = #{deptId}
+    </select>
+
+    <select id="selectDeptComboList"
+            resultType="egovframework.ops.sys.dept.service.DeptVO">
+        SELECT DEPT_ID AS deptId, DEPT_CD AS deptCd, DEPT_NM AS deptNm
+          FROM OPS_DEPT
+         WHERE USE_AT = 'Y'
+         ORDER BY SORT_ORDR, DEPT_ID
+    </select>
+
+    <insert id="insertDept" parameterType="egovframework.ops.sys.dept.service.DeptVO"
+            useGeneratedKeys="true" keyProperty="deptId">
+        INSERT INTO OPS_DEPT
+            (DEPT_CD, DEPT_NM, UPPER_ID, MNGR_ID, SORT_ORDR, DEPT_DESC, USE_AT, REG_DT)
+        VALUES
+            (#{deptCd}, #{deptNm}, #{upperId}, #{mngrId},
+             <choose><when test="sortOrdr != null">#{sortOrdr}</when><otherwise>1</otherwise></choose>,
+             #{deptDesc},
+             <choose><when test="useAt != null and useAt != ''">#{useAt}</when><otherwise>'Y'</otherwise></choose>,
+             CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateDept" parameterType="egovframework.ops.sys.dept.service.DeptVO">
+        UPDATE OPS_DEPT
+           SET DEPT_CD = #{deptCd},
+               DEPT_NM = #{deptNm},
+               UPPER_ID = #{upperId},
+               MNGR_ID = #{mngrId},
+               SORT_ORDR = #{sortOrdr},
+               DEPT_DESC = #{deptDesc},
+               USE_AT = #{useAt}
+         WHERE DEPT_ID = #{deptId}
+    </update>
+
+    <delete id="deleteDept" parameterType="long">
+        DELETE FROM OPS_DEPT WHERE DEPT_ID = #{deptId}
+    </delete>
+
+</mapper>

@@ -148,6 +148,7 @@ JDK 21 등록·Lombok 설치·UTF-8 인코딩 등 상세 절차는 **[docs/ECLIP
 | 테이블 | 설명 |
 |--------|------|
 | `OPS_USER` | 사용자(운영자) |
+| `OPS_DEPT` | 부서 마스터(상위부서/부서장/정렬/사용여부) — 결재선/공유 대상 지정에 사용 |
 | `OPS_SYSTEM` | 응용시스템 마스터 |
 | `OPS_CODE` | 공통코드 |
 | `OPS_INCIDENT` / `OPS_INCIDENT_HIS` | 장애 / 장애 처리이력 |
@@ -156,6 +157,7 @@ JDK 21 등록·Lombok 설치·UTF-8 인코딩 등 상세 절차는 **[docs/ECLIP
 | `OPS_CHECK` / `OPS_CHECK_ITEM` | 운영점검 / 점검항목 |
 | `OPS_APPR_LINE` | 결재선(검토/승인/처리자 라인) — `bizType`+`bizId` 로 업무 공통 연결 |
 | `OPS_SHARE` | 공유(공람/참조) |
+| `OPS_APPR_TEMPLATE` | 결재선/공유 관리별 기본 템플릿 |
 
 스키마: `src/main/resources/db/schema.sql`, 초기데이터: `src/main/resources/db/data.sql`
 

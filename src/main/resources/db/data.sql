@@ -324,3 +324,10 @@ INSERT INTO OPS_APPR_TEMPLATE (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARG
  ('CHANGE', 'LINE',  'APPROVE', 2, 1, 'USER',      'admin',      NULL),
  ('CHANGE', 'LINE',  'HANDLE',  3, 1, 'REQUESTER', NULL,         NULL),
  ('CHANGE', 'SHARE', NULL,      1, 1, 'DEPT',      '시스템운영부', '변경 공유');
+
+-- 부서 마스터 데모 (기존 사용자 DEPT_NM 과 동일 명칭)
+INSERT INTO OPS_DEPT (DEPT_CD, DEPT_NM, UPPER_ID, MNGR_ID, SORT_ORDR, DEPT_DESC, USE_AT) VALUES
+ ('D100', '정보화운영팀', NULL, 'admin',  1, '정보화 운영 총괄', 'Y'),
+ ('D110', '시스템운영부', 1,    'oper01', 2, '인프라/시스템 운영', 'Y'),
+ ('D120', '응용운영부',   1,    'oper02', 3, '응용프로그램 운영', 'Y'),
+ ('D130', '민원지원과',   1,    NULL,     4, '대민 민원 지원', 'Y');
