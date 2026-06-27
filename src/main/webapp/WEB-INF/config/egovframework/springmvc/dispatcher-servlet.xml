@@ -35,6 +35,8 @@
             <mvc:exclude-mapping path="/images/**"/>
             <mvc:exclude-mapping path="/login"/>
             <mvc:exclude-mapping path="/denied"/>
+            <!-- 결재선/공유 패널은 상세화면에 c:import(server include)되는 단편 — 부모 상세에서 이미 접근통제되므로 제외 -->
+            <mvc:exclude-mapping path="/appr/**"/>
             <bean class="egovframework.com.config.AccessInterceptor">
                 <constructor-arg ref="egovApprService"/>
             </bean>
