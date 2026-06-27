@@ -14,6 +14,8 @@
         <intercept-url pattern="/h2-console/**" access="permitAll"/>
         <intercept-url pattern="/error"        access="permitAll"/>
 
+        <!-- 부서 검색 팝업 : 결재선/공유 지정에 필요하므로 운영자도 허용 (/sys/** 보다 먼저) -->
+        <intercept-url pattern="/sys/dept/popup" access="hasAnyRole('ADMIN','OPERATOR')"/>
         <!-- 사용자/공통코드 관리 : 운영관리자 -->
         <intercept-url pattern="/sys/**"       access="hasRole('ADMIN')"/>
         <!-- 결재선/공유 기본설정(템플릿) 관리 : 운영관리자 -->

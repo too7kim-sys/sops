@@ -136,9 +136,11 @@
                 </select>
             </label>
             <label class="tgt-dept" style="display:none;">부서
-                <select name="targetValue">
-                    <c:forEach var="d" items="${deptList}"><option value="${d}">${d}</option></c:forEach>
-                </select>
+                <span style="display:flex;gap:4px;">
+                    <input type="text" name="targetValue" id="lineDept_nm" class="dept-search-disp" data-prefix="lineDept"
+                           placeholder="부서명 입력 후 Enter" autocomplete="off" readonly onclick="openDeptPopup('lineDept')" style="min-width:140px;"/>
+                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('lineDept')">검색</button>
+                </span>
             </label>
             <button type="submit" class="btn btn-primary btn-sm">결재선 추가</button>
         </div>
@@ -204,9 +206,11 @@
                 </select>
             </label>
             <label class="tgt-dept" style="display:none;">부서
-                <select name="targetValue">
-                    <c:forEach var="d" items="${deptList}"><option value="${d}">${d}</option></c:forEach>
-                </select>
+                <span style="display:flex;gap:4px;">
+                    <input type="text" name="targetValue" id="shareDept_nm" class="dept-search-disp" data-prefix="shareDept"
+                           placeholder="부서명 입력 후 Enter" autocomplete="off" readonly onclick="openDeptPopup('shareDept')" style="min-width:140px;"/>
+                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('shareDept')">검색</button>
+                </span>
             </label>
             <label style="flex:1;">메모
                 <input type="text" name="shareMemo" placeholder="공유 메모(선택)" style="width:100%;"/>
@@ -230,7 +234,7 @@
         }
         if (d) {
             d.style.display = (v === 'DEPT') ? '' : 'none';
-            var ds = d.querySelector('select'); if (ds) ds.disabled = (v !== 'DEPT');
+            var dv = d.querySelector('[name=targetValue]'); if (dv) dv.disabled = (v !== 'DEPT');
         }
     }
     var forms = document.querySelectorAll('form[data-target-form]');

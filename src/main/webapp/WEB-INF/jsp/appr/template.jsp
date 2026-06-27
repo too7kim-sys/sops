@@ -99,9 +99,11 @@
                 </select>
             </label>
             <label class="tgt-dept" style="display:none;">부서
-                <select name="targetValue">
-                    <c:forEach var="d" items="${deptList}"><option value="${d}">${d}</option></c:forEach>
-                </select>
+                <span style="display:flex;gap:4px;">
+                    <input type="text" name="targetValue" id="tplDept_nm" class="dept-search-disp" data-prefix="tplDept"
+                           placeholder="부서명 입력 후 Enter" autocomplete="off" readonly onclick="openDeptPopup('tplDept')" style="min-width:140px;"/>
+                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('tplDept')">검색</button>
+                </span>
             </label>
             <label style="flex:1;">메모(공유)
                 <input type="text" name="memo" placeholder="공유 메모(선택)" style="width:100%;"/>
@@ -123,7 +125,7 @@
         u.style.display = (tt === 'USER') ? '' : 'none';
         u.querySelector('select').disabled = (tt !== 'USER');
         d.style.display = (tt === 'DEPT') ? '' : 'none';
-        d.querySelector('select').disabled = (tt !== 'DEPT');
+        var dv = d.querySelector('[name=targetValue]'); if (dv) dv.disabled = (tt !== 'DEPT');
         lt.style.display = (kind === 'LINE') ? '' : 'none';
         lt.querySelector('select').disabled = (kind !== 'LINE');
     }

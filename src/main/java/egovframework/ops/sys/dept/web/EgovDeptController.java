@@ -60,6 +60,19 @@ public class EgovDeptController {
         return "sys/dept/list";
     }
 
+    /** 부서 검색 팝업 (결재선/공유·사용자·부서 폼 공통, ADMIN/OPERATOR) */
+    @GetMapping("/popup")
+    public String popup(@ModelAttribute("searchVO") DeptVO searchVO,
+                        @RequestParam(defaultValue = "dept") String prefix,
+                        Model model) {
+        searchVO.setSearchStatus("Y"); // 활성 부서만
+        searchVO.setPageUnit(200);
+        searchVO.initPaging();
+        model.addAttribute("deptList", deptService.selectDeptList(searchVO));
+        model.addAttribute("prefix", prefix);
+        return "sys/dept/popup";
+    }
+
     /** 부서 등록 폼 */
     @GetMapping("/write")
     public String writeForm(Model model) {

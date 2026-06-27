@@ -23,14 +23,12 @@
             <tr>
                 <th>상위부서</th>
                 <td>
-                    <select name="upperId">
-                        <option value="">없음(최상위)</option>
-                        <c:forEach var="p" items="${deptComboList}">
-                            <c:if test="${p.deptId != dept.deptId}">
-                                <option value="${p.deptId}" ${p.deptId == dept.upperId ? 'selected' : ''}>${p.deptNm}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
+                    <input type="text" id="upper_nm" class="dept-search-disp" data-prefix="upper"
+                           value="${dept.upperNm}" placeholder="부서 검색(클릭/Enter)" readonly
+                           onclick="openDeptPopup('upper')"/>
+                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('upper')">검색</button>
+                    <button type="button" class="btn btn-default btn-sm" onclick="clearDept('upper')">최상위</button>
+                    <input type="hidden" name="upperId" id="upper_val" data-dept-bind="id" value="${dept.upperId}"/>
                 </td>
                 <th>부서장</th>
                 <td>

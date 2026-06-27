@@ -48,12 +48,9 @@
             <tr>
                 <th>부서</th>
                 <td>
-                    <select name="deptNm">
-                        <option value="">미지정</option>
-                        <c:forEach var="d" items="${deptComboList}">
-                            <option value="${d.deptNm}" ${d.deptNm == user.deptNm ? 'selected' : ''}>${d.deptNm}</option>
-                        </c:forEach>
-                    </select>
+                    <input type="text" name="deptNm" id="userDept_nm" class="dept-search-disp" data-prefix="userDept"
+                           value="${user.deptNm}" placeholder="부서명 입력 후 Enter 또는 검색" autocomplete="off"/>
+                    <button type="button" class="btn btn-default btn-sm" onclick="openDeptPopup('userDept')">검색</button>
                 </td>
                 <th>연락처</th>
                 <td><input type="text" name="telno" value="${user.telno}"/></td>
