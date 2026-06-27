@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.appr.service.impl.ApprMapper">
+
+    <!-- ===================== 결재선 ===================== -->
+
+    <select id="selectLineList" parameterType="egovframework.ops.appr.service.ApprLineVO"
+            resultType="egovframework.ops.appr.service.ApprLineVO">
+        SELECT A.APPR_ID     AS apprId,
+               A.BIZ_TYPE    AS bizType,
+               A.BIZ_ID      AS bizId,
+               A.LINE_TYPE   AS lineType,
+               LC.CODE_NM    AS lineTypeNm,
+               A.STEP_NO     AS stepNo,
+               A.SORT_NO     AS sortNo,
+               A.ASSIGNEE_ID AS assigneeId,
+               U.USER_NM     AS assigneeNm,
+               U.DEPT_NM     AS assigneeDept,
+               A.STATUS      AS status,
+               SC.CODE_NM    AS statusNm,
+               A.OPINION     AS opinion,
+               TO_CHAR(A.ACT_DT, 'YYYY-MM-DD HH24:MI') AS actDt,
+               A.REG_ID      AS regId,
+               TO_CHAR(A.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_APPR_LINE A
+          LEFT JOIN OPS_USER U ON U.USER_ID = A.ASSIGNEE_ID
+          LEFT JOIN OPS_CODE LC ON LC.CODE_GRP = 'LINE_TYPE'   AND LC.CODE_ID = A.LINE_TYPE
+          LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'APPR_STATUS' AND SC.CODE_ID = A.STATUS
+         WHERE A.BIZ_TYPE = #{bizType}
+           AND A.BIZ_ID = #{bizId}
+         ORDER BY A.STEP_NO, A.SORT_NO, A.APPR_ID
+    </select>
+
+    <select id="selectLine" parameterType="long"
+            resultType="egovframework.ops.appr.service.ApprLineVO">
+        SELECT A.APPR_ID     AS apprId,
+               A.BIZ_TYPE    AS bizType,
+               A.BIZ_ID      AS bizId,
+               A.LINE_TYPE   AS lineType,
+               A.STEP_NO     AS stepNo,
+               A.SORT_NO     AS sortNo,
+               A.ASSIGNEE_ID AS assigneeId,
+               A.STATUS      AS status,
+               A.OPINION     AS opinion
+          FROM OPS_APPR_LINE A
+         WHERE A.APPR_ID = #{apprId}
+    </select>
+
+    <insert id="insertLine" parameterType="egovframework.ops.appr.service.ApprLineVO"
+            useGeneratedKeys="true" keyProperty="apprId">
+        INSERT INTO OPS_APPR_LINE
+            (BIZ_TYPE, BIZ_ID, LINE_TYPE, STEP_NO, SORT_NO, ASSIGNEE_ID, STATUS, OPINION, REG_ID, REG_DT)
+        VALUES
+            (#{bizType}, #{bizId}, #{lineType}, #{stepNo}, #{sortNo}, #{assigneeId},
+             #{status}, #{opinion}, #{regId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteLine" parameterType="long">
+        DELETE FROM OPS_APPR_LINE WHERE APPR_ID = #{apprId}
+    </delete>
+
+    <update id="actLine" parameterType="egovframework.ops.appr.service.ApprLineVO">
+        UPDATE OPS_APPR_LINE
+           SET STATUS = #{status},
+               OPINION = #{opinion},
+               ACT_DT = CURRENT_TIMESTAMP
+         WHERE APPR_ID = #{apprId}
+    </update>
+
+    <!-- ===================== 공유 ===================== -->
+
+    <select id="selectShareList" parameterType="egovframework.ops.appr.service.ShareVO"
+            resultType="egovframework.ops.appr.service.ShareVO">
+        SELECT S.SHARE_ID   AS shareId,
+               S.BIZ_TYPE   AS bizType,
+               S.BIZ_ID     AS bizId,
+               S.USER_ID    AS userId,
+               U.USER_NM    AS userNm,
+               U.DEPT_NM    AS userDept,
+               S.SHARE_MEMO AS shareMemo,
+               S.READ_AT    AS readAt,
+               S.SHARED_BY  AS sharedBy,
+               B.USER_NM    AS sharedByNm,
+               TO_CHAR(S.SHARED_DT, 'YYYY-MM-DD HH24:MI') AS sharedDt
+          FROM OPS_SHARE S
+          LEFT JOIN OPS_USER U ON U.USER_ID = S.USER_ID
+          LEFT JOIN OPS_USER B ON B.USER_ID = S.SHARED_BY
+         WHERE S.BIZ_TYPE = #{bizType}
+           AND S.BIZ_ID = #{bizId}
+         ORDER BY S.SHARED_DT DESC, S.SHARE_ID DESC
+    </select>
+
+    <insert id="insertShare" parameterType="egovframework.ops.appr.service.ShareVO"
+            useGeneratedKeys="true" keyProperty="shareId">
+        INSERT INTO OPS_SHARE
+            (BIZ_TYPE, BIZ_ID, USER_ID, SHARE_MEMO, READ_AT, SHARED_BY, SHARED_DT)
+        VALUES
+            (#{bizType}, #{bizId}, #{userId}, #{shareMemo}, 'N', #{sharedBy}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteShare" parameterType="long">
+        DELETE FROM OPS_SHARE WHERE SHARE_ID = #{shareId}
+    </delete>
+
+    <update id="updateShareRead" parameterType="egovframework.ops.appr.service.ShareVO">
+        UPDATE OPS_SHARE
+           SET READ_AT = 'Y'
+         WHERE BIZ_TYPE = #{bizType}
+           AND BIZ_ID = #{bizId}
+           AND USER_ID = #{userId}
+           AND READ_AT = 'N'
+    </update>
+
+    <select id="selectSharedWithMe" parameterType="string"
+            resultType="egovframework.ops.appr.service.ShareVO">
+        SELECT S.SHARE_ID   AS shareId,
+               S.BIZ_TYPE   AS bizType,
+               S.BIZ_ID     AS bizId,
+               S.USER_ID    AS userId,
+               S.SHARE_MEMO AS shareMemo,
+               S.READ_AT    AS readAt,
+               S.SHARED_BY  AS sharedBy,
+               B.USER_NM    AS sharedByNm,
+               TO_CHAR(S.SHARED_DT, 'YYYY-MM-DD HH24:MI') AS sharedDt
+          FROM OPS_SHARE S
+          LEFT JOIN OPS_USER B ON B.USER_ID = S.SHARED_BY
+         WHERE S.USER_ID = #{userId}
+         ORDER BY S.SHARED_DT DESC, S.SHARE_ID DESC
+    </select>
+
+    <select id="selectSharedUnreadCnt" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM OPS_SHARE WHERE USER_ID = #{userId} AND READ_AT = 'N'
+    </select>
+
+    <!-- ===================== 보조 ===================== -->
+
+    <select id="selectAssigneeCandidates"
+            resultType="egovframework.ops.sys.user.service.UserVO">
+        SELECT USER_ID AS userId,
+               USER_NM AS userNm,
+               ROLE    AS role,
+               DEPT_NM AS deptNm
+          FROM OPS_USER
+         WHERE USE_AT = 'Y'
+         ORDER BY CASE ROLE WHEN 'ADMIN' THEN 1 WHEN 'OPERATOR' THEN 2 ELSE 3 END, USER_NM
+    </select>
+
+</mapper>

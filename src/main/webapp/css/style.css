@@ -165,3 +165,22 @@ table.form textarea { resize: vertical; min-height: 70px; }
 table.form .note-editor { margin: 0; max-width: 100%; }
 .note-editor.note-frame { border-color: #cbd5e2; border-radius: 6px; }
 .note-editor .note-editing-area .note-editable { font-size: 14px; line-height: 1.7; }
+
+/* ---------- 결재선/공유 패널 ---------- */
+.st-pending { background: #eef1f5; color: #5a6573; }
+.st-reviewed { background: #e7eefb; color: #2e5da8; }
+.st-done { background: #d8f3e3; color: #14794a; }
+.lt-review  { background: #e7eefb; color: #2e5da8; }
+.lt-approve { background: #ede3fb; color: #6b3fa0; }
+.lt-handle  { background: #fff1d6; color: #b3760a; }
+.ov-approved { background: #d8f3e3; color: #14794a; }
+.ov-rejected { background: #fbe0e0; color: #c0392b; }
+.ov-pending  { background: #fff1d6; color: #b3760a; }
+.ov-none     { background: #e2e6eb; color: #5a6573; }
+.appr-panel .list td { vertical-align: top; }
+.appr-panel tr.step-sep td { border-top: 2px solid #cfd9e8; }
+.appr-panel .act-form { margin-top: 4px; }
+.appr-panel .act-form .btn-sm { margin-right: 4px; }
+.appr-add { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #d6dce5; }
+.appr-add-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.appr-add-row label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #667; }

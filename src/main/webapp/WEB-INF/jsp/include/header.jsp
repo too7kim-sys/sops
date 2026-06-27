@@ -32,6 +32,7 @@
     <nav class="sidebar">
         <ul class="menu">
             <li><a href="${ctx}/main" class="${menu=='dashboard' ? 'active' : ''}">운영현황</a></li>
+            <li><a href="${ctx}/appr/shared" class="${menu=='shared' ? 'active' : ''}">공유함<c:if test="${sharedUnreadCnt > 0}"> <span class="badge st-rejected">${sharedUnreadCnt}</span></c:if></a></li>
             <li class="menu-group">표준운영절차</li>
             <li><a href="${ctx}/csr/list"       class="${menu=='csr' ? 'active' : ''}">1. 요청관리</a></li>
             <li><a href="${ctx}/change/list"    class="${menu=='change' ? 'active' : ''}">2. 변경관리</a></li>

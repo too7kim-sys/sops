@@ -287,3 +287,27 @@ INSERT INTO OPS_PROBLEM_HIS (PRB_ID, STATUS, CONTENT, PROC_ID) VALUES
 INSERT INTO OPS_PROBLEM_INC (PRB_ID, INC_ID) VALUES (1, 2);
 INSERT INTO OPS_KEDB (PRB_ID, TITLE, SYMPTOM, CAUSE, WORKAROUND, SOLUTION) VALUES
  (2, '야간 배치 지연(풀스캔)', '월말 배치 수행시간 급증', '대상 테이블 인덱스 부재', '배치 시간대 분산', '인덱스 추가 및 실행계획 점검');
+
+-- =====================================================================
+-- 결재선/공유 공통코드 및 데모 데이터
+-- =====================================================================
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
+ ('LINE_TYPE', 'REVIEW',  '검토', 1, 'Y'),
+ ('LINE_TYPE', 'APPROVE', '승인', 2, 'Y'),
+ ('LINE_TYPE', 'HANDLE',  '처리', 3, 'Y'),
+ ('APPR_STATUS', 'PENDING',  '대기',     1, 'Y'),
+ ('APPR_STATUS', 'REVIEWED', '검토완료', 2, 'Y'),
+ ('APPR_STATUS', 'APPROVED', '승인',     3, 'Y'),
+ ('APPR_STATUS', 'REJECTED', '반려',     4, 'Y'),
+ ('APPR_STATUS', 'DONE',     '처리완료', 5, 'Y');
+
+-- 결재선 데모 (변경 CHG-1: 1단계 검토 병렬 2인 / 2단계 승인 1인 / 처리자 1인)
+INSERT INTO OPS_APPR_LINE (BIZ_TYPE, BIZ_ID, LINE_TYPE, STEP_NO, SORT_NO, ASSIGNEE_ID, STATUS, OPINION, ACT_DT, REG_ID) VALUES
+ ('CHANGE', 1, 'REVIEW',  1, 1, 'oper01', 'REVIEWED', '영향도 검토 완료, 진행 가능', CURRENT_TIMESTAMP, 'admin'),
+ ('CHANGE', 1, 'REVIEW',  1, 2, 'oper02', 'PENDING',  NULL, NULL, 'admin'),
+ ('CHANGE', 1, 'APPROVE', 2, 1, 'admin',  'PENDING',  NULL, NULL, 'admin'),
+ ('CHANGE', 1, 'HANDLE',  3, 1, 'oper01', 'PENDING',  NULL, NULL, 'admin');
+
+-- 공유 데모
+INSERT INTO OPS_SHARE (BIZ_TYPE, BIZ_ID, USER_ID, SHARE_MEMO, READ_AT, SHARED_BY) VALUES
+ ('CHANGE', 1, 'user01', '변경 일정 참고 바랍니다.', 'N', 'admin');

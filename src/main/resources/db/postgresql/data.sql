@@ -137,3 +137,17 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('RELEASE_ITEM_RESULT', 'FAIL',    '실패', 2, 'Y'),
  ('RELEASE_ITEM_RESULT', 'SKIP',    '제외', 3, 'Y')
 ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;
+
+-- =====================================================================
+-- 결재선/공유 공통코드 (운영: 기준코드만 시딩, 거래데이터 미적재)
+-- =====================================================================
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
+ ('LINE_TYPE', 'REVIEW',  '검토', 1, 'Y'),
+ ('LINE_TYPE', 'APPROVE', '승인', 2, 'Y'),
+ ('LINE_TYPE', 'HANDLE',  '처리', 3, 'Y'),
+ ('APPR_STATUS', 'PENDING',  '대기',     1, 'Y'),
+ ('APPR_STATUS', 'REVIEWED', '검토완료', 2, 'Y'),
+ ('APPR_STATUS', 'APPROVED', '승인',     3, 'Y'),
+ ('APPR_STATUS', 'REJECTED', '반려',     4, 'Y'),
+ ('APPR_STATUS', 'DONE',     '처리완료', 5, 'Y')
+ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;

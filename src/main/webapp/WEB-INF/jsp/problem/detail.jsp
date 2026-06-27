@@ -149,5 +149,12 @@
 
 <div class="toolbar"><a href="${ctx}/problem/list" class="btn btn-default">＜ 목록</a></div>
 
+<%-- 결재선(검토/승인/처리자) · 병렬 처리 · 공유 --%>
+<c:import url="/appr/panel" charEncoding="UTF-8">
+    <c:param name="bizType" value="PROBLEM"/>
+    <c:param name="bizId" value="${problem.prbId}"/>
+    <c:param name="returnUrl" value="/problem/detail/${problem.prbId}"/>
+</c:import>
+
 <jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

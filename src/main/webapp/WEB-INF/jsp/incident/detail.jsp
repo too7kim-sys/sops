@@ -118,5 +118,12 @@
 
 <div class="toolbar"><a href="${ctx}/incident/list" class="btn btn-default">＜ 목록</a></div>
 
+<%-- 결재선(검토/승인/처리자) · 병렬 처리 · 공유 --%>
+<c:import url="/appr/panel" charEncoding="UTF-8">
+    <c:param name="bizType" value="INCIDENT"/>
+    <c:param name="bizId" value="${incident.incId}"/>
+    <c:param name="returnUrl" value="/incident/detail/${incident.incId}"/>
+</c:import>
+
 <jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>
