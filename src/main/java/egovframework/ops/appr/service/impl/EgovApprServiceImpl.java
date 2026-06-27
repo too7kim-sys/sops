@@ -29,13 +29,14 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     /**
      * 업무 모듈 상태 자동전이 규칙(내부 화이트리스트).
-     * {table, idCol, statusCol, approvedStatus, rejectedStatus} — 값은 코드 고정(주입 무관).
+     * {table, idCol, statusCol, approvedStatus, rejectedStatus, apprIdCol, apprDtCol} — 값은 코드 고정(주입 무관).
+     * apprIdCol/apprDtCol 이 있으면 승인 확정 시 승인자/승인일시를 기록한다.
      */
     private static final Map<String, String[]> STATUS_RULE = new LinkedHashMap<>();
     static {
-        STATUS_RULE.put("CHANGE",  new String[]{"OPS_CHANGE",  "CHG_ID", "STATUS", "APPROVED",    "REJECTED"});
-        STATUS_RULE.put("RELEASE", new String[]{"OPS_RELEASE", "REL_ID", "STATUS", "APPROVED",    null});
-        STATUS_RULE.put("CSR",     new String[]{"OPS_CSR",     "CSR_ID", "STATUS", "IN_PROGRESS", "REJECTED"});
+        STATUS_RULE.put("CHANGE",  new String[]{"OPS_CHANGE",  "CHG_ID", "STATUS", "APPROVED",    "REJECTED", "APPR_ID", "APPR_DT"});
+        STATUS_RULE.put("RELEASE", new String[]{"OPS_RELEASE", "REL_ID", "STATUS", "APPROVED",    null,       null,      null});
+        STATUS_RULE.put("CSR",     new String[]{"OPS_CSR",     "CSR_ID", "STATUS", "IN_PROGRESS", "REJECTED", null,      null});
     }
 
     private ApprLineVO lineKey(String bizType, Long bizId) {
@@ -72,7 +73,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     @Override
     @Transactional
-    public String applyModuleOutcome(String bizType, Long bizId) {
+    public String applyModuleOutcome(String bizType, Long bizId, String actorId) {
         String[] rule = STATUS_RULE.get(bizType);
         if (rule == null) {
             return null; // 승인 게이트 미정의 모듈 — 협업 레이어로만 동작
@@ -90,14 +91,20 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
                 rejected = true;
             }
         }
+        boolean isApproved = false;
         String target = null;
         if (rejected) {
             target = rule[4];
         } else if (approveTotal > 0 && approved == approveTotal) {
             target = rule[3];
+            isApproved = true;
         }
         if (target != null) {
             apprMapper.updateBizStatus(rule[0], rule[1], rule[2], bizId, target);
+            // 승인 확정 시 승인자/승인일시 기록(컬럼이 정의된 모듈: 변경)
+            if (isApproved && rule[5] != null) {
+                apprMapper.updateBizApprover(rule[0], rule[1], rule[5], rule[6], bizId, actorId);
+            }
         }
         return target;
     }

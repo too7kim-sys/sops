@@ -75,6 +75,14 @@
          WHERE ${idCol} = #{bizId}
     </update>
 
+    <!-- 승인 확정 시 승인자/승인일시 기록. 컬럼명은 서비스 내부 화이트리스트 값(주입 무관) -->
+    <update id="updateBizApprover">
+        UPDATE ${table}
+           SET ${apprIdCol} = #{apprId},
+               ${apprDtCol} = CURRENT_TIMESTAMP
+         WHERE ${idCol} = #{bizId}
+    </update>
+
     <!-- ===================== 공유 ===================== -->
 
     <select id="selectShareList" parameterType="egovframework.ops.appr.service.ShareVO"

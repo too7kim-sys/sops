@@ -31,6 +31,14 @@ public interface ApprMapper {
                          @Param("bizId") Long bizId,
                          @Param("status") String status);
 
+    /** 승인 확정 시 승인자/승인일시 기록 (컬럼명은 내부 화이트리스트 값) */
+    void updateBizApprover(@Param("table") String table,
+                           @Param("idCol") String idCol,
+                           @Param("apprIdCol") String apprIdCol,
+                           @Param("apprDtCol") String apprDtCol,
+                           @Param("bizId") Long bizId,
+                           @Param("apprId") String apprId);
+
     List<ShareVO> selectShareList(ShareVO param);
 
     void insertShare(ShareVO vo);
