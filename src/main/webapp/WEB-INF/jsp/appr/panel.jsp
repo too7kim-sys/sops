@@ -49,7 +49,8 @@
         </c:if>
         <c:set var="prevStep" value="-1"/>
         <c:forEach var="ln" items="${lineList}">
-            <c:set var="canAct" value="${(ln.assigneeId == loginId or isManager) and ln.status == 'PENDING'}"/>
+            <%-- 처리 버튼 권한: 본인 담당 라인(차례)만 노출, 운영관리자는 대리처리 가능 --%>
+            <c:set var="canAct" value="${(ln.assigneeId == loginId or isAdmin) and ln.status == 'PENDING'}"/>
             <tr<c:if test="${ln.stepNo ne prevStep and prevStep ne -1}"> class="step-sep"</c:if>>
                 <td>
                     <c:choose>
