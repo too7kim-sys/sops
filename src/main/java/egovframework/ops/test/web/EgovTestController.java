@@ -2,6 +2,7 @@ package egovframework.ops.test.web;
 
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
+import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.system.service.EgovSystemService;
 import egovframework.ops.test.service.EgovTestService;
@@ -23,13 +24,16 @@ public class EgovTestController {
     private final EgovTestService testService;
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
+    private final EgovApprService apprService;
 
     public EgovTestController(EgovTestService testService,
                               EgovSystemService systemService,
-                              EgovCodeService codeService) {
+                              EgovCodeService codeService,
+                                EgovApprService apprService) {
         this.testService = testService;
         this.systemService = systemService;
         this.codeService = codeService;
+        this.apprService = apprService;
     }
 
     /** 테스트 목록 */
@@ -82,6 +86,8 @@ public class EgovTestController {
             testVO.setTesterId(loginUser.getUsername());
         }
         testService.insertTest(testVO);
+        // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
+        apprService.applyTemplate("TEST", testVO.getTestId(), loginUser.getUsername());
         return "redirect:/test/detail/" + testVO.getTestId();
     }
 

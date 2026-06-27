@@ -2,6 +2,7 @@ package egovframework.ops.ci.web;
 
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
+import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.ci.service.CiVO;
 import egovframework.ops.ci.service.EgovCiService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
@@ -23,13 +24,16 @@ public class EgovCiController {
     private final EgovCiService ciService;
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
+    private final EgovApprService apprService;
 
     public EgovCiController(EgovCiService ciService,
                             EgovSystemService systemService,
-                            EgovCodeService codeService) {
+                            EgovCodeService codeService,
+                                EgovApprService apprService) {
         this.ciService = ciService;
         this.systemService = systemService;
         this.codeService = codeService;
+        this.apprService = apprService;
     }
 
     /** 형상항목 목록 */
@@ -79,6 +83,8 @@ public class EgovCiController {
             ciVO.setOwnerId(loginUser.getUsername());
         }
         ciService.insertCi(ciVO);
+        // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
+        apprService.applyTemplate("CI", ciVO.getCiId(), loginUser.getUsername());
         return "redirect:/ci/detail/" + ciVO.getCiId();
     }
 

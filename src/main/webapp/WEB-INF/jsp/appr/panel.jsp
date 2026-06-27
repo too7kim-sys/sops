@@ -9,7 +9,7 @@
         <span class="badge ov-${fn:toLowerCase(overallKey)}" style="margin-left:8px;">${overallNm}</span>
         <c:if test="${isManager}">
             <span style="float:right;font-weight:400;">
-                <c:if test="${hasTemplate}">
+                <c:if test="${hasTemplate and empty lineList and empty shares}">
                 <form method="post" action="${ctx}/appr/applyTemplate" style="display:inline;"
                       onsubmit="return confirm('이 업무의 기본 결재선/공유를 적용할까요?');">
                     <input type="hidden" name="bizType" value="${bizType}"/>

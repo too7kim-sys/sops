@@ -2,6 +2,7 @@ package egovframework.ops.release.web;
 
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
+import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.deploy.service.DeployService;
 import egovframework.ops.release.service.EgovReleaseService;
@@ -25,15 +26,18 @@ public class EgovReleaseController {
     private final EgovReleaseService releaseService;
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
+    private final EgovApprService apprService;
     private final DeployService deployService;
 
     public EgovReleaseController(EgovReleaseService releaseService,
                                  EgovSystemService systemService,
                                  EgovCodeService codeService,
-                                 DeployService deployService) {
+                                 DeployService deployService,
+                                EgovApprService apprService) {
         this.releaseService = releaseService;
         this.systemService = systemService;
         this.codeService = codeService;
+        this.apprService = apprService;
         this.deployService = deployService;
     }
 
@@ -108,6 +112,8 @@ public class EgovReleaseController {
                          @AuthenticationPrincipal LoginUser loginUser) {
         releaseVO.setChargerId(loginUser.getUsername());
         releaseService.insertRelease(releaseVO);
+        // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
+        apprService.applyTemplate("RELEASE", releaseVO.getRelId(), loginUser.getUsername());
         return "redirect:/release/detail/" + releaseVO.getRelId();
     }
 

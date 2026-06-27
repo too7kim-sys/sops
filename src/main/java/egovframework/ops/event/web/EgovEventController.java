@@ -2,6 +2,7 @@ package egovframework.ops.event.web;
 
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
+import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.event.service.EgovEventService;
 import egovframework.ops.event.service.EventVO;
@@ -23,13 +24,16 @@ public class EgovEventController {
     private final EgovEventService eventService;
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
+    private final EgovApprService apprService;
 
     public EgovEventController(EgovEventService eventService,
                                EgovSystemService systemService,
-                               EgovCodeService codeService) {
+                               EgovCodeService codeService,
+                                EgovApprService apprService) {
         this.eventService = eventService;
         this.systemService = systemService;
         this.codeService = codeService;
+        this.apprService = apprService;
     }
 
     /** 이벤트 목록 */
@@ -79,6 +83,8 @@ public class EgovEventController {
             eventVO.setChargerId(loginUser.getUsername());
         }
         eventService.insertEvent(eventVO);
+        // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
+        apprService.applyTemplate("EVENT", eventVO.getEvtId(), loginUser.getUsername());
         return "redirect:/event/detail/" + eventVO.getEvtId();
     }
 

@@ -2,6 +2,7 @@ package egovframework.ops.incident.web;
 
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
+import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.incident.service.EgovIncidentService;
 import egovframework.ops.incident.service.IncidentEscalVO;
@@ -24,13 +25,16 @@ public class EgovIncidentController {
     private final EgovIncidentService incidentService;
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
+    private final EgovApprService apprService;
 
     public EgovIncidentController(EgovIncidentService incidentService,
                                   EgovSystemService systemService,
-                                  EgovCodeService codeService) {
+                                  EgovCodeService codeService,
+                                EgovApprService apprService) {
         this.incidentService = incidentService;
         this.systemService = systemService;
         this.codeService = codeService;
+        this.apprService = apprService;
     }
 
     /** 장애 목록 */
@@ -79,6 +83,8 @@ public class EgovIncidentController {
                          @AuthenticationPrincipal LoginUser loginUser) {
         incidentVO.setRegId(loginUser.getUsername());
         incidentService.insertIncident(incidentVO);
+        // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
+        apprService.applyTemplate("INCIDENT", incidentVO.getIncId(), loginUser.getUsername());
         return "redirect:/incident/detail/" + incidentVO.getIncId();
     }
 

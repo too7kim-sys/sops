@@ -2,6 +2,7 @@ package egovframework.ops.csr.web;
 
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.com.config.LoginUser;
+import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.csr.service.EgovCsrService;
 import egovframework.ops.csr.service.CsrVO;
@@ -23,13 +24,16 @@ public class EgovCsrController {
     private final EgovCsrService csrService;
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
+    private final EgovApprService apprService;
 
     public EgovCsrController(EgovCsrService csrService,
                              EgovSystemService systemService,
-                             EgovCodeService codeService) {
+                             EgovCodeService codeService,
+                                EgovApprService apprService) {
         this.csrService = csrService;
         this.systemService = systemService;
         this.codeService = codeService;
+        this.apprService = apprService;
     }
 
     /** 요청 목록 */
@@ -77,6 +81,8 @@ public class EgovCsrController {
                          @AuthenticationPrincipal LoginUser loginUser) {
         csrVO.setReqId(loginUser.getUsername());
         csrService.insertCsr(csrVO);
+        // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
+        apprService.applyTemplate("CSR", csrVO.getCsrId(), loginUser.getUsername());
         return "redirect:/csr/detail/" + csrVO.getCsrId();
     }
 
