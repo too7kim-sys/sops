@@ -43,7 +43,7 @@
             <th>제목</th>
             <th class="center" style="width:90px;">유형</th>
             <th class="center" style="width:90px;">우선순위</th>
-            <th class="center" style="width:90px;">상태</th>
+            <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:110px;">요청자</th>
         </tr>
         </thead>
@@ -55,7 +55,12 @@
                 <td><a href="${ctx}/csr/detail/${c.csrId}">${c.title}</a></td>
                 <td class="center">${c.csrTypeNm}</td>
                 <td class="center">${c.priorityNm}</td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(c.status)}">${c.statusNm}</span></td>
+                <td>
+                    <jsp:include page="/WEB-INF/jsp/include/csr-stage.jsp">
+                        <jsp:param name="status" value="${c.status}"/>
+                        <jsp:param name="mode" value="mini"/>
+                    </jsp:include>
+                </td>
                 <td class="center">${c.reqId}</td>
             </tr>
         </c:forEach>

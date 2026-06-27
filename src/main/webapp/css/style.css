@@ -184,3 +184,25 @@ table.form .note-editor { margin: 0; max-width: 100%; }
 .appr-add { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #d6dce5; }
 .appr-add-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
 .appr-add-row label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #667; }
+
+/* ---------- 진행 단계 스테퍼(요청관리) ---------- */
+.stepper { display: flex; align-items: flex-start; }
+.stepper .step { flex: 1; text-align: center; position: relative; }
+.stepper .step .dot { display: inline-flex; width: 26px; height: 26px; border-radius: 50%;
+    align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+    background: #e2e6eb; color: #8a93a0; position: relative; z-index: 1; }
+.stepper .step .lbl { display: block; margin-top: 6px; font-size: 12px; color: #8a93a0; }
+.stepper .step:not(:first-child)::before { content: ''; position: absolute; top: 12px; left: -50%;
+    width: 100%; height: 2px; background: #e2e6eb; z-index: 0; }
+.stepper .step.done .dot { background: #14794a; color: #fff; }
+.stepper .step.done::before { background: #14794a; }
+.stepper .step.current .dot { background: #1b3a6b; color: #fff; box-shadow: 0 0 0 4px rgba(27,58,107,.15); }
+.stepper .step.current .lbl { color: #1b3a6b; font-weight: 700; }
+.stepper .step.current::before { background: #14794a; }
+.stepper.is-rejected { align-items: center; gap: 10px; }
+.stepper .rej-note { font-size: 12px; color: #c0392b; }
+/* 목록용 미니 */
+.stepper-mini .step .dot { width: 15px; height: 15px; font-size: 0; }
+.stepper-mini .step .lbl { display: none; margin-top: 3px; font-size: 11px; line-height: 1.1; }
+.stepper-mini .step.current .lbl { display: block; }
+.stepper-mini .step::before { top: 7px !important; }
