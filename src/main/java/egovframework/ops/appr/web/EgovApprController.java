@@ -208,6 +208,8 @@ public class EgovApprController {
                 line.setStatus(status);
                 line.setOpinion(opinion);
                 apprService.actLine(line);
+                // 결재 결과를 업무 모듈 상태에 자동 반영(승인 게이트 정의 모듈)
+                apprService.applyModuleOutcome(line.getBizType(), line.getBizId());
             }
         }
         return "redirect:" + safeReturn(returnUrl, ctx(), line.getBizType(), line.getBizId());

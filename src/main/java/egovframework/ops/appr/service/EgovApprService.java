@@ -29,6 +29,14 @@ public interface EgovApprService {
     /** 결재 처리(검토/승인/반려/처리완료) — 의견 포함 */
     void actLine(ApprLineVO vo);
 
+    /**
+     * 결재선 처리 결과를 업무 모듈 상태에 반영(자동 전이).
+     *
+     * <p>승인 라인 전원 승인 → 모듈 승인상태, 1건이라도 반려 → 모듈 반려상태로 전이한다.
+     * 승인 게이트가 정의된 모듈(변경/배포/요청)만 동작하며, 변경된 상태값을 반환(없으면 null).</p>
+     */
+    String applyModuleOutcome(String bizType, Long bizId);
+
     /* ---------- 공유 ---------- */
 
     /** 특정 업무의 공유 목록 */

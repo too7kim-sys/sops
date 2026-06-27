@@ -68,6 +68,13 @@
          WHERE APPR_ID = #{apprId}
     </update>
 
+    <!-- 업무 모듈 상태 자동전이. table/idCol/statusCol 은 서비스 내부 화이트리스트 값(주입 무관) -->
+    <update id="updateBizStatus">
+        UPDATE ${table}
+           SET ${statusCol} = #{status}
+         WHERE ${idCol} = #{bizId}
+    </update>
+
     <!-- ===================== 공유 ===================== -->
 
     <select id="selectShareList" parameterType="egovframework.ops.appr.service.ShareVO"

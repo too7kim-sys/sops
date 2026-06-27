@@ -8,7 +8,9 @@ import egovframework.ops.sys.user.service.UserVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 결재선/공유 서비스 구현체.
@@ -23,6 +25,17 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     public EgovApprServiceImpl(ApprMapper apprMapper) {
         this.apprMapper = apprMapper;
+    }
+
+    /**
+     * 업무 모듈 상태 자동전이 규칙(내부 화이트리스트).
+     * {table, idCol, statusCol, approvedStatus, rejectedStatus} — 값은 코드 고정(주입 무관).
+     */
+    private static final Map<String, String[]> STATUS_RULE = new LinkedHashMap<>();
+    static {
+        STATUS_RULE.put("CHANGE",  new String[]{"OPS_CHANGE",  "CHG_ID", "STATUS", "APPROVED",    "REJECTED"});
+        STATUS_RULE.put("RELEASE", new String[]{"OPS_RELEASE", "REL_ID", "STATUS", "APPROVED",    null});
+        STATUS_RULE.put("CSR",     new String[]{"OPS_CSR",     "CSR_ID", "STATUS", "IN_PROGRESS", "REJECTED"});
     }
 
     private ApprLineVO lineKey(String bizType, Long bizId) {
@@ -55,6 +68,38 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
     @Override
     public void actLine(ApprLineVO vo) {
         apprMapper.actLine(vo);
+    }
+
+    @Override
+    @Transactional
+    public String applyModuleOutcome(String bizType, Long bizId) {
+        String[] rule = STATUS_RULE.get(bizType);
+        if (rule == null) {
+            return null; // 승인 게이트 미정의 모듈 — 협업 레이어로만 동작
+        }
+        int approveTotal = 0, approved = 0;
+        boolean rejected = false;
+        for (ApprLineVO l : selectLineList(bizType, bizId)) {
+            if (!"APPROVE".equals(l.getLineType())) {
+                continue;
+            }
+            approveTotal++;
+            if ("APPROVED".equals(l.getStatus())) {
+                approved++;
+            } else if ("REJECTED".equals(l.getStatus())) {
+                rejected = true;
+            }
+        }
+        String target = null;
+        if (rejected) {
+            target = rule[4];
+        } else if (approveTotal > 0 && approved == approveTotal) {
+            target = rule[3];
+        }
+        if (target != null) {
+            apprMapper.updateBizStatus(rule[0], rule[1], rule[2], bizId, target);
+        }
+        return target;
     }
 
     @Override
