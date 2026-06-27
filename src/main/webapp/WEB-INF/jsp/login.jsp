@@ -12,6 +12,8 @@
 <body>
 <div class="login-wrap">
     <div class="login-box">
+        <img class="login-logo" src="${ctx}/images/logo.png" alt="로고"
+             onerror="this.onerror=null;this.src='${ctx}/images/logo.svg';"/>
         <h1>범정부 응용프로그램<br/>운영관리시스템</h1>
         <p class="sub">전자정부 표준프레임워크 · 표준운영절차</p>
 

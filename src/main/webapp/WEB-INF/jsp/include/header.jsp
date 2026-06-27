@@ -14,7 +14,10 @@
 <header class="topbar">
     <div class="topbar-inner">
         <a class="brand" href="${ctx}/main">
-            <span class="brand-mark">eGov</span>
+            <span class="brand-logo-box">
+                <img class="brand-logo" src="${ctx}/images/logo.png" alt="로고"
+                     onerror="this.onerror=null;this.src='${ctx}/images/logo.svg';"/>
+            </span>
             <span class="brand-name">범정부 응용프로그램 운영관리시스템</span>
         </a>
         <div class="topbar-right">

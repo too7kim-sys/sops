@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 34" width="150" height="34" role="img" aria-label="cusoft">
+  <g font-family="'Segoe UI', 'Malgun Gothic', Arial, sans-serif" font-weight="800">
+    <text x="0" y="25" font-size="25" fill="#1b3a6b" letter-spacing="-0.5">cusoft</text>
+    <circle cx="121" cy="9" r="4" fill="#2e7df6"/>
+    <text x="128" y="14" font-size="9" fill="#2e7df6" font-weight="700">AI</text>
+  </g>
+</svg>
