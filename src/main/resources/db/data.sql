@@ -5,11 +5,11 @@
 -- =====================================================================
 
 -- 사용자(운영자) -------------------------------------------------------
-INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT) VALUES
- ('admin',  '운영관리자', 'admin123!', 'ADMIN',    '정보화운영팀', 'admin@egov.go.kr',  '02-100-0001', 'Y'),
- ('oper01', '김운영',     'oper123!',  'OPERATOR', '시스템운영부', 'oper01@egov.go.kr', '02-100-0002', 'Y'),
- ('oper02', '이담당',     'oper123!',  'OPERATOR', '응용운영부',   'oper02@egov.go.kr', '02-100-0003', 'Y'),
- ('user01', '박사용',     'user123!',  'USER',     '민원지원과',   'user01@egov.go.kr', '02-100-0004', 'Y');
+INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_CD, EMAIL, TELNO, USE_AT) VALUES
+ ('admin',  '운영관리자', 'admin123!', 'ADMIN',    'D100', 'admin@egov.go.kr',  '02-100-0001', 'Y'),
+ ('oper01', '김운영',     'oper123!',  'OPERATOR', 'D110', 'oper01@egov.go.kr', '02-100-0002', 'Y'),
+ ('oper02', '이담당',     'oper123!',  'OPERATOR', 'D120', 'oper02@egov.go.kr', '02-100-0003', 'Y'),
+ ('user01', '박사용',     'user123!',  'USER',     'D130', 'user01@egov.go.kr', '02-100-0004', 'Y');
 
 -- 응용시스템 마스터 ----------------------------------------------------
 INSERT INTO OPS_SYSTEM (SYS_ID, SYS_NM, SYS_DESC, MNGR_NM, MNGR_DEPT, GRAD, USE_AT) VALUES
@@ -320,10 +320,10 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('TARGET_TYPE', 'ALL',       '전체',   4, 'Y');
 
 INSERT INTO OPS_APPR_TEMPLATE (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO) VALUES
- ('CHANGE', 'LINE',  'REVIEW',  1, 1, 'DEPT',      '응용운영부', NULL),
- ('CHANGE', 'LINE',  'APPROVE', 2, 1, 'USER',      'admin',      NULL),
- ('CHANGE', 'LINE',  'HANDLE',  3, 1, 'REQUESTER', NULL,         NULL),
- ('CHANGE', 'SHARE', NULL,      1, 1, 'DEPT',      '시스템운영부', '변경 공유');
+ ('CHANGE', 'LINE',  'REVIEW',  1, 1, 'DEPT',      'D120',  NULL),
+ ('CHANGE', 'LINE',  'APPROVE', 2, 1, 'USER',      'admin', NULL),
+ ('CHANGE', 'LINE',  'HANDLE',  3, 1, 'REQUESTER', NULL,    NULL),
+ ('CHANGE', 'SHARE', NULL,      1, 1, 'DEPT',      'D110',  '변경 공유');
 
 -- 부서 마스터 데모 (기존 사용자 DEPT_NM 과 동일 명칭)
 INSERT INTO OPS_DEPT (DEPT_CD, DEPT_NM, UPPER_ID, MNGR_ID, SORT_ORDR, DEPT_DESC, USE_AT) VALUES

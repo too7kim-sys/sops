@@ -24,7 +24,10 @@ public class SessionVO implements Serializable {
     /** 권한(롤) : ADMIN(운영관리자), OPERATOR(운영자), USER(일반) */
     private String role;
 
-    /** 소속 부서명 */
+    /** 소속 부서코드 (OPS_DEPT.DEPT_CD) */
+    private String deptCd;
+
+    /** 소속 부서명 (조인 표시용) */
     private String deptNm;
 
     /** 이메일 */

@@ -16,7 +16,7 @@
                A.SORT_NO     AS sortNo,
                A.ASSIGNEE_ID AS assigneeId,
                U.USER_NM     AS assigneeNm,
-               U.DEPT_NM     AS assigneeDept,
+               UD.DEPT_NM    AS assigneeDept,
                A.STATUS      AS status,
                SC.CODE_NM    AS statusNm,
                A.OPINION     AS opinion,
@@ -25,6 +25,7 @@
                TO_CHAR(A.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
           FROM OPS_APPR_LINE A
           LEFT JOIN OPS_USER U ON U.USER_ID = A.ASSIGNEE_ID
+          LEFT JOIN OPS_DEPT UD ON UD.DEPT_CD = U.DEPT_CD
           LEFT JOIN OPS_CODE LC ON LC.CODE_GRP = 'LINE_TYPE'   AND LC.CODE_ID = A.LINE_TYPE
           LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'APPR_STATUS' AND SC.CODE_ID = A.STATUS
          WHERE A.BIZ_TYPE = #{bizType}
@@ -113,7 +114,7 @@
                S.BIZ_ID     AS bizId,
                S.USER_ID    AS userId,
                U.USER_NM    AS userNm,
-               U.DEPT_NM    AS userDept,
+               UD.DEPT_NM   AS userDept,
                S.SHARE_MEMO AS shareMemo,
                S.READ_AT    AS readAt,
                S.SHARED_BY  AS sharedBy,
@@ -121,6 +122,7 @@
                TO_CHAR(S.SHARED_DT, 'YYYY-MM-DD HH24:MI') AS sharedDt
           FROM OPS_SHARE S
           LEFT JOIN OPS_USER U ON U.USER_ID = S.USER_ID
+          LEFT JOIN OPS_DEPT UD ON UD.DEPT_CD = U.DEPT_CD
           LEFT JOIN OPS_USER B ON B.USER_ID = S.SHARED_BY
          WHERE S.BIZ_TYPE = #{bizType}
            AND S.BIZ_ID = #{bizId}
@@ -173,13 +175,15 @@
 
     <select id="selectAssigneeCandidates"
             resultType="egovframework.ops.sys.user.service.UserVO">
-        SELECT USER_ID AS userId,
-               USER_NM AS userNm,
-               ROLE    AS role,
-               DEPT_NM AS deptNm
-          FROM OPS_USER
-         WHERE USE_AT = 'Y'
-         ORDER BY CASE ROLE WHEN 'ADMIN' THEN 1 WHEN 'OPERATOR' THEN 2 ELSE 3 END, USER_NM
+        SELECT U.USER_ID AS userId,
+               U.USER_NM AS userNm,
+               U.ROLE    AS role,
+               U.DEPT_CD AS deptCd,
+               D.DEPT_NM AS deptNm
+          FROM OPS_USER U
+          LEFT JOIN OPS_DEPT D ON D.DEPT_CD = U.DEPT_CD
+         WHERE U.USE_AT = 'Y'
+         ORDER BY CASE U.ROLE WHEN 'ADMIN' THEN 1 WHEN 'OPERATOR' THEN 2 ELSE 3 END, U.USER_NM
     </select>
 
     <!-- ===================== 대상 전개 ===================== -->
@@ -190,8 +194,9 @@
          ORDER BY SORT_ORDR, DEPT_ID
     </select>
 
+    <!-- 대상값(부서)은 부서코드(DEPT_CD) — 사용자의 DEPT_CD 와 매칭 -->
     <select id="selectUserIdsByDept" parameterType="string" resultType="string">
-        SELECT USER_ID FROM OPS_USER WHERE USE_AT = 'Y' AND DEPT_NM = #{deptNm} ORDER BY USER_ID
+        SELECT USER_ID FROM OPS_USER WHERE USE_AT = 'Y' AND DEPT_CD = #{deptCd} ORDER BY USER_ID
     </select>
 
     <select id="selectAllActiveUserIds" resultType="string">
@@ -216,10 +221,12 @@
                T.TARGET_TYPE AS targetType,
                TC.CODE_NM    AS targetTypeNm,
                T.TARGET_VALUE AS targetValue,
+               TD.DEPT_NM    AS targetValueNm,
                T.MEMO        AS memo
           FROM OPS_APPR_TEMPLATE T
           LEFT JOIN OPS_CODE LC ON LC.CODE_GRP = 'LINE_TYPE'   AND LC.CODE_ID = T.LINE_TYPE
           LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'TARGET_TYPE' AND TC.CODE_ID = T.TARGET_TYPE
+          LEFT JOIN OPS_DEPT TD ON T.TARGET_TYPE = 'DEPT' AND TD.DEPT_CD = T.TARGET_VALUE
          WHERE T.BIZ_TYPE = #{bizType}
          ORDER BY T.KIND DESC, T.STEP_NO, T.SORT_NO, T.TPL_ID
     </select>

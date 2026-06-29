@@ -48,7 +48,12 @@
                 <td>${empty t.lineTypeNm ? '-' : t.lineTypeNm}</td>
                 <td class="center">${t.stepNo}</td>
                 <td>${t.targetTypeNm}</td>
-                <td>${empty t.targetValue ? '-' : t.targetValue}</td>
+                <td>
+                    <c:choose>
+                        <c:when test="${t.targetType == 'DEPT'}">${empty t.targetValueNm ? t.targetValue : t.targetValueNm}</c:when>
+                        <c:otherwise>${empty t.targetValue ? '-' : t.targetValue}</c:otherwise>
+                    </c:choose>
+                </td>
                 <td>${empty t.memo ? '-' : t.memo}</td>
                 <td>
                     <form method="post" action="${ctx}/appr/template/delete" onsubmit="return confirm('삭제할까요?');">
@@ -100,8 +105,9 @@
             </label>
             <label class="tgt-dept" style="display:none;">부서
                 <span class="dept-search" style="max-width:240px;">
-                    <input type="text" name="targetValue" id="tplDept_nm" class="dept-search-disp" data-prefix="tplDept"
+                    <input type="text" id="tplDept_nm" class="dept-search-disp" data-prefix="tplDept"
                            placeholder="부서 검색" autocomplete="off" readonly onclick="openDeptPopup('tplDept')"/>
+                    <input type="hidden" name="targetValue" id="tplDept_val" data-dept-bind="cd"/>
                     <button type="button" class="dept-search-btn" onclick="openDeptPopup('tplDept')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
                 </span>
             </label>

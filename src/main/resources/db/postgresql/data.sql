@@ -7,8 +7,8 @@
 -- =====================================================================
 
 -- 사용자(운영자) -------------------------------------------------------
-INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT) VALUES
- ('admin',  '운영관리자', 'admin123!', 'ADMIN',    '정보화운영팀', 'admin@egov.go.kr',  '02-100-0001', 'Y')
+INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_CD, EMAIL, TELNO, USE_AT) VALUES
+ ('admin',  '운영관리자', 'admin123!', 'ADMIN',    'D100', 'admin@egov.go.kr',  '02-100-0001', 'Y')
 ON CONFLICT (USER_ID) DO NOTHING;
 
 -- 공통코드 ------------------------------------------------------------
@@ -172,9 +172,9 @@ ON CONFLICT (DEPT_CD) DO NOTHING;
 -- 결재선/공유가 비어 있는 업무 패널 조회 시 이 템플릿이 자동 적용된다.
 INSERT INTO OPS_APPR_TEMPLATE (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO)
 SELECT v.* FROM (VALUES
- ('CHANGE', 'LINE',  'REVIEW',  1, 1, 'DEPT',      '응용운영부',   CAST(NULL AS VARCHAR)),
- ('CHANGE', 'LINE',  'APPROVE', 2, 1, 'USER',      'admin',        NULL),
- ('CHANGE', 'LINE',  'HANDLE',  3, 1, 'REQUESTER', NULL,           NULL),
- ('CHANGE', 'SHARE', NULL,      1, 1, 'DEPT',      '시스템운영부', '변경 공유')
+ ('CHANGE', 'LINE',  'REVIEW',  1, 1, 'DEPT',      'D120',  CAST(NULL AS VARCHAR)),
+ ('CHANGE', 'LINE',  'APPROVE', 2, 1, 'USER',      'admin', NULL),
+ ('CHANGE', 'LINE',  'HANDLE',  3, 1, 'REQUESTER', NULL,    NULL),
+ ('CHANGE', 'SHARE', NULL,      1, 1, 'DEPT',      'D110',  '변경 공유')
 ) AS v(BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO)
 WHERE NOT EXISTS (SELECT 1 FROM OPS_APPR_TEMPLATE WHERE BIZ_TYPE = 'CHANGE');

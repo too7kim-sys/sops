@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS OPS_USER (
     USER_NM    VARCHAR(50)   NOT NULL,
     PASSWORD   VARCHAR(100)  NOT NULL,
     ROLE       VARCHAR(20)   NOT NULL,
-    DEPT_NM    VARCHAR(100),
+    DEPT_CD    VARCHAR(20),             -- 소속 부서코드(OPS_DEPT.DEPT_CD) — 표시는 부서명으로 조인
     EMAIL      VARCHAR(100),
     TELNO      VARCHAR(20),
     USE_AT     CHAR(1)       DEFAULT 'Y',

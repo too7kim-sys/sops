@@ -46,8 +46,11 @@ public class ApprTemplateVO extends ComDefaultVO {
     /** 대상 유형 명 */
     private String targetTypeNm;
 
-    /** 대상 값 (userId / deptNm / null) */
+    /** 대상 값 (USER=userId / DEPT=deptCd / null) */
     private String targetValue;
+
+    /** 대상 값 표시명 (DEPT 인 경우 부서명 조인) */
+    private String targetValueNm;
 
     /** 공유 메모 */
     private String memo;

@@ -24,7 +24,7 @@
                D.SORT_ORDR  AS sortOrdr,
                D.DEPT_DESC  AS deptDesc,
                D.USE_AT     AS useAt,
-               (SELECT COUNT(*) FROM OPS_USER U WHERE U.DEPT_NM = D.DEPT_NM) AS userCnt
+               (SELECT COUNT(*) FROM OPS_USER U WHERE U.DEPT_CD = D.DEPT_CD) AS userCnt
           FROM OPS_DEPT D
           LEFT JOIN OPS_DEPT P ON P.DEPT_ID = D.UPPER_ID
           LEFT JOIN OPS_USER M ON M.USER_ID = D.MNGR_ID

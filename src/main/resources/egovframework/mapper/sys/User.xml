@@ -5,43 +5,53 @@
 
     <sql id="searchWhere">
         <if test="searchKeyword != null and searchKeyword != ''">
-            AND (USER_ID LIKE '%' || #{searchKeyword} || '%'
-                 OR USER_NM LIKE '%' || #{searchKeyword} || '%'
-                 OR DEPT_NM LIKE '%' || #{searchKeyword} || '%')
+            AND (U.USER_ID LIKE '%' || #{searchKeyword} || '%'
+                 OR U.USER_NM LIKE '%' || #{searchKeyword} || '%'
+                 OR D.DEPT_NM LIKE '%' || #{searchKeyword} || '%')
         </if>
         <if test="searchCondition != null and searchCondition != ''">
-            AND ROLE = #{searchCondition}
+            AND U.ROLE = #{searchCondition}
         </if>
     </sql>
 
+    <!-- 부서는 코드(DEPT_CD)로 저장하고 화면 표시는 OPS_DEPT 조인으로 부서명을 함께 조회 -->
     <select id="selectUserList" parameterType="egovframework.ops.sys.user.service.UserVO"
             resultType="egovframework.ops.sys.user.service.UserVO">
-        SELECT USER_ID, USER_NM, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT,
-               TO_CHAR(REG_DT, 'YYYY-MM-DD HH24:MI') AS REG_DT
-          FROM OPS_USER
+        SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.ROLE AS role,
+               U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
+               U.EMAIL AS email, U.TELNO AS telno, U.USE_AT AS useAt,
+               TO_CHAR(U.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_USER U
+          LEFT JOIN OPS_DEPT D ON D.DEPT_CD = U.DEPT_CD
          WHERE 1 = 1
         <include refid="searchWhere"/>
-         ORDER BY REG_DT DESC, USER_ID
+         ORDER BY U.REG_DT DESC, U.USER_ID
          OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
     </select>
 
     <select id="selectUserListCnt" parameterType="egovframework.ops.sys.user.service.UserVO"
             resultType="int">
-        SELECT COUNT(*) FROM OPS_USER WHERE 1 = 1
+        SELECT COUNT(*)
+          FROM OPS_USER U
+          LEFT JOIN OPS_DEPT D ON D.DEPT_CD = U.DEPT_CD
+         WHERE 1 = 1
         <include refid="searchWhere"/>
     </select>
 
     <select id="selectUser" parameterType="string"
             resultType="egovframework.ops.sys.user.service.UserVO">
-        SELECT USER_ID, USER_NM, PASSWORD, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT,
-               TO_CHAR(REG_DT, 'YYYY-MM-DD HH24:MI') AS REG_DT
-          FROM OPS_USER
-         WHERE USER_ID = #{userId}
+        SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.PASSWORD AS password,
+               U.ROLE AS role, U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
+               U.EMAIL AS email, U.TELNO AS telno, U.USE_AT AS useAt,
+               TO_CHAR(U.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_USER U
+          LEFT JOIN OPS_DEPT D ON D.DEPT_CD = U.DEPT_CD
+         WHERE U.USER_ID = #{userId}
     </select>
 
     <insert id="insertUser" parameterType="egovframework.ops.sys.user.service.UserVO">
-        INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_NM, EMAIL, TELNO, USE_AT, REG_DT)
-        VALUES (#{userId}, #{userNm}, #{password}, #{role}, #{deptNm}, #{email}, #{telno},
+        INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_CD, EMAIL, TELNO, USE_AT, REG_DT)
+        VALUES (#{userId}, #{userNm}, #{password}, #{role}, #{deptCd}, #{email}, #{telno},
                 #{useAt}, CURRENT_TIMESTAMP)
     </insert>
 
@@ -49,7 +59,7 @@
         UPDATE OPS_USER
            SET USER_NM = #{userNm},
                ROLE    = #{role},
-               DEPT_NM = #{deptNm},
+               DEPT_CD = #{deptCd},
                EMAIL   = #{email},
                TELNO   = #{telno},
                USE_AT  = #{useAt}
