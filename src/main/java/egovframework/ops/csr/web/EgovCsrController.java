@@ -225,14 +225,20 @@ public class EgovCsrController {
         return "redirect:/csr/detail/" + csrVO.getCsrId();
     }
 
-    /** 요청 처리(상태전이) */
+    /** 요청 처리(상태전이) — 분류완료(CLASSIFIED) 처리 시 이관 대상이 지정되면 함께 이관 */
     @PostMapping("/process")
     public String process(@ModelAttribute CsrVO csrVO,
+                          @RequestParam(required = false) String targetType,
                           @AuthenticationPrincipal LoginUser loginUser) {
         if (csrVO.getChargerId() == null || csrVO.getChargerId().isBlank()) {
             csrVO.setChargerId(loginUser.getUsername());
         }
         csrService.processCsr(csrVO);
+        // 분류완료로 처리하면서 이관 대상이 선택된 경우 대상 모듈로 이관 후 대상 상세로 이동
+        if ("CLASSIFIED".equals(csrVO.getStatus()) && targetType != null && !targetType.isBlank()) {
+            String detailUrl = transferService.transfer(csrVO.getCsrId(), targetType, loginUser.getUsername());
+            return "redirect:" + detailUrl;
+        }
         return "redirect:/csr/detail/" + csrVO.getCsrId();
     }
 
