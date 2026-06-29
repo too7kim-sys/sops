@@ -76,16 +76,16 @@
                 <table class="form">
                     <tr><th>처리 상태 <span class="required">*</span></th>
                         <td>
-                            <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                <select name="status" id="procStatusSel" required>
+                            <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap;">
+                                <select name="status" id="procStatusSel" required style="width:auto;min-width:120px;">
                                     <c:forEach var="cd" items="${statusList}">
                                         <option value="${cd.codeId}" ${cd.codeId == csr.status ? 'selected' : ''}>${cd.codeNm}</option>
                                     </c:forEach>
                                 </select>
                                 <%-- 분류완료(CLASSIFIED) 선택 시 처리상태 콤보 옆에 분류/이관 노출 --%>
-                                <span id="inlineTransfer" style="display:none;align-items:center;gap:6px;padding-left:10px;border-left:1px solid #e0e5ec;">
+                                <span id="inlineTransfer" style="display:none;align-items:center;gap:6px;padding-left:10px;border-left:1px solid #e0e5ec;white-space:nowrap;">
                                     <span class="h-meta" style="color:#1b3a6b;">분류/이관 &rarr;</span>
-                                    <select id="inlineTargetType">
+                                    <select id="inlineTargetType" style="width:auto;">
                                         <c:forEach var="t" items="${transferTargets}">
                                             <option value="${t.key}">${t.value.label}</option>
                                         </c:forEach>
