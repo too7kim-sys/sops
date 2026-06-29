@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="요청 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
@@ -104,6 +105,44 @@
             </ul>
         </div>
     </div>
+</div>
+
+<%-- 첨부파일 --%>
+<div class="panel">
+    <h3>첨부파일 <span class="badge">${fn:length(fileList)}</span></h3>
+    <table class="list">
+        <thead>
+        <tr>
+            <th>파일명</th>
+            <th class="center" style="width:110px;">크기</th>
+            <th class="center" style="width:140px;">등록자</th>
+            <th class="center" style="width:150px;">등록일시</th>
+            <th class="center" style="width:60px;"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:if test="${empty fileList}"><tr><td colspan="5" class="empty">첨부파일이 없습니다.</td></tr></c:if>
+        <c:forEach var="f" items="${fileList}">
+            <tr>
+                <td><a href="${ctx}/csr/file/download/${f.fileId}">📎 ${f.originNm}</a></td>
+                <td class="center"><fmt:formatNumber value="${(f.fileSize + 1023) / 1024}" maxFractionDigits="0"/> KB</td>
+                <td class="center">${uf:nm(userNameMap, f.regId)}</td>
+                <td class="center">${f.regDt}</td>
+                <td class="center">
+                    <form method="post" action="${ctx}/csr/file/delete/${f.fileId}" onsubmit="return confirm('이 첨부파일을 삭제할까요?');" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">×</button>
+                    </form>
+                </td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+    <form method="post" action="${ctx}/csr/file/upload" enctype="multipart/form-data" class="appr-add-row" style="margin-top:12px;align-items:center;gap:8px;">
+        <input type="hidden" name="csrId" value="${csr.csrId}"/>
+        <input type="file" name="files" multiple required/>
+        <button type="submit" class="btn btn-primary btn-sm">＋ 업로드</button>
+        <span class="h-meta">여러 파일 선택 가능 · 파일당 최대 50MB</span>
+    </form>
 </div>
 
 <div class="toolbar" style="justify-content:flex-end;"><a href="${ctx}/csr/list" class="btn btn-default">목록 ＞</a></div>

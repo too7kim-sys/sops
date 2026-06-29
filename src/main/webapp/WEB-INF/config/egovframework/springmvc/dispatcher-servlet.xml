@@ -21,6 +21,10 @@
         </mvc:argument-resolvers>
     </mvc:annotation-driven>
 
+    <!-- 파일 첨부 멀티파트 리졸버 (Servlet 3.0 표준 — web.xml multipart-config 연동) -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
+
     <!-- 정적 자원 -->
     <mvc:resources mapping="/css/**"    location="/css/"/>
     <mvc:resources mapping="/js/**"     location="/js/"/>

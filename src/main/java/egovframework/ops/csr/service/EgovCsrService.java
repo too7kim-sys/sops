@@ -44,4 +44,14 @@ public interface EgovCsrService {
 
     /** 템플릿 저장(있으면 수정, 없으면 등록) */
     void saveCsrTpl(CsrTplVO vo);
+
+    /* ===== 요청 첨부파일 (메타데이터) ===== */
+
+    List<CsrFileVO> selectCsrFileList(Long csrId);
+
+    CsrFileVO selectCsrFile(Long fileId);
+
+    void insertCsrFile(CsrFileVO vo);
+
+    void deleteCsrFile(Long fileId);
 }

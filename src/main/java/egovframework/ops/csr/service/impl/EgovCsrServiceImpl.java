@@ -2,6 +2,7 @@ package egovframework.ops.csr.service.impl;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.ops.csr.service.EgovCsrService;
+import egovframework.ops.csr.service.CsrFileVO;
 import egovframework.ops.csr.service.CsrHisVO;
 import egovframework.ops.csr.service.CsrTplVO;
 import egovframework.ops.csr.service.CsrVO;
@@ -100,9 +101,34 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
     @Override
     @Transactional
     public void deleteCsr(Long csrId) {
+        csrMapper.deleteCsrFileByCsr(csrId);
         csrMapper.deleteCsrSys(csrId);
         csrMapper.deleteCsrHis(csrId);
         csrMapper.deleteCsr(csrId);
+    }
+
+    /* ===== 요청 첨부파일 (메타데이터) ===== */
+
+    @Override
+    public List<CsrFileVO> selectCsrFileList(Long csrId) {
+        return csrMapper.selectCsrFileList(csrId);
+    }
+
+    @Override
+    public CsrFileVO selectCsrFile(Long fileId) {
+        return csrMapper.selectCsrFile(fileId);
+    }
+
+    @Override
+    @Transactional
+    public void insertCsrFile(CsrFileVO vo) {
+        csrMapper.insertCsrFile(vo);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCsrFile(Long fileId) {
+        csrMapper.deleteCsrFile(fileId);
     }
 
     /** 완료요구일 빈값을 null 로 정규화 (DATE 캐스팅 안전) */

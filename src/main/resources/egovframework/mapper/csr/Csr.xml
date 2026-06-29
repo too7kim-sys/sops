@@ -169,6 +169,41 @@
         DELETE FROM OPS_CSR_SYS WHERE CSR_ID = #{csrId}
     </delete>
 
+    <!-- ===================== 요청 첨부파일 ===================== -->
+
+    <select id="selectCsrFileList" parameterType="long"
+            resultType="egovframework.ops.csr.service.CsrFileVO">
+        SELECT FILE_ID AS fileId, CSR_ID AS csrId, ORIGIN_NM AS originNm,
+               STORE_NM AS storeNm, FILE_SIZE AS fileSize, CONTENT_TYPE AS contentType,
+               REG_ID AS regId, TO_CHAR(REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
+          FROM OPS_CSR_FILE
+         WHERE CSR_ID = #{csrId}
+         ORDER BY FILE_ID
+    </select>
+
+    <select id="selectCsrFile" parameterType="long"
+            resultType="egovframework.ops.csr.service.CsrFileVO">
+        SELECT FILE_ID AS fileId, CSR_ID AS csrId, ORIGIN_NM AS originNm,
+               STORE_NM AS storeNm, FILE_SIZE AS fileSize, CONTENT_TYPE AS contentType,
+               REG_ID AS regId
+          FROM OPS_CSR_FILE
+         WHERE FILE_ID = #{fileId}
+    </select>
+
+    <insert id="insertCsrFile" parameterType="egovframework.ops.csr.service.CsrFileVO"
+            useGeneratedKeys="true" keyProperty="fileId">
+        INSERT INTO OPS_CSR_FILE (CSR_ID, ORIGIN_NM, STORE_NM, FILE_SIZE, CONTENT_TYPE, REG_ID, REG_DT)
+        VALUES (#{csrId}, #{originNm}, #{storeNm}, #{fileSize}, #{contentType}, #{regId}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteCsrFile" parameterType="long">
+        DELETE FROM OPS_CSR_FILE WHERE FILE_ID = #{fileId}
+    </delete>
+
+    <delete id="deleteCsrFileByCsr" parameterType="long">
+        DELETE FROM OPS_CSR_FILE WHERE CSR_ID = #{csrId}
+    </delete>
+
     <!-- ===================== 요청내용 템플릿 ===================== -->
 
     <!-- 전체 소분류(CSR_SUBTYPE) 기준 LEFT JOIN 템플릿 : 미등록 소분류도 노출 -->

@@ -5,13 +5,29 @@ import egovframework.com.config.LoginUser;
 import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.csr.service.EgovCsrService;
+import egovframework.ops.csr.service.CsrFileVO;
 import egovframework.ops.csr.service.CsrTplVO;
 import egovframework.ops.csr.service.CsrVO;
 import egovframework.ops.system.service.EgovSystemService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 /**
  * 요청관리(CSR) 컨트롤러 (Presentation 계층).
@@ -26,6 +42,9 @@ public class EgovCsrController {
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
     private final EgovApprService apprService;
+
+    @Value("${ops.upload.dir:${java.io.tmpdir}/egov-sop/upload}")
+    private String uploadDir;
 
     public EgovCsrController(EgovCsrService csrService,
                              EgovSystemService systemService,
@@ -63,8 +82,80 @@ public class EgovCsrController {
     public String detail(@PathVariable Long csrId, Model model) {
         model.addAttribute("csr", csrService.selectCsr(csrId));
         model.addAttribute("statusList", codeService.selectCodeList("CSR_STATUS"));
+        model.addAttribute("fileList", csrService.selectCsrFileList(csrId));
         model.addAttribute("menu", "csr");
         return "csr/detail";
+    }
+
+    /* ============================ 첨부파일 ============================ */
+
+    /** 첨부파일 업로드(다중) */
+    @PostMapping("/file/upload")
+    public String fileUpload(@RequestParam Long csrId,
+                            @RequestParam("files") MultipartFile[] files,
+                            @AuthenticationPrincipal LoginUser loginUser) throws IOException {
+        Path dir = Paths.get(uploadDir);
+        Files.createDirectories(dir);
+        for (MultipartFile mf : files) {
+            if (mf == null || mf.isEmpty()) {
+                continue;
+            }
+            // 원본 파일명에서 경로 구분자만 제거(Paths.get 은 OS 파일명 charset 영향으로 한글 깨짐/오류 → 문자열 처리)
+            String origin = mf.getOriginalFilename();
+            if (origin != null) {
+                int sep = Math.max(origin.lastIndexOf('/'), origin.lastIndexOf('\\'));
+                origin = (sep >= 0) ? origin.substring(sep + 1) : origin;
+            } else {
+                origin = "unnamed";
+            }
+            String store = UUID.randomUUID().toString().replace("-", "");
+            mf.transferTo(dir.resolve(store).toFile());
+
+            CsrFileVO vo = new CsrFileVO();
+            vo.setCsrId(csrId);
+            vo.setOriginNm(origin);
+            vo.setStoreNm(store);
+            vo.setFileSize(mf.getSize());
+            vo.setContentType(mf.getContentType());
+            vo.setRegId(loginUser.getUsername());
+            csrService.insertCsrFile(vo);
+        }
+        return "redirect:/csr/detail/" + csrId;
+    }
+
+    /** 첨부파일 다운로드 */
+    @GetMapping("/file/download/{fileId}")
+    public ResponseEntity<Resource> fileDownload(@PathVariable Long fileId) {
+        CsrFileVO f = csrService.selectCsrFile(fileId);
+        if (f == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Path path = Paths.get(uploadDir).resolve(f.getStoreNm());
+        Resource resource = new FileSystemResource(path);
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+        String encoded = URLEncoder.encode(f.getOriginNm(), StandardCharsets.UTF_8).replace("+", "%20");
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encoded + "\"; filename*=UTF-8''" + encoded)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+    /** 첨부파일 삭제 */
+    @PostMapping("/file/delete/{fileId}")
+    public String fileDelete(@PathVariable Long fileId) {
+        CsrFileVO f = csrService.selectCsrFile(fileId);
+        Long csrId = (f != null) ? f.getCsrId() : null;
+        if (f != null) {
+            try {
+                Files.deleteIfExists(Paths.get(uploadDir).resolve(f.getStoreNm()));
+            } catch (IOException ignore) {
+                // 물리 파일이 없어도 메타데이터는 삭제
+            }
+            csrService.deleteCsrFile(fileId);
+        }
+        return "redirect:/csr/detail/" + (csrId != null ? csrId : "");
     }
 
     /** 요청 등록 폼 */

@@ -44,6 +44,18 @@ public interface CsrMapper {
 
     void deleteCsrSys(Long csrId);
 
+    /* ===== 요청 첨부파일 ===== */
+
+    List<egovframework.ops.csr.service.CsrFileVO> selectCsrFileList(Long csrId);
+
+    egovframework.ops.csr.service.CsrFileVO selectCsrFile(Long fileId);
+
+    void insertCsrFile(egovframework.ops.csr.service.CsrFileVO vo);
+
+    void deleteCsrFile(Long fileId);
+
+    void deleteCsrFileByCsr(Long csrId);
+
     /* ===== 요청 소분류별 요청내용 템플릿 ===== */
 
     /** 전체 소분류 + 템플릿(LEFT JOIN) — 관리목록 */
