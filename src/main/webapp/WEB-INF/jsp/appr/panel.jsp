@@ -4,6 +4,8 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <%-- 결재선(검토/승인/처리자 라인) · 병렬 처리 · 공유 공통 패널 --%>
+<%-- 기본 결재선·공유가 전혀 없으면(기본설정 미구성) 상세에서 패널 자체를 숨김 --%>
+<c:if test="${not empty lineList or not empty shares}">
 <div class="panel appr-panel">
     <h3>결재선 / 공유
         <span class="badge ov-${fn:toLowerCase(overallKey)}" style="margin-left:8px;">${overallNm}</span>
@@ -122,3 +124,4 @@
         <c:otherwise>운영관리자에게 문의하세요.</c:otherwise></c:choose>
     </div>
 </div>
+</c:if>
