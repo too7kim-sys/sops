@@ -61,28 +61,6 @@
 
     <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
     <div>
-        <%-- 심의/승인 --%>
-        <div class="panel">
-            <h3>심의/승인</h3>
-            <form method="post" action="${ctx}/change/approve">
-                <input type="hidden" name="chgId" value="${change.chgId}"/>
-                <table class="form">
-                    <tr><th>심의 결과 <span class="required">*</span></th>
-                        <td>
-                            <select name="status" required>
-                                <option value="REVIEWING">검토</option>
-                                <option value="APPROVED">승인</option>
-                                <option value="REJECTED">반려</option>
-                            </select>
-                        </td></tr>
-                    <tr><th>심의 의견</th><td><textarea class="wysiwyg" name="apprOpinion" rows="3">${change.apprOpinion}</textarea></td></tr>
-                </table>
-                <div class="right" style="margin-top:12px;">
-                    <button type="submit" class="btn btn-success">심의 등록</button>
-                </div>
-            </form>
-        </div>
-
         <%-- 적용 --%>
         <div class="panel">
             <h3>적용 처리</h3>
@@ -106,9 +84,32 @@
     </c:if>
 </div>
 
-<%-- CAB(변경자문위원회) 심의이력 --%>
+<%-- CAB(변경자문위원회) 심의 --%>
 <div class="panel">
-    <h3>CAB 심의이력</h3>
+    <h3>CAB 심의</h3>
+    <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
+    <form method="post" action="${ctx}/change/cab">
+        <input type="hidden" name="chgId" value="${change.chgId}"/>
+        <table class="form">
+            <tr><th>심의 결과 <span class="required">*</span></th>
+                <td>
+                    <select name="decision" required>
+                        <option value="">선택</option>
+                        <c:forEach var="d" items="${cabDecisionList}">
+                            <option value="${d.codeId}">${d.codeNm}</option>
+                        </c:forEach>
+                    </select>
+                </td></tr>
+            <tr><th>심의 의견</th><td><textarea class="wysiwyg" name="opinion" rows="3"></textarea></td></tr>
+            <tr><th>심의위원</th><td><input type="text" name="reviewer" placeholder="미입력 시 로그인 사용자"/></td></tr>
+        </table>
+        <div class="right" style="margin-top:12px;">
+            <button type="submit" class="btn btn-success">CAB 심의 등록</button>
+        </div>
+    </form>
+    </c:if>
+
+    <h3 style="margin-top:20px;">CAB 심의이력</h3>
     <table class="list">
         <thead>
         <tr>
@@ -132,26 +133,6 @@
         </c:forEach>
         </tbody>
     </table>
-
-    <form method="post" action="${ctx}/change/cab" style="margin-top:12px;">
-        <input type="hidden" name="chgId" value="${change.chgId}"/>
-        <table class="form">
-            <tr><th>심의 결과 <span class="required">*</span></th>
-                <td>
-                    <select name="decision" required>
-                        <option value="">선택</option>
-                        <c:forEach var="d" items="${cabDecisionList}">
-                            <option value="${d.codeId}">${d.codeNm}</option>
-                        </c:forEach>
-                    </select>
-                </td></tr>
-            <tr><th>심의 의견</th><td><textarea class="wysiwyg" name="opinion" rows="3"></textarea></td></tr>
-            <tr><th>심의위원</th><td><input type="text" name="reviewer" placeholder="미입력 시 로그인 사용자"/></td></tr>
-        </table>
-        <div class="right" style="margin-top:12px;">
-            <button type="submit" class="btn btn-success">CAB 심의 등록</button>
-        </div>
-    </form>
 </div>
 
 <%-- 이행후검토(PIR) --%>
