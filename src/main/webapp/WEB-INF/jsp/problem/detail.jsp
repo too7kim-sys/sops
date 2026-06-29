@@ -32,18 +32,22 @@
     <div class="panel">
         <h3>문제 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${problem.sysNm}</td></tr>
-            <tr><th>제목</th><td>${problem.title}</td></tr>
-            <tr><th>우선순위 / 상태</th><td>
-                <span class="badge lv-${fn:toLowerCase(problem.priority)}">${problem.priorityNm}</span>
-                &nbsp;
-                <span class="badge st-${fn:toLowerCase(problem.status)}">${problem.statusNm}</span>
-            </td></tr>
-            <tr><th>처리자</th><td>${empty problem.chargerId ? '-' : uf:nm(userNameMap, problem.chargerId)}</td></tr>
-            <tr><th>등록 / 해결</th><td>${problem.regDt} / ${empty problem.resolveDt ? '-' : problem.resolveDt}</td></tr>
-            <tr><th>문제 내용</th><td><div class="rte-view">${problem.content}</div></td></tr>
-            <tr><th>근본 원인</th><td><div class="rte-view">${empty problem.rootCause ? '-' : problem.rootCause}</div></td></tr>
-            <tr><th>해결책</th><td><div class="rte-view">${empty problem.solution ? '-' : problem.solution}</div></td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${problem.sysNm}</td>
+                <th>우선순위 / 상태</th><td>
+                    <span class="badge lv-${fn:toLowerCase(problem.priority)}">${problem.priorityNm}</span>&nbsp;
+                    <span class="badge st-${fn:toLowerCase(problem.status)}">${problem.statusNm}</span>
+                </td>
+            </tr>
+            <tr><th>제목</th><td colspan="3">${problem.title}</td></tr>
+            <tr>
+                <th>등록일시</th><td>${problem.regDt}</td>
+                <th>해결일시</th><td>${empty problem.resolveDt ? '-' : problem.resolveDt}</td>
+            </tr>
+            <tr><th>처리자</th><td colspan="3">${empty problem.chargerId ? '-' : uf:nm(userNameMap, problem.chargerId)}</td></tr>
+            <tr><th>문제 내용</th><td colspan="3"><div class="rte-view">${problem.content}</div></td></tr>
+            <tr><th>근본 원인</th><td colspan="3"><div class="rte-view">${empty problem.rootCause ? '-' : problem.rootCause}</div></td></tr>
+            <tr><th>해결책</th><td colspan="3"><div class="rte-view">${empty problem.solution ? '-' : problem.solution}</div></td></tr>
         </table>
     </div>
 

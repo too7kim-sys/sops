@@ -33,25 +33,34 @@
     <div class="panel">
         <h3>장애 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${incident.sysNm}</td></tr>
-            <tr><th>제목</th><td>${incident.title}</td></tr>
-            <tr><th>등급 / 상태</th><td>
-                <span class="badge sev-${incident.severity}">${incident.severity}등급</span>&nbsp;
-                <span class="badge st-${fn:toLowerCase(incident.status)}">${incident.statusNm}</span>
-            </td></tr>
-            <tr><th>발생 / 접수</th><td>${incident.occrDt} / ${incident.rcptDt}</td></tr>
-            <tr><th>목표복구일시</th><td>${empty incident.targetResolveDt ? '-' : incident.targetResolveDt}</td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${incident.sysNm}</td>
+                <th>등급 / 상태</th><td>
+                    <span class="badge sev-${incident.severity}">${incident.severity}등급</span>&nbsp;
+                    <span class="badge st-${fn:toLowerCase(incident.status)}">${incident.statusNm}</span>
+                </td>
+            </tr>
+            <tr><th>제목</th><td colspan="3">${incident.title}</td></tr>
+            <tr>
+                <th>발생일시</th><td>${empty incident.occrDt ? '-' : incident.occrDt}</td>
+                <th>접수일시</th><td>${empty incident.rcptDt ? '-' : incident.rcptDt}</td>
+            </tr>
+            <tr>
+                <th>목표복구일시</th><td>${empty incident.targetResolveDt ? '-' : incident.targetResolveDt}</td>
+                <th>조치완료</th><td>${empty incident.resolveDt ? '-' : incident.resolveDt}</td>
+            </tr>
+            <tr>
+                <th>처리자</th><td>${empty incident.chargerId ? '-' : uf:nm(userNameMap, incident.chargerId)}</td>
+                <th>연계 문제</th><td><c:choose><c:when test="${incident.refPrbId != null}">PRB-${incident.refPrbId}</c:when><c:otherwise>-</c:otherwise></c:choose></td>
+            </tr>
             <c:if test="${incident.slaStatus != null}">
-            <tr><th>SLA</th><td>
+            <tr><th>SLA</th><td colspan="3">
                 <span class="badge ${incident.slaStatus == '준수' ? 'sla-ok' : (incident.slaStatus == '진행중' ? 'sla-warn' : 'sla-viol')}">${incident.slaStatus}</span>
             </td></tr>
             </c:if>
-            <tr><th>조치완료</th><td>${empty incident.resolveDt ? '-' : incident.resolveDt}</td></tr>
-            <tr><th>연계 문제</th><td><c:choose><c:when test="${incident.refPrbId != null}">PRB-${incident.refPrbId}</c:when><c:otherwise>-</c:otherwise></c:choose></td></tr>
-            <tr><th>처리자</th><td>${empty incident.chargerId ? '-' : uf:nm(userNameMap, incident.chargerId)}</td></tr>
-            <tr><th>장애 내용</th><td><div class="rte-view">${incident.content}</div></td></tr>
-            <tr><th>장애 원인</th><td><div class="rte-view">${empty incident.cause ? '-' : incident.cause}</div></td></tr>
-            <tr><th>조치 내용</th><td><div class="rte-view">${empty incident.action ? '-' : incident.action}</div></td></tr>
+            <tr><th>장애 내용</th><td colspan="3"><div class="rte-view">${incident.content}</div></td></tr>
+            <tr><th>장애 원인</th><td colspan="3"><div class="rte-view">${empty incident.cause ? '-' : incident.cause}</div></td></tr>
+            <tr><th>조치 내용</th><td colspan="3"><div class="rte-view">${empty incident.action ? '-' : incident.action}</div></td></tr>
         </table>
     </div>
 

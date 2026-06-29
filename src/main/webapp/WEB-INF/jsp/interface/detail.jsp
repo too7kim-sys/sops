@@ -32,19 +32,28 @@
     <div class="panel">
         <h3>연계 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${itf.sysNm}</td></tr>
-            <tr><th>제목</th><td>${itf.title}</td></tr>
-            <tr><th>상대 시스템</th><td>${empty itf.partnerSys ? '-' : itf.partnerSys}</td></tr>
-            <tr><th>연계 유형 / 상태</th><td>
-                <span>${itf.ifTypeNm}</span>
-                &nbsp;
-                <span class="badge st-${fn:toLowerCase(itf.status)}">${itf.statusNm}</span>
-            </td></tr>
-            <tr><th>요청자 / 요청일시</th><td><span>${uf:nm(userNameMap, itf.reqId)}</span> / <span>${itf.reqDt}</span></td></tr>
-            <tr><th>처리자</th><td>${empty itf.chargerId ? '-' : uf:nm(userNameMap, itf.chargerId)}</td></tr>
-            <tr><th>예정일 / 완료일시</th><td><span>${empty itf.planDt ? '-' : itf.planDt}</span> / <span>${empty itf.completeDt ? '-' : itf.completeDt}</span></td></tr>
-            <tr><th>연계 데이터</th><td><div class="rte-view">${empty itf.dataDesc ? '-' : itf.dataDesc}</div></td></tr>
-            <tr><th>처리 결과</th><td><div class="rte-view">${empty itf.result ? '-' : itf.result}</div></td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${itf.sysNm}</td>
+                <th>상대 시스템</th><td>${empty itf.partnerSys ? '-' : itf.partnerSys}</td>
+            </tr>
+            <tr><th>제목</th><td colspan="3">${itf.title}</td></tr>
+            <tr>
+                <th>연계 유형 / 상태</th><td>
+                    <span>${itf.ifTypeNm}</span>&nbsp;
+                    <span class="badge st-${fn:toLowerCase(itf.status)}">${itf.statusNm}</span>
+                </td>
+                <th>처리자</th><td>${empty itf.chargerId ? '-' : uf:nm(userNameMap, itf.chargerId)}</td>
+            </tr>
+            <tr>
+                <th>요청자</th><td>${uf:nm(userNameMap, itf.reqId)}</td>
+                <th>요청일시</th><td>${itf.reqDt}</td>
+            </tr>
+            <tr>
+                <th>예정일</th><td>${empty itf.planDt ? '-' : itf.planDt}</td>
+                <th>완료일시</th><td>${empty itf.completeDt ? '-' : itf.completeDt}</td>
+            </tr>
+            <tr><th>연계 데이터</th><td colspan="3"><div class="rte-view">${empty itf.dataDesc ? '-' : itf.dataDesc}</div></td></tr>
+            <tr><th>처리 결과</th><td colspan="3"><div class="rte-view">${empty itf.result ? '-' : itf.result}</div></td></tr>
         </table>
     </div>
 

@@ -33,17 +33,22 @@
     <div class="panel">
         <h3>배포 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${release.sysNm}</td></tr>
-            <tr><th>버전</th><td>${release.ver}</td></tr>
-            <tr><th>제목</th><td>${release.title}</td></tr>
-            <tr><th>상태</th><td>
-                <span class="badge st-${fn:toLowerCase(release.status)}">${release.statusNm}</span>
-            </td></tr>
-            <tr><th>연계 변경ID</th><td>${empty release.chgId ? '-' : release.chgId}</td></tr>
-            <tr><th>배포 예정 / 일시</th><td>${empty release.planDt ? '-' : release.planDt} / ${empty release.deployDt ? '-' : release.deployDt}</td></tr>
-            <tr><th>처리자</th><td>${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
-            <tr><th>배포 내용</th><td><div class="rte-view">${release.content}</div></td></tr>
-            <tr><th>배포 결과</th><td><div class="rte-view">${empty release.result ? '-' : release.result}</div></td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${release.sysNm}</td>
+                <th>버전</th><td>${release.ver}</td>
+            </tr>
+            <tr><th>제목</th><td colspan="3">${release.title}</td></tr>
+            <tr>
+                <th>상태</th><td><span class="badge st-${fn:toLowerCase(release.status)}">${release.statusNm}</span></td>
+                <th>연계 변경ID</th><td>${empty release.chgId ? '-' : release.chgId}</td>
+            </tr>
+            <tr>
+                <th>배포 예정일</th><td>${empty release.planDt ? '-' : release.planDt}</td>
+                <th>배포 일시</th><td>${empty release.deployDt ? '-' : release.deployDt}</td>
+            </tr>
+            <tr><th>처리자</th><td colspan="3">${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
+            <tr><th>배포 내용</th><td colspan="3"><div class="rte-view">${release.content}</div></td></tr>
+            <tr><th>배포 결과</th><td colspan="3"><div class="rte-view">${empty release.result ? '-' : release.result}</div></td></tr>
         </table>
     </div>
 

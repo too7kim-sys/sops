@@ -33,20 +33,29 @@
     <div class="panel">
         <h3>변경 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${change.sysNm}</td></tr>
-            <tr><th>제목</th><td>${change.title}</td></tr>
-            <tr><th>유형 / 상태</th><td>
-                <span class="badge">${change.chgTypeNm}</span>
-                &nbsp;
-                <span class="badge st-${fn:toLowerCase(change.status)}">${change.statusNm}</span>
-            </td></tr>
-            <tr><th>요청자 / 요청일시</th><td>${empty change.reqId ? '-' : uf:nm(userNameMap, change.reqId)} / ${empty change.reqDt ? '-' : change.reqDt}</td></tr>
-            <tr><th>적용 예정일</th><td>${empty change.planDt ? '-' : change.planDt}</td></tr>
-            <tr><th>적용 일시</th><td>${empty change.applyDt ? '-' : change.applyDt}</td></tr>
-            <tr><th>변경 사유</th><td><div class="rte-view">${empty change.reason ? '-' : change.reason}</div></td></tr>
-            <tr><th>변경 내용</th><td><div class="rte-view">${empty change.content ? '-' : change.content}</div></td></tr>
-            <tr><th>심의자 / 심의일시</th><td>${empty change.apprId ? '-' : uf:nm(userNameMap, change.apprId)} / ${empty change.apprDt ? '-' : change.apprDt}</td></tr>
-            <tr><th>심의 의견</th><td><div class="rte-view">${empty change.apprOpinion ? '-' : change.apprOpinion}</div></td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${change.sysNm}</td>
+                <th>유형 / 상태</th><td>
+                    <span class="badge">${change.chgTypeNm}</span>&nbsp;
+                    <span class="badge st-${fn:toLowerCase(change.status)}">${change.statusNm}</span>
+                </td>
+            </tr>
+            <tr><th>제목</th><td colspan="3">${change.title}</td></tr>
+            <tr>
+                <th>요청자</th><td>${empty change.reqId ? '-' : uf:nm(userNameMap, change.reqId)}</td>
+                <th>요청일시</th><td>${empty change.reqDt ? '-' : change.reqDt}</td>
+            </tr>
+            <tr>
+                <th>적용 예정일</th><td>${empty change.planDt ? '-' : change.planDt}</td>
+                <th>적용 일시</th><td>${empty change.applyDt ? '-' : change.applyDt}</td>
+            </tr>
+            <tr>
+                <th>심의자</th><td>${empty change.apprId ? '-' : uf:nm(userNameMap, change.apprId)}</td>
+                <th>심의일시</th><td>${empty change.apprDt ? '-' : change.apprDt}</td>
+            </tr>
+            <tr><th>변경 사유</th><td colspan="3"><div class="rte-view">${empty change.reason ? '-' : change.reason}</div></td></tr>
+            <tr><th>변경 내용</th><td colspan="3"><div class="rte-view">${empty change.content ? '-' : change.content}</div></td></tr>
+            <tr><th>심의 의견</th><td colspan="3"><div class="rte-view">${empty change.apprOpinion ? '-' : change.apprOpinion}</div></td></tr>
         </table>
     </div>
 

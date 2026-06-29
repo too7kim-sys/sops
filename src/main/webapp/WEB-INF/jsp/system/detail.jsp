@@ -20,21 +20,27 @@
 <div class="panel">
     <h3>시스템 정보</h3>
     <table class="form">
-        <tr><th>시스템ID</th><td>${system.sysId}</td></tr>
-        <tr><th>시스템명</th><td>${system.sysNm}</td></tr>
-        <tr><th>중요도등급</th><td>
-            <c:choose>
-                <c:when test="${system.grad == '1'}">1등급(상)</c:when>
-                <c:when test="${system.grad == '2'}">2등급(중)</c:when>
-                <c:when test="${system.grad == '3'}">3등급(하)</c:when>
-                <c:otherwise>${system.grad}</c:otherwise>
-            </c:choose>
-        </td></tr>
-        <tr><th>운영담당자</th><td>${empty system.mngrNm ? '-' : system.mngrNm}</td></tr>
-        <tr><th>운영부서</th><td>${empty system.mngrDept ? '-' : system.mngrDept}</td></tr>
-        <tr><th>사용여부</th><td>${system.useAt == 'Y' ? '사용' : '미사용'}</td></tr>
-        <tr><th>등록일</th><td>${empty system.regDt ? '-' : system.regDt}</td></tr>
-        <tr><th>시스템설명</th><td><div class="rte-view">${empty system.sysDesc ? '-' : system.sysDesc}</div></td></tr>
+        <tr>
+            <th>시스템ID</th><td>${system.sysId}</td>
+            <th>시스템명</th><td>${system.sysNm}</td>
+        </tr>
+        <tr>
+            <th>중요도등급</th><td>
+                <c:choose>
+                    <c:when test="${system.grad == '1'}">1등급(상)</c:when>
+                    <c:when test="${system.grad == '2'}">2등급(중)</c:when>
+                    <c:when test="${system.grad == '3'}">3등급(하)</c:when>
+                    <c:otherwise>${system.grad}</c:otherwise>
+                </c:choose>
+            </td>
+            <th>사용여부</th><td>${system.useAt == 'Y' ? '사용' : '미사용'}</td>
+        </tr>
+        <tr>
+            <th>운영담당자</th><td>${empty system.mngrNm ? '-' : system.mngrNm}</td>
+            <th>운영부서</th><td>${empty system.mngrDept ? '-' : system.mngrDept}</td>
+        </tr>
+        <tr><th>등록일</th><td colspan="3">${empty system.regDt ? '-' : system.regDt}</td></tr>
+        <tr><th>시스템설명</th><td colspan="3"><div class="rte-view">${empty system.sysDesc ? '-' : system.sysDesc}</div></td></tr>
     </table>
 </div>
 

@@ -33,16 +33,20 @@
     <div class="panel">
         <h3>형상 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${ci.sysNm}</td></tr>
-            <tr><th>형상항목명</th><td>${ci.ciNm}</td></tr>
-            <tr><th>유형 / 버전</th><td>${ci.ciTypeNm} / ${empty ci.ver ? '-' : ci.ver}</td></tr>
-            <tr><th>형상 상태</th><td>
-                <span class="badge st-${fn:toLowerCase(ci.ciStatus)}">${ci.ciStatusNm}</span>
-            </td></tr>
-            <tr><th>처리자</th><td>${empty ci.ownerId ? '-' : uf:nm(userNameMap, ci.ownerId)}</td></tr>
-            <tr><th>저장 위치</th><td>${empty ci.location ? '-' : ci.location}</td></tr>
-            <tr><th>등록 일시</th><td>${ci.regDt}</td></tr>
-            <tr><th>설명</th><td><div class="rte-view">${empty ci.ciDesc ? '-' : ci.ciDesc}</div></td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${ci.sysNm}</td>
+                <th>형상항목명</th><td>${ci.ciNm}</td>
+            </tr>
+            <tr>
+                <th>유형 / 버전</th><td>${ci.ciTypeNm} / ${empty ci.ver ? '-' : ci.ver}</td>
+                <th>형상 상태</th><td><span class="badge st-${fn:toLowerCase(ci.ciStatus)}">${ci.ciStatusNm}</span></td>
+            </tr>
+            <tr>
+                <th>처리자</th><td>${empty ci.ownerId ? '-' : uf:nm(userNameMap, ci.ownerId)}</td>
+                <th>저장 위치</th><td>${empty ci.location ? '-' : ci.location}</td>
+            </tr>
+            <tr><th>등록 일시</th><td colspan="3">${ci.regDt}</td></tr>
+            <tr><th>설명</th><td colspan="3"><div class="rte-view">${empty ci.ciDesc ? '-' : ci.ciDesc}</div></td></tr>
         </table>
     </div>
 

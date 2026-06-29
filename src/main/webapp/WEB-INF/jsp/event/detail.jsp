@@ -32,24 +32,29 @@
     <div class="panel">
         <h3>이벤트 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${event.sysNm}</td></tr>
-            <tr><th>제목</th><td>${event.title}</td></tr>
-            <tr><th>유형</th><td>${event.evtTypeNm}</td></tr>
-            <tr><th>심각도 / 상태</th><td>
-                <span class="badge lv-${fn:toLowerCase(event.severity)}">${event.severityNm}</span>
-                &nbsp;
-                <span class="badge st-${fn:toLowerCase(event.status)}">${event.statusNm}</span>
-            </td></tr>
-            <tr><th>발생일시</th><td>${empty event.occrDt ? '-' : event.occrDt}</td></tr>
-            <tr><th>처리자</th><td>${empty event.chargerId ? '-' : uf:nm(userNameMap, event.chargerId)}</td></tr>
-            <tr><th>연계 장애</th><td>
-                <c:choose>
-                    <c:when test="${event.linkedIncId != null}"><a href="${ctx}/incident/detail/${event.linkedIncId}">INC-${event.linkedIncId}</a></c:when>
-                    <c:otherwise>-</c:otherwise>
-                </c:choose>
-            </td></tr>
-            <tr><th>내용</th><td><div class="rte-view">${event.content}</div></td></tr>
-            <tr><th>조치 내용</th><td><div class="rte-view">${empty event.action ? '-' : event.action}</div></td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${event.sysNm}</td>
+                <th>유형</th><td>${event.evtTypeNm}</td>
+            </tr>
+            <tr><th>제목</th><td colspan="3">${event.title}</td></tr>
+            <tr>
+                <th>심각도 / 상태</th><td>
+                    <span class="badge lv-${fn:toLowerCase(event.severity)}">${event.severityNm}</span>&nbsp;
+                    <span class="badge st-${fn:toLowerCase(event.status)}">${event.statusNm}</span>
+                </td>
+                <th>발생일시</th><td>${empty event.occrDt ? '-' : event.occrDt}</td>
+            </tr>
+            <tr>
+                <th>처리자</th><td>${empty event.chargerId ? '-' : uf:nm(userNameMap, event.chargerId)}</td>
+                <th>연계 장애</th><td>
+                    <c:choose>
+                        <c:when test="${event.linkedIncId != null}"><a href="${ctx}/incident/detail/${event.linkedIncId}">INC-${event.linkedIncId}</a></c:when>
+                        <c:otherwise>-</c:otherwise>
+                    </c:choose>
+                </td>
+            </tr>
+            <tr><th>내용</th><td colspan="3"><div class="rte-view">${event.content}</div></td></tr>
+            <tr><th>조치 내용</th><td colspan="3"><div class="rte-view">${empty event.action ? '-' : event.action}</div></td></tr>
         </table>
     </div>
 

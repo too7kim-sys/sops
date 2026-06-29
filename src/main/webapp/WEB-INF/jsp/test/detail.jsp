@@ -32,17 +32,21 @@
     <div class="panel">
         <h3>테스트 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${test.sysNm}</td></tr>
-            <tr><th>제목</th><td>${test.title}</td></tr>
-            <tr><th>유형 / 환경</th><td><span>${test.testTypeNm}</span> / <span>${test.testEnvNm}</span></td></tr>
-            <tr><th>상태</th><td>
-                <span class="badge st-${fn:toLowerCase(test.status)}">${test.statusNm}</span>
-            </td></tr>
-            <tr><th>연계 변경 ID</th><td>${empty test.chgId ? '-' : test.chgId}</td></tr>
-            <tr><th>예정일</th><td>${empty test.planDt ? '-' : test.planDt}</td></tr>
-            <tr><th>테스터</th><td>${empty test.testerId ? '-' : uf:nm(userNameMap, test.testerId)}</td></tr>
-            <tr><th>등록 일시</th><td>${test.regDt}</td></tr>
-            <tr><th>결과 요약</th><td><div class="rte-view">${empty test.resultSummary ? '-' : test.resultSummary}</div></td></tr>
+            <tr>
+                <th>대상 시스템</th><td>${test.sysNm}</td>
+                <th>유형 / 환경</th><td><span>${test.testTypeNm}</span> / <span>${test.testEnvNm}</span></td>
+            </tr>
+            <tr><th>제목</th><td colspan="3">${test.title}</td></tr>
+            <tr>
+                <th>상태</th><td><span class="badge st-${fn:toLowerCase(test.status)}">${test.statusNm}</span></td>
+                <th>연계 변경 ID</th><td>${empty test.chgId ? '-' : test.chgId}</td>
+            </tr>
+            <tr>
+                <th>예정일</th><td>${empty test.planDt ? '-' : test.planDt}</td>
+                <th>등록 일시</th><td>${test.regDt}</td>
+            </tr>
+            <tr><th>테스터</th><td colspan="3">${empty test.testerId ? '-' : uf:nm(userNameMap, test.testerId)}</td></tr>
+            <tr><th>결과 요약</th><td colspan="3"><div class="rte-view">${empty test.resultSummary ? '-' : test.resultSummary}</div></td></tr>
         </table>
     </div>
 

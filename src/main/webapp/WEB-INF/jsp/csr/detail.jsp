@@ -33,7 +33,7 @@
     <div class="panel">
         <h3>요청 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>
+            <tr><th>대상 시스템</th><td colspan="3">
                 <c:choose>
                     <c:when test="${not empty csr.sysList}">
                         <c:forEach var="s" items="${csr.sysList}"><span class="badge" style="margin:2px 4px 2px 0;">${s.sysNm}</span></c:forEach>
@@ -41,23 +41,28 @@
                     <c:otherwise>${csr.sysNm}</c:otherwise>
                 </c:choose>
             </td></tr>
-            <tr><th>제목</th><td>${csr.title}</td></tr>
-            <tr><th>요청 분류</th><td>
-                <span class="badge">${csr.csrTypeNm}</span>
-                <c:if test="${not empty csr.csrSubTypeNm}">&nbsp;&gt;&nbsp;<span>${csr.csrSubTypeNm}</span></c:if>
-            </td></tr>
-            <tr><th>우선순위</th><td>
-                <span>${csr.priorityNm}</span>
-            </td></tr>
-            <tr><th>상태</th><td>
-                <span class="badge st-${fn:toLowerCase(csr.status)}">${csr.statusNm}</span>
-            </td></tr>
-            <tr><th>요청자 / 요청일시</th><td><span>${empty csr.reqId ? '-' : uf:nm(userNameMap, csr.reqId)}</span> / <span>${empty csr.reqDt ? '-' : csr.reqDt}</span></td></tr>
-            <tr><th>완료요구일</th><td>${empty csr.dueDt ? '-' : csr.dueDt}</td></tr>
-            <tr><th>처리자</th><td>${empty csr.chargerId ? '-' : uf:nm(userNameMap, csr.chargerId)}</td></tr>
-            <tr><th>처리일시</th><td>${empty csr.procDt ? '-' : csr.procDt}</td></tr>
-            <tr><th>요청 내용</th><td><div class="rte-view">${csr.content}</div></td></tr>
-            <tr><th>처리 내용</th><td><div class="rte-view">${empty csr.procContent ? '-' : csr.procContent}</div></td></tr>
+            <tr><th>제목</th><td colspan="3">${csr.title}</td></tr>
+            <tr>
+                <th>요청 분류</th><td>
+                    <span class="badge">${csr.csrTypeNm}</span>
+                    <c:if test="${not empty csr.csrSubTypeNm}">&nbsp;&gt;&nbsp;<span>${csr.csrSubTypeNm}</span></c:if>
+                </td>
+                <th>우선순위</th><td>${csr.priorityNm}</td>
+            </tr>
+            <tr>
+                <th>상태</th><td><span class="badge st-${fn:toLowerCase(csr.status)}">${csr.statusNm}</span></td>
+                <th>완료요구일</th><td>${empty csr.dueDt ? '-' : csr.dueDt}</td>
+            </tr>
+            <tr>
+                <th>요청자</th><td>${empty csr.reqId ? '-' : uf:nm(userNameMap, csr.reqId)}</td>
+                <th>요청일시</th><td>${empty csr.reqDt ? '-' : csr.reqDt}</td>
+            </tr>
+            <tr>
+                <th>처리자</th><td>${empty csr.chargerId ? '-' : uf:nm(userNameMap, csr.chargerId)}</td>
+                <th>처리일시</th><td>${empty csr.procDt ? '-' : csr.procDt}</td>
+            </tr>
+            <tr><th>요청 내용</th><td colspan="3"><div class="rte-view">${csr.content}</div></td></tr>
+            <tr><th>처리 내용</th><td colspan="3"><div class="rte-view">${empty csr.procContent ? '-' : csr.procContent}</div></td></tr>
         </table>
     </div>
 
