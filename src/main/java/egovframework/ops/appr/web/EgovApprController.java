@@ -87,6 +87,16 @@ public class EgovApprController {
         List<ApprLineVO> lines = apprService.selectLineList(bizType, bizId);
         List<ShareVO> shares = apprService.selectShareList(bizType, bizId);
 
+        // 기본 결재선/공유 자동 구성 : 결재선·공유가 모두 비어 있고 기본설정(템플릿)이 있으면 지연 적용
+        // (신규 등록 시점뿐 아니라 기존/시드 데이터도 패널 조회 시 기본 결재선이 보이도록)
+        if (lines.isEmpty() && shares.isEmpty()) {
+            int created = apprService.applyTemplate(bizType, bizId, loginId);
+            if (created > 0) {
+                lines = apprService.selectLineList(bizType, bizId);
+                shares = apprService.selectShareList(bizType, bizId);
+            }
+        }
+
         // 진행 집계 (병렬 라인 기준)
         int approveTotal = 0, approveDone = 0, reviewTotal = 0, reviewDone = 0, handleTotal = 0, handleDone = 0;
         boolean rejected = false;

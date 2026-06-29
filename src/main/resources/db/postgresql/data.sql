@@ -167,3 +167,14 @@ INSERT INTO OPS_DEPT (DEPT_CD, DEPT_NM, UPPER_ID, MNGR_ID, SORT_ORDR, DEPT_DESC,
  ('D120', '응용운영부',   1,    'oper02', 3, '응용프로그램 운영', 'Y'),
  ('D130', '민원지원과',   1,    NULL,     4, '대민 민원 지원', 'Y')
 ON CONFLICT (DEPT_CD) DO NOTHING;
+
+-- 결재 기본설정(템플릿) — 변경관리 기본 결재선/공유 (TPL_ID 가 시리얼이라 ON CONFLICT 불가 → 존재여부로 가드)
+-- 결재선/공유가 비어 있는 업무 패널 조회 시 이 템플릿이 자동 적용된다.
+INSERT INTO OPS_APPR_TEMPLATE (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO)
+SELECT v.* FROM (VALUES
+ ('CHANGE', 'LINE',  'REVIEW',  1, 1, 'DEPT',      '응용운영부',   CAST(NULL AS VARCHAR)),
+ ('CHANGE', 'LINE',  'APPROVE', 2, 1, 'USER',      'admin',        NULL),
+ ('CHANGE', 'LINE',  'HANDLE',  3, 1, 'REQUESTER', NULL,           NULL),
+ ('CHANGE', 'SHARE', NULL,      1, 1, 'DEPT',      '시스템운영부', '변경 공유')
+) AS v(BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO)
+WHERE NOT EXISTS (SELECT 1 FROM OPS_APPR_TEMPLATE WHERE BIZ_TYPE = 'CHANGE');
