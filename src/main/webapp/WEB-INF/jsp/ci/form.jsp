@@ -42,9 +42,7 @@
             </tr>
             <tr>
                 <th>버전</th>
-                <td><input type="text" name="ver" value="${ci.ver}" placeholder="예: 1.0.0"/></td>
-                <th>처리자</th>
-                <td><select name="ownerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == ci.ownerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td>
+                <td colspan="3"><input type="text" name="ver" value="${ci.ver}" placeholder="예: 1.0.0"/></td>
             </tr>
             <tr>
                 <th>저장 위치</th>

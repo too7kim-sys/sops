@@ -40,9 +40,7 @@
             </tr>
             <tr>
                 <th>발생일시</th>
-                <td><input type="datetime-local" name="occrDt" value="${fn:replace(incident.occrDt,' ','T')}"/></td>
-                <th>처리자</th>
-                <td><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == incident.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td>
+                <td colspan="3"><input type="datetime-local" name="occrDt" value="${fn:replace(incident.occrDt,' ','T')}"/></td>
             </tr>
             <tr>
                 <th>장애 내용</th>

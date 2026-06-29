@@ -62,7 +62,6 @@
                                 </c:forEach>
                             </select>
                         </td></tr>
-                    <tr><th>처리자</th><td><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == problem.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td></tr>
                     <tr><th>근본 원인</th><td><textarea class="wysiwyg" name="rootCause" rows="3">${problem.rootCause}</textarea></td></tr>
                     <tr><th>해결책</th><td><textarea class="wysiwyg" name="solution" rows="3">${problem.solution}</textarea></td></tr>
                 </table>

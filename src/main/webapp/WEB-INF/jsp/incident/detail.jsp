@@ -70,7 +70,6 @@
                                 </c:forEach>
                             </select>
                         </td></tr>
-                    <tr><th>처리자</th><td><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == incident.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td></tr>
                     <tr><th>연계 문제</th><td><input type="number" name="refPrbId" value="${incident.refPrbId}" placeholder="연계 문제 ID (선택)"/></td></tr>
                     <tr><th>장애 원인</th><td><textarea class="wysiwyg" name="cause" rows="3">${incident.cause}</textarea></td></tr>
                     <tr><th>조치 내용</th><td><textarea class="wysiwyg" name="action" rows="3">${incident.action}</textarea></td></tr>

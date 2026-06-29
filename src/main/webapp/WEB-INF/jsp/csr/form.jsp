@@ -63,10 +63,6 @@
                 <td><input type="date" name="dueDt" value="${csr.dueDt}"/></td>
             </tr>
             <tr>
-                <th>처리자</th>
-                <td colspan="3"><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == csr.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td>
-            </tr>
-            <tr>
                 <th>제목 <span class="required">*</span></th>
                 <td colspan="3"><input type="text" name="title" value="${csr.title}" required/></td>
             </tr>

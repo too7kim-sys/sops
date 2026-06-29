@@ -68,7 +68,6 @@
                                 </c:forEach>
                             </select>
                         </td></tr>
-                    <tr><th>처리자</th><td><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == event.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td></tr>
                     <tr><th>장애 연계<br/><small style="color:#999;font-weight:400;">(에스컬레이션 시 장애ID)</small></th>
                         <td><input type="number" name="linkedIncId" value="${event.linkedIncId}" placeholder="연계 장애 ID"/></td></tr>
                     <tr><th>조치 내용</th><td><textarea class="wysiwyg" name="action" rows="3">${event.action}</textarea></td></tr>
