@@ -107,6 +107,15 @@ public class EgovCsrController {
     public String fileUpload(@RequestParam Long csrId,
                             @RequestParam("files") MultipartFile[] files,
                             @AuthenticationPrincipal LoginUser loginUser) throws IOException {
+        storeFiles(csrId, files, loginUser.getUsername());
+        return "redirect:/csr/detail/" + csrId;
+    }
+
+    /** 업로드된 멀티파트 파일들을 저장하고 메타데이터를 적재(등록/수정/상세 공용) */
+    private void storeFiles(Long csrId, MultipartFile[] files, String actorId) throws IOException {
+        if (csrId == null || files == null) {
+            return;
+        }
         Path dir = Paths.get(uploadDir);
         Files.createDirectories(dir);
         for (MultipartFile mf : files) {
@@ -130,10 +139,9 @@ public class EgovCsrController {
             vo.setStoreNm(store);
             vo.setFileSize(mf.getSize());
             vo.setContentType(mf.getContentType());
-            vo.setRegId(loginUser.getUsername());
+            vo.setRegId(actorId);
             csrService.insertCsrFile(vo);
         }
-        return "redirect:/csr/detail/" + csrId;
     }
 
     /** 첨부파일 다운로드 */
@@ -155,9 +163,10 @@ public class EgovCsrController {
                 .body(resource);
     }
 
-    /** 첨부파일 삭제 */
+    /** 첨부파일 삭제 (returnUrl 지정 시 해당 화면으로 복귀 — 수정폼 등) */
     @PostMapping("/file/delete/{fileId}")
-    public String fileDelete(@PathVariable Long fileId) {
+    public String fileDelete(@PathVariable Long fileId,
+                             @RequestParam(required = false) String returnUrl) {
         CsrFileVO f = csrService.selectCsrFile(fileId);
         Long csrId = (f != null) ? f.getCsrId() : null;
         if (f != null) {
@@ -167,6 +176,9 @@ public class EgovCsrController {
                 // 물리 파일이 없어도 메타데이터는 삭제
             }
             csrService.deleteCsrFile(fileId);
+        }
+        if (returnUrl != null && !returnUrl.isBlank()) {
+            return "redirect:" + returnUrl;
         }
         return "redirect:/csr/detail/" + (csrId != null ? csrId : "");
     }
@@ -180,14 +192,16 @@ public class EgovCsrController {
         return "csr/form";
     }
 
-    /** 요청 등록 처리 */
+    /** 요청 등록 처리 (첨부파일 포함) */
     @PostMapping("/insert")
     public String insert(@ModelAttribute CsrVO csrVO,
-                         @AuthenticationPrincipal LoginUser loginUser) {
+                         @RequestParam(value = "files", required = false) MultipartFile[] files,
+                         @AuthenticationPrincipal LoginUser loginUser) throws IOException {
         csrVO.setReqId(loginUser.getUsername());
         csrService.insertCsr(csrVO);
         // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
         apprService.applyTemplate("CSR", csrVO.getCsrId(), loginUser.getUsername());
+        storeFiles(csrVO.getCsrId(), files, loginUser.getUsername());
         return "redirect:/csr/detail/" + csrVO.getCsrId();
     }
 
@@ -195,15 +209,19 @@ public class EgovCsrController {
     @GetMapping("/edit/{csrId}")
     public String editForm(@PathVariable Long csrId, Model model) {
         model.addAttribute("csr", csrService.selectCsr(csrId));
+        model.addAttribute("fileList", csrService.selectCsrFileList(csrId));
         addFormCodes(model);
         model.addAttribute("menu", "csr");
         return "csr/form";
     }
 
-    /** 요청 기본정보 수정 처리 */
+    /** 요청 기본정보 수정 처리 (첨부파일 추가 포함) */
     @PostMapping("/update")
-    public String update(@ModelAttribute CsrVO csrVO) {
+    public String update(@ModelAttribute CsrVO csrVO,
+                         @RequestParam(value = "files", required = false) MultipartFile[] files,
+                         @AuthenticationPrincipal LoginUser loginUser) throws IOException {
         csrService.updateCsr(csrVO);
+        storeFiles(csrVO.getCsrId(), files, loginUser.getUsername());
         return "redirect:/csr/detail/" + csrVO.getCsrId();
     }
 

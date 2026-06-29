@@ -11,7 +11,7 @@
     <div class="page-title">${isNew ? '요청 등록' : '요청 정보 수정'}</div>
 </div>
 
-<form method="post" action="${ctx}${isNew ? '/csr/insert' : '/csr/update'}">
+<form method="post" action="${ctx}${isNew ? '/csr/insert' : '/csr/update'}" enctype="multipart/form-data">
     <input type="hidden" name="csrId" value="${csr.csrId}"/>
     <div class="panel">
         <table class="form">
@@ -69,6 +69,23 @@
             <tr>
                 <th>요청 내용</th>
                 <td colspan="3"><textarea class="wysiwyg" id="content" name="content" rows="5">${csr.content}</textarea></td>
+            </tr>
+            <tr>
+                <th>첨부파일</th>
+                <td colspan="3">
+                    <c:if test="${not empty fileList}">
+                        <div style="margin-bottom:8px;">
+                            <c:forEach var="f" items="${fileList}">
+                                <span class="sys-chip" style="margin:2px 6px 2px 0;">
+                                    <a href="${ctx}/csr/file/download/${f.fileId}">📎 ${f.originNm}</a>
+                                    <button type="button" class="sys-chip-x" title="삭제" onclick="delCsrFile(${f.fileId})">×</button>
+                                </span>
+                            </c:forEach>
+                        </div>
+                    </c:if>
+                    <input type="file" name="files" multiple/>
+                    <div class="h-meta">여러 파일 선택 가능 · 파일당 최대 50MB · 저장 시 함께 첨부됩니다.</div>
+                </td>
             </tr>
         </table>
     </div>
@@ -230,5 +247,20 @@
     renderTags();
 })();
 </script>
+
+<%-- 기존 첨부파일 삭제 : 수정폼으로 복귀(returnUrl) --%>
+<c:if test="${not isNew}">
+<script>
+function delCsrFile(fileId) {
+    if (!confirm('이 첨부파일을 삭제할까요?')) { return; }
+    var f = document.createElement('form');
+    f.method = 'post';
+    f.action = '${ctx}/csr/file/delete/' + fileId;
+    f.innerHTML = '<input type="hidden" name="returnUrl" value="${ctx}/csr/edit/${csr.csrId}"/>';
+    document.body.appendChild(f);
+    f.submit();
+}
+</script>
+</c:if>
 
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>
