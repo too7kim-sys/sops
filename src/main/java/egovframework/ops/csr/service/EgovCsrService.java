@@ -30,4 +30,18 @@ public interface EgovCsrService {
 
     /** 요청 삭제 */
     void deleteCsr(Long csrId);
+
+    /* ===== 요청 소분류별 요청내용 템플릿 ===== */
+
+    /** 소분류 전체 + 템플릿 목록 (관리화면) */
+    List<CsrTplVO> selectCsrTplList();
+
+    /** 등록폼 자동주입용 — 템플릿이 있는 소분류만 */
+    List<CsrTplVO> selectCsrTplActive();
+
+    /** 소분류 1건 템플릿 조회 */
+    CsrTplVO selectCsrTpl(String subType);
+
+    /** 템플릿 저장(있으면 수정, 없으면 등록) */
+    void saveCsrTpl(CsrTplVO vo);
 }

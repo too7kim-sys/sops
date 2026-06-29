@@ -5,6 +5,7 @@ import egovframework.com.config.LoginUser;
 import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.csr.service.EgovCsrService;
+import egovframework.ops.csr.service.CsrTplVO;
 import egovframework.ops.csr.service.CsrVO;
 import egovframework.ops.system.service.EgovSystemService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -125,7 +126,34 @@ public class EgovCsrController {
         model.addAttribute("typeList", codeService.selectCodeList("CSR_TYPE"));
         // 요청 소분류 — 대분류(upperCode)별로 폼에서 연동 필터링
         model.addAttribute("subTypeList", codeService.selectCodeList("CSR_SUBTYPE"));
+        // 소분류별 요청내용 템플릿 — 폼에서 소분류 선택 시 요청내용에 자동 반영
+        model.addAttribute("csrTplList", csrService.selectCsrTplActive());
         model.addAttribute("priorityList", codeService.selectCodeList("PRIORITY"));
         model.addAttribute("statusList", codeService.selectCodeList("CSR_STATUS"));
+    }
+
+    /* ============ 요청 소분류별 요청내용 템플릿 관리 (운영관리자) ============ */
+
+    /** 템플릿 관리 목록 */
+    @GetMapping("/tpl")
+    public String tplList(Model model) {
+        model.addAttribute("tplList", csrService.selectCsrTplList());
+        model.addAttribute("menu", "csrTpl");
+        return "csr/tpl_list";
+    }
+
+    /** 템플릿 편집 폼 */
+    @GetMapping("/tpl/edit")
+    public String tplEdit(@RequestParam String subType, Model model) {
+        model.addAttribute("tpl", csrService.selectCsrTpl(subType));
+        model.addAttribute("menu", "csrTpl");
+        return "csr/tpl_form";
+    }
+
+    /** 템플릿 저장 */
+    @PostMapping("/tpl/save")
+    public String tplSave(@ModelAttribute CsrTplVO tplVO) {
+        csrService.saveCsrTpl(tplVO);
+        return "redirect:/csr/tpl";
     }
 }

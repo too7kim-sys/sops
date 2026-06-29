@@ -60,7 +60,7 @@
             </tr>
             <tr>
                 <th>요청 내용</th>
-                <td colspan="3"><textarea class="wysiwyg" name="content" rows="5">${csr.content}</textarea></td>
+                <td colspan="3"><textarea class="wysiwyg" id="content" name="content" rows="5">${csr.content}</textarea></td>
             </tr>
         </table>
     </div>
@@ -70,16 +70,31 @@
     </div>
 </form>
 
-<%-- 요청 대분류 → 소분류 연동 (코드 UPPER_CODE 기준 필터) --%>
+<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
+
+<%-- 소분류별 요청내용 템플릿 원본(HTML) : textarea 에 담아 브라우저가 엔티티를 복원하면 .value 로 원본 HTML 획득 --%>
+<div style="display:none;">
+    <c:forEach var="t" items="${csrTplList}">
+        <textarea class="csr-tpl-data" data-sub="${t.subType}">${fn:escapeXml(t.content)}</textarea>
+    </c:forEach>
+</div>
+
+<%-- 요청 대분류 → 소분류 연동 + 소분류별 요청내용 템플릿 자동주입 (에디터 초기화 이후 실행) --%>
 <script>
 (function () {
     var SUBTYPES = [
         <c:forEach var="st" items="${subTypeList}" varStatus="vs">{id:'${st.codeId}', nm:'${fn:escapeXml(st.codeNm)}', up:'${st.upperCode}'}<c:if test="${!vs.last}">,</c:if></c:forEach>
     ];
+    var TEMPLATES = {};
+    Array.prototype.forEach.call(document.querySelectorAll('.csr-tpl-data'), function (t) {
+        TEMPLATES[t.getAttribute('data-sub')] = t.value;
+    });
     var curSel = '${csr.csrSubType}';
+    var isNew = ${csr.csrId == null};
     var major = document.getElementById('csrType');
     var sub = document.getElementById('csrSubType');
     if (!major || !sub) return;
+
     function fill() {
         var maj = major.value;
         sub.innerHTML = '';
@@ -95,10 +110,25 @@
             sub.appendChild(o);
         }
     }
-    major.addEventListener('change', function () { curSel = ''; fill(); });
+
+    // 선택 소분류의 요청내용 템플릿을 에디터에 주입 (비어있으면 바로, 내용 있으면 확인)
+    function applyTpl(subCd) {
+        var tpl = TEMPLATES[subCd];
+        if (!tpl || !window.jQuery) return;
+        var $c = jQuery('#content');
+        if (!$c.length) return;
+        var empty = $c.data('summernote') ? $c.summernote('isEmpty') : !($c.val() && $c.val().trim());
+        if (empty || confirm('선택한 소분류의 요청내용 템플릿을 불러올까요?\n(기존 입력 내용이 대체됩니다)')) {
+            if ($c.data('summernote')) { $c.summernote('code', tpl); } else { $c.val(tpl); }
+        }
+    }
+
+    major.addEventListener('change', function () { curSel = ''; fill(); applyTpl(sub.value); });
+    sub.addEventListener('change', function () { applyTpl(sub.value); });
     fill();
+    // 신규 등록 시 최초 진입한 소분류 템플릿을 자동 표시(에디터 준비 후)
+    if (isNew && window.jQuery) { jQuery(function () { applyTpl(sub.value); }); }
 })();
 </script>
 
-<jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

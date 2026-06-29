@@ -3,6 +3,7 @@ package egovframework.ops.csr.service.impl;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.ops.csr.service.EgovCsrService;
 import egovframework.ops.csr.service.CsrHisVO;
+import egovframework.ops.csr.service.CsrTplVO;
 import egovframework.ops.csr.service.CsrVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,5 +86,34 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
     public void deleteCsr(Long csrId) {
         csrMapper.deleteCsrHis(csrId);
         csrMapper.deleteCsr(csrId);
+    }
+
+    /* ===== 요청 소분류별 요청내용 템플릿 ===== */
+
+    @Override
+    public List<CsrTplVO> selectCsrTplList() {
+        return csrMapper.selectCsrTplList();
+    }
+
+    @Override
+    public List<CsrTplVO> selectCsrTplActive() {
+        return csrMapper.selectCsrTplActive();
+    }
+
+    @Override
+    public CsrTplVO selectCsrTpl(String subType) {
+        return csrMapper.selectCsrTpl(subType);
+    }
+
+    @Override
+    @Transactional
+    public void saveCsrTpl(CsrTplVO vo) {
+        if (vo.getUseAt() == null || vo.getUseAt().isBlank()) {
+            vo.setUseAt("Y");
+        }
+        // 있으면 수정, 없으면 등록 (소분류 1:1)
+        if (csrMapper.updateCsrTpl(vo) == 0) {
+            csrMapper.insertCsrTpl(vo);
+        }
     }
 }

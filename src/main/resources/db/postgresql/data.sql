@@ -147,6 +147,17 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT, UPPER_CODE)
  ('CSR_SUBTYPE', 'CFG_ADD',      '구성정보 추가요청(신규)', 2, 'Y', 'CONFIG')
 ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;
 
+-- 요청 소분류별 요청내용 템플릿 (예시, 멱등) ---------------------------
+INSERT INTO OPS_CSR_TPL (SUB_TYPE, CONTENT, USE_AT) VALUES
+ ('GEN_INQUIRY', '<p>■ 문의 내용 : </p><p>■ 확인 요청 사항 : </p><p>■ 희망 회신 기한 : </p>', 'Y'),
+ ('INC_FAIL',    '<p>■ 장애 현상 : </p><p>■ 발생 시각 : </p><p>■ 재현 경로/조건 : </p><p>■ 영향 범위 : </p>', 'Y'),
+ ('CHG_NEW',     '<p>■ 개발 배경/목적 : </p><p>■ 요구 기능 : </p><p>■ 대상 화면/업무 : </p><p>■ 기대 효과 : </p>', 'Y'),
+ ('CHG_MOD',     '<p>■ 수정 대상(화면/기능) : </p><p>■ 변경 전/후 : </p><p>■ 변경 사유 : </p>', 'Y'),
+ ('CHG_DB',      '<p>■ 작업 대상(테이블/스키마) : </p><p>■ 작업 내용 : </p><p>■ 영향도/백업 여부 : </p><p>■ 작업 희망 일시 : </p>', 'Y'),
+ ('BAK_RESTORE', '<p>■ 대상 시스템/데이터 : </p><p>■ 백업/복구 시점 : </p><p>■ 요청 사유 : </p>', 'Y'),
+ ('CFG_ADD',     '<p>■ 신규 구성 항목 : </p><p>■ 사양/수량 : </p><p>■ 설치 위치 : </p><p>■ 도입 사유 : </p>', 'Y')
+ON CONFLICT (SUB_TYPE) DO NOTHING;
+
 -- 현행 모듈 보강 공통코드 ----------------------------------------------
 INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('RELEASE_STATUS', 'VERIFYING',  '배포검증', 6, 'Y'),

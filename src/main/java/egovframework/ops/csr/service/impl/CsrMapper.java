@@ -1,6 +1,7 @@
 package egovframework.ops.csr.service.impl;
 
 import egovframework.ops.csr.service.CsrHisVO;
+import egovframework.ops.csr.service.CsrTplVO;
 import egovframework.ops.csr.service.CsrVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -31,4 +32,19 @@ public interface CsrMapper {
     void deleteCsr(Long csrId);
 
     void deleteCsrHis(Long csrId);
+
+    /* ===== 요청 소분류별 요청내용 템플릿 ===== */
+
+    /** 전체 소분류 + 템플릿(LEFT JOIN) — 관리목록 */
+    List<CsrTplVO> selectCsrTplList();
+
+    /** 템플릿이 등록된 소분류만 — 등록폼 자동주입용 */
+    List<CsrTplVO> selectCsrTplActive();
+
+    /** 소분류 1건의 템플릿(소분류/대분류명 포함) */
+    CsrTplVO selectCsrTpl(String subType);
+
+    int updateCsrTpl(CsrTplVO vo);
+
+    void insertCsrTpl(CsrTplVO vo);
 }

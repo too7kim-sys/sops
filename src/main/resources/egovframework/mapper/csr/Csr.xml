@@ -144,4 +144,53 @@
         DELETE FROM OPS_CSR_HIS WHERE CSR_ID = #{csrId}
     </delete>
 
+    <!-- ===================== 요청내용 템플릿 ===================== -->
+
+    <!-- 전체 소분류(CSR_SUBTYPE) 기준 LEFT JOIN 템플릿 : 미등록 소분류도 노출 -->
+    <select id="selectCsrTplList" resultType="egovframework.ops.csr.service.CsrTplVO">
+        SELECT SC.CODE_ID    AS subType,
+               SC.CODE_NM    AS subTypeNm,
+               SC.UPPER_CODE AS csrType,
+               TC.CODE_NM    AS csrTypeNm,
+               T.CONTENT     AS content,
+               COALESCE(T.USE_AT, 'Y') AS useAt
+          FROM OPS_CODE SC
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE' AND TC.CODE_ID = SC.UPPER_CODE
+          LEFT JOIN OPS_CSR_TPL T ON T.SUB_TYPE = SC.CODE_ID
+         WHERE SC.CODE_GRP = 'CSR_SUBTYPE' AND SC.USE_AT = 'Y'
+         ORDER BY TC.SORT_ORDR, SC.SORT_ORDR
+    </select>
+
+    <!-- 등록폼 자동주입용 : 사용중·내용 있는 템플릿만 -->
+    <select id="selectCsrTplActive" resultType="egovframework.ops.csr.service.CsrTplVO">
+        SELECT SUB_TYPE AS subType, CONTENT AS content
+          FROM OPS_CSR_TPL
+         WHERE USE_AT = 'Y' AND CONTENT IS NOT NULL
+    </select>
+
+    <select id="selectCsrTpl" parameterType="string"
+            resultType="egovframework.ops.csr.service.CsrTplVO">
+        SELECT SC.CODE_ID    AS subType,
+               SC.CODE_NM    AS subTypeNm,
+               SC.UPPER_CODE AS csrType,
+               TC.CODE_NM    AS csrTypeNm,
+               T.CONTENT     AS content,
+               COALESCE(T.USE_AT, 'Y') AS useAt
+          FROM OPS_CODE SC
+          LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE' AND TC.CODE_ID = SC.UPPER_CODE
+          LEFT JOIN OPS_CSR_TPL T ON T.SUB_TYPE = SC.CODE_ID
+         WHERE SC.CODE_GRP = 'CSR_SUBTYPE' AND SC.CODE_ID = #{subType}
+    </select>
+
+    <update id="updateCsrTpl" parameterType="egovframework.ops.csr.service.CsrTplVO">
+        UPDATE OPS_CSR_TPL
+           SET CONTENT = #{content}, USE_AT = #{useAt}
+         WHERE SUB_TYPE = #{subType}
+    </update>
+
+    <insert id="insertCsrTpl" parameterType="egovframework.ops.csr.service.CsrTplVO">
+        INSERT INTO OPS_CSR_TPL (SUB_TYPE, CONTENT, USE_AT, REG_DT)
+        VALUES (#{subType}, #{content}, #{useAt}, CURRENT_TIMESTAMP)
+    </insert>
+
 </mapper>
