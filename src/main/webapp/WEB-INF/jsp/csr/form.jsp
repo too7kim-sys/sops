@@ -18,22 +18,20 @@
             <tr>
                 <th>대상 시스템 <span class="required">*</span></th>
                 <td>
-                    <div class="syschooser">
-                        <div class="syschooser-top">
-                            <input type="text" id="sysFilter" class="syschooser-search" placeholder="시스템명 검색…" autocomplete="off"/>
-                            <span class="h-meta" id="sysCount" style="white-space:nowrap;">선택 0</span>
-                            <button type="button" class="btn btn-ghost btn-sm" id="sysCheckAll">표시 전체선택</button>
-                            <button type="button" class="btn btn-ghost btn-sm" id="sysClear">표시 해제</button>
+                    <div class="sysfind" id="sysFind">
+                        <div class="sysfind-box" id="sysFindBox">
+                            <span class="sysfind-tags" id="sysTags"></span>
+                            <input type="text" id="sysSearch" class="sysfind-search" placeholder="시스템명 검색 후 선택…" autocomplete="off"/>
                         </div>
-                        <div class="syschooser-chips" id="sysChips"></div>
-                        <div class="chk-layer" id="sysIdsBox">
+                        <div class="sysfind-results" id="sysResults" style="display:none;"></div>
+                        <%-- 실제 제출값(체크박스) : 검색 UI 가 토글, 화면에는 숨김 --%>
+                        <span class="sysfind-data" id="sysIdsBox" style="display:none;">
                             <c:forEach var="s" items="${systemList}">
-                                <label data-nm="${fn:escapeXml(s.sysNm)}"><input type="checkbox" name="sysIds" value="${s.sysId}" ${csr.sysIds.contains(s.sysId) ? 'checked' : ''}/> ${s.sysNm}</label>
+                                <label data-nm="${fn:escapeXml(s.sysNm)}"><input type="checkbox" name="sysIds" value="${s.sysId}" ${csr.sysIds.contains(s.sysId) ? 'checked' : ''}/></label>
                             </c:forEach>
-                            <div class="chk-empty" id="sysNoMatch" style="display:none;">검색 결과가 없습니다.</div>
-                        </div>
+                        </span>
                     </div>
-                    <div class="h-meta">검색으로 좁혀 체크하세요. 선택 항목은 위에 칩으로 표시됩니다. (1개 이상)</div>
+                    <div class="h-meta">검색어를 입력해 시스템을 찾아 선택하세요. 선택 항목은 위에 표시됩니다. (1개 이상)</div>
                 </td>
                 <th>요청 대분류 <span class="required">*</span></th>
                 <td>
@@ -154,62 +152,86 @@
 })();
 </script>
 
-<%-- 대상 시스템 선택기 : 검색 필터 + 선택 칩 + 표시중 일괄선택 (시스템 다수 대응) --%>
+<%-- 대상 시스템 통합검색 선택기 : 검색 입력 → 결과 드롭다운 선택 → 토큰(칩) (다수 대응) --%>
 <script>
 (function () {
-    var box = document.getElementById('sysIdsBox');
-    if (!box) return;
-    var filterEl = document.getElementById('sysFilter');
-    var chipsEl  = document.getElementById('sysChips');
-    var countEl  = document.getElementById('sysCount');
-    var noMatch  = document.getElementById('sysNoMatch');
-    var labels = Array.prototype.slice.call(box.querySelectorAll('label'));
+    var dataBox = document.getElementById('sysIdsBox');
+    if (!dataBox) return;
+    var tagsEl  = document.getElementById('sysTags');
+    var input   = document.getElementById('sysSearch');
+    var results = document.getElementById('sysResults');
+    var MAX = 30;
 
-    function cbOf(l)  { return l.querySelector('input[type=checkbox]'); }
-    function nameOf(l){ return (l.getAttribute('data-nm') || l.textContent).trim(); }
+    var items = Array.prototype.slice.call(dataBox.querySelectorAll('label')).map(function (l) {
+        var cb = l.querySelector('input[type=checkbox]');
+        return { id: cb.value, nm: (l.getAttribute('data-nm') || '').trim(), cb: cb };
+    });
 
-    function refreshChips() {
-        chipsEl.innerHTML = '';
-        var n = 0;
-        labels.forEach(function (l) {
-            var cb = cbOf(l);
-            if (!cb.checked) return;
-            n++;
+    function renderTags() {
+        tagsEl.innerHTML = '';
+        items.filter(function (it) { return it.cb.checked; }).forEach(function (it) {
             var chip = document.createElement('span');
             chip.className = 'sys-chip';
-            chip.appendChild(document.createTextNode(nameOf(l)));
+            chip.appendChild(document.createTextNode(it.nm));
             var x = document.createElement('button');
-            x.type = 'button'; x.className = 'sys-chip-x'; x.textContent = '×';
-            x.title = '제거';
-            x.addEventListener('click', function () { cb.checked = false; refreshChips(); });
+            x.type = 'button'; x.className = 'sys-chip-x'; x.textContent = '×'; x.title = '제거';
+            x.addEventListener('mousedown', function (e) { e.preventDefault(); it.cb.checked = false; renderTags(); });
             chip.appendChild(x);
-            chipsEl.appendChild(chip);
+            tagsEl.appendChild(chip);
         });
-        countEl.textContent = '선택 ' + n;
     }
 
-    function applyFilter() {
-        var q = (filterEl.value || '').toLowerCase();
-        var shown = 0;
-        labels.forEach(function (l) {
-            var ok = !q || nameOf(l).toLowerCase().indexOf(q) >= 0;
-            l.style.display = ok ? '' : 'none';
-            if (ok) shown++;
+    function openResults() {
+        var q = (input.value || '').toLowerCase().trim();
+        var matches = items.filter(function (it) {
+            return !it.cb.checked && (!q || it.nm.toLowerCase().indexOf(q) >= 0);
         });
-        if (noMatch) noMatch.style.display = shown ? 'none' : '';
+        results.innerHTML = '';
+        if (!matches.length) {
+            var none = document.createElement('div');
+            none.className = 'sysfind-none';
+            none.textContent = q ? '검색 결과가 없습니다.' : '추가할 시스템이 없습니다.';
+            results.appendChild(none);
+        } else {
+            matches.slice(0, MAX).forEach(function (it) {
+                var d = document.createElement('div');
+                d.className = 'sysfind-item';
+                d.textContent = it.nm;
+                d.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+                    it.cb.checked = true; input.value = '';
+                    renderTags(); openResults(); input.focus();
+                });
+                results.appendChild(d);
+            });
+            if (matches.length > MAX) {
+                var more = document.createElement('div');
+                more.className = 'sysfind-none';
+                more.textContent = '… 외 ' + (matches.length - MAX) + '건 · 검색어를 더 입력하세요';
+                results.appendChild(more);
+            }
+        }
+        results.style.display = '';
     }
+    function closeResults() { results.style.display = 'none'; }
 
-    box.addEventListener('change', refreshChips);
-    filterEl.addEventListener('input', applyFilter);
-    document.getElementById('sysCheckAll').addEventListener('click', function () {
-        labels.forEach(function (l) { if (l.style.display !== 'none') cbOf(l).checked = true; });
-        refreshChips();
+    input.addEventListener('focus', openResults);
+    input.addEventListener('input', openResults);
+    input.addEventListener('blur', function () { setTimeout(closeResults, 150); });
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            var first = results.querySelector('.sysfind-item');
+            if (first) { first.dispatchEvent(new MouseEvent('mousedown')); }
+        } else if (e.key === 'Backspace' && !input.value) {
+            var checked = items.filter(function (it) { return it.cb.checked; });
+            if (checked.length) { checked[checked.length - 1].cb.checked = false; renderTags(); openResults(); }
+        }
     });
-    document.getElementById('sysClear').addEventListener('click', function () {
-        labels.forEach(function (l) { if (l.style.display !== 'none') cbOf(l).checked = false; });
-        refreshChips();
-    });
-    refreshChips();
+    // 입력창 영역 클릭 시 검색창 포커스
+    document.getElementById('sysFindBox').addEventListener('click', function () { input.focus(); });
+
+    renderTags();
 })();
 </script>
 

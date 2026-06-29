@@ -81,20 +81,25 @@ table.form textarea { resize: vertical; min-height: 70px; }
 .chk-layer input[type=checkbox] { width: auto; margin: 0; }
 .chk-empty { width: 100%; color: #98a2b3; font-size: 13px; padding: 6px 2px; }
 
-/* 다수 항목 선택기(검색 + 칩 + 체크리스트) */
-.syschooser { border: 1px solid #cfd5dd; border-radius: 6px; background: #fff; max-width: 620px; }
-.syschooser-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-    padding: 8px; border-bottom: 1px solid #eef1f5; background: #f8fafc; border-radius: 6px 6px 0 0; }
-.syschooser-search { flex: 1; min-width: 180px; padding: 6px 9px; border: 1px solid #cfd5dd;
-    border-radius: 4px; font-size: 13px; }
-.syschooser-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border-bottom: 1px solid #eef1f5; }
-.syschooser-chips:empty { display: none; }
+/* 통합검색형 다중 선택기(검색 입력 → 결과 드롭다운 → 토큰) */
+.sysfind { position: relative; max-width: 620px; }
+.sysfind-box { display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    border: 1px solid #cfd5dd; border-radius: 6px; padding: 6px 8px; background: #fff;
+    min-height: 40px; cursor: text; }
+.sysfind-box:focus-within { border-color: #6aa3e6; box-shadow: 0 0 0 2px rgba(106,163,230,.18); }
+.sysfind-tags { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.sysfind-search { flex: 1; min-width: 160px; border: none; outline: none; font-size: 13px; padding: 4px; background: transparent; }
+.sysfind-results { position: absolute; left: 0; right: 0; top: 100%; margin-top: 3px;
+    max-height: 240px; overflow-y: auto; background: #fff; border: 1px solid #cfd5dd;
+    border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.12); z-index: 50; }
+.sysfind-item { padding: 8px 12px; font-size: 13px; cursor: pointer; }
+.sysfind-item:hover { background: #eaf2fb; color: #1b3a6b; }
+.sysfind-none { padding: 8px 12px; font-size: 12px; color: #98a2b3; }
 .sys-chip { display: inline-flex; align-items: center; gap: 2px; background: #eaf2fb; color: #1b3a6b;
-    border: 1px solid #cfe0f3; border-radius: 14px; padding: 2px 4px 2px 10px; font-size: 12px; }
+    border: 1px solid #cfe0f3; border-radius: 14px; padding: 2px 4px 2px 10px; font-size: 12px; white-space: nowrap; }
 .sys-chip-x { border: none; background: transparent; color: #3672c2; cursor: pointer;
     font-size: 15px; line-height: 1; padding: 0 4px; }
 .sys-chip-x:hover { color: #c0392b; }
-.syschooser .chk-layer { border: none; border-radius: 0 0 6px 6px; max-height: 220px; }
 
 /* ---------- 버튼 ---------- */
 .btn { display: inline-block; padding: 8px 16px; border: 1px solid transparent; border-radius: 5px;
