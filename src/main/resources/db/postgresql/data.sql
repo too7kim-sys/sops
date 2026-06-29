@@ -7,8 +7,8 @@
 -- =====================================================================
 
 -- 사용자(운영자) -------------------------------------------------------
-INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_CD, EMAIL, TELNO, USE_AT) VALUES
- ('admin',  '운영관리자', 'admin123!', 'ADMIN',    'D100', 'admin@egov.go.kr',  '02-100-0001', 'Y')
+INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, POSITN, DEPT_CD, EMAIL, TELNO, USE_AT) VALUES
+ ('admin',  '운영관리자', 'admin123!', 'ADMIN',    '부장', 'D100', 'admin@egov.go.kr',  '02-100-0001', 'Y')
 ON CONFLICT (USER_ID) DO NOTHING;
 
 -- 공통코드 ------------------------------------------------------------

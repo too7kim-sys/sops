@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="장애 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -47,7 +48,7 @@
             </c:if>
             <tr><th>조치완료</th><td>${empty incident.resolveDt ? '-' : incident.resolveDt}</td></tr>
             <tr><th>연계 문제</th><td><c:choose><c:when test="${incident.refPrbId != null}">PRB-${incident.refPrbId}</c:when><c:otherwise>-</c:otherwise></c:choose></td></tr>
-            <tr><th>담당자</th><td>${empty incident.chargerId ? '-' : incident.chargerId}</td></tr>
+            <tr><th>담당자</th><td>${empty incident.chargerId ? '-' : uf:nm(userNameMap, incident.chargerId)}</td></tr>
             <tr><th>장애 내용</th><td><div class="rte-view">${incident.content}</div></td></tr>
             <tr><th>장애 원인</th><td><div class="rte-view">${empty incident.cause ? '-' : incident.cause}</div></td></tr>
             <tr><th>조치 내용</th><td><div class="rte-view">${empty incident.action ? '-' : incident.action}</div></td></tr>
@@ -86,7 +87,7 @@
                     <li>
                         <span class="badge st-${fn:toLowerCase(h.status)}">${h.statusNm}</span>
                         <span style="white-space:pre-line;">${h.content}</span>
-                        <div class="h-meta">${h.procId} · ${h.procDt}</div>
+                        <div class="h-meta">${uf:nm(userNameMap, h.procId)} · ${h.procDt}</div>
                     </li>
                 </c:forEach>
                 <c:if test="${empty incident.historyList}"><li style="border:none;">이력이 없습니다.</li></c:if>

@@ -33,6 +33,7 @@
         <tr>
             <th style="width:140px;">사용자ID</th>
             <th style="width:140px;">사용자명</th>
+            <th class="center" style="width:80px;">직급</th>
             <th class="center" style="width:110px;">권한</th>
             <th style="width:140px;">부서</th>
             <th>이메일</th>
@@ -45,6 +46,7 @@
             <tr>
                 <td><a href="${ctx}/sys/user/edit/${u.userId}">${u.userId}</a></td>
                 <td>${u.userNm}</td>
+                <td class="center">${empty u.positn ? '-' : u.positn}</td>
                 <td class="center">
                     <c:choose>
                         <c:when test="${u.role == 'ADMIN'}">운영관리자</c:when>
@@ -59,7 +61,7 @@
                 <td class="center">${u.regDt}</td>
             </tr>
         </c:forEach>
-        <c:if test="${empty userList}"><tr><td colspan="7" class="empty">등록된 사용자가 없습니다.</td></tr></c:if>
+        <c:if test="${empty userList}"><tr><td colspan="8" class="empty">등록된 사용자가 없습니다.</td></tr></c:if>
         </tbody>
     </table>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/sys/user/list"/></jsp:include>

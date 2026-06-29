@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="테스트 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -39,7 +40,7 @@
             </td></tr>
             <tr><th>연계 변경 ID</th><td>${empty test.chgId ? '-' : test.chgId}</td></tr>
             <tr><th>예정일</th><td>${empty test.planDt ? '-' : test.planDt}</td></tr>
-            <tr><th>테스터</th><td>${empty test.testerId ? '-' : test.testerId}</td></tr>
+            <tr><th>테스터</th><td>${empty test.testerId ? '-' : uf:nm(userNameMap, test.testerId)}</td></tr>
             <tr><th>등록 일시</th><td>${test.regDt}</td></tr>
             <tr><th>결과 요약</th><td><div class="rte-view">${empty test.resultSummary ? '-' : test.resultSummary}</div></td></tr>
         </table>

@@ -5,11 +5,11 @@
 -- =====================================================================
 
 -- 사용자(운영자) -------------------------------------------------------
-INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_CD, EMAIL, TELNO, USE_AT) VALUES
- ('admin',  '운영관리자', 'admin123!', 'ADMIN',    'D100', 'admin@egov.go.kr',  '02-100-0001', 'Y'),
- ('oper01', '김운영',     'oper123!',  'OPERATOR', 'D110', 'oper01@egov.go.kr', '02-100-0002', 'Y'),
- ('oper02', '이담당',     'oper123!',  'OPERATOR', 'D120', 'oper02@egov.go.kr', '02-100-0003', 'Y'),
- ('user01', '박사용',     'user123!',  'USER',     'D130', 'user01@egov.go.kr', '02-100-0004', 'Y');
+INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, POSITN, DEPT_CD, EMAIL, TELNO, USE_AT) VALUES
+ ('admin',  '운영관리자', 'admin123!', 'ADMIN',    '부장', 'D100', 'admin@egov.go.kr',  '02-100-0001', 'Y'),
+ ('oper01', '김운영',     'oper123!',  'OPERATOR', '과장', 'D110', 'oper01@egov.go.kr', '02-100-0002', 'Y'),
+ ('oper02', '이담당',     'oper123!',  'OPERATOR', '대리', 'D120', 'oper02@egov.go.kr', '02-100-0003', 'Y'),
+ ('user01', '박사용',     'user123!',  'USER',     '주임', 'D130', 'user01@egov.go.kr', '02-100-0004', 'Y');
 
 -- 응용시스템 마스터 ----------------------------------------------------
 INSERT INTO OPS_SYSTEM (SYS_ID, SYS_NM, SYS_DESC, MNGR_NM, MNGR_DEPT, GRAD, USE_AT) VALUES

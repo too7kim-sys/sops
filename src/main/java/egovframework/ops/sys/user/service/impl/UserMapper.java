@@ -17,6 +17,9 @@ public interface UserMapper {
 
     UserVO selectUser(String userId);
 
+    /** 활성 사용자 표시정보(아이디/성명/직급) — 성명(직급) 매핑용 */
+    List<UserVO> selectUserDisplayList();
+
     void insertUser(UserVO userVO);
 
     void updateUser(UserVO userVO);

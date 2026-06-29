@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="형상항목 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -77,7 +78,7 @@
                         <span class="badge st-${fn:toLowerCase(h.chgType)}">${h.chgTypeNm}</span>
                         <c:if test="${h.ver != null and h.ver != ''}"><span style="color:#888;">[v${h.ver}]</span></c:if>
                         <span style="white-space:pre-line;">${h.content}</span>
-                        <div class="h-meta">${h.procId} · ${h.procDt}</div>
+                        <div class="h-meta">${uf:nm(userNameMap, h.procId)} · ${h.procDt}</div>
                     </li>
                 </c:forEach>
                 <c:if test="${empty ci.historyList}"><li style="border:none;">이력이 없습니다.</li></c:if>

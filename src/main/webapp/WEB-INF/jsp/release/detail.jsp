@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="배포 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -40,7 +41,7 @@
             </td></tr>
             <tr><th>연계 변경ID</th><td>${empty release.chgId ? '-' : release.chgId}</td></tr>
             <tr><th>배포 예정 / 일시</th><td>${empty release.planDt ? '-' : release.planDt} / ${empty release.deployDt ? '-' : release.deployDt}</td></tr>
-            <tr><th>담당자</th><td>${empty release.chargerId ? '-' : release.chargerId}</td></tr>
+            <tr><th>담당자</th><td>${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
             <tr><th>배포 내용</th><td><div class="rte-view">${release.content}</div></td></tr>
             <tr><th>배포 결과</th><td><div class="rte-view">${empty release.result ? '-' : release.result}</div></td></tr>
         </table>

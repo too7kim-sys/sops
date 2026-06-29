@@ -1,6 +1,7 @@
 package egovframework.ops.sys.user.service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 사용자(운영자) 관리 서비스 인터페이스.
@@ -27,4 +28,7 @@ public interface EgovUserService {
 
     /** 사용자 삭제 */
     void deleteUser(String userId);
+
+    /** 사용자ID → "성명(직급)" 표시 매핑 (전역 화면 표기용) */
+    Map<String, String> selectUserNameMap();
 }

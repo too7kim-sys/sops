@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <%-- 결재선(검토/승인/처리자 라인) · 병렬 처리 · 공유 공통 패널 --%>
@@ -58,7 +59,7 @@
                     </c:choose>
                 </td>
                 <td><span class="badge lt-${fn:toLowerCase(ln.lineType)}">${ln.lineTypeNm}</span></td>
-                <td>${empty ln.assigneeNm ? ln.assigneeId : ln.assigneeNm}
+                <td>${uf:nm(userNameMap, ln.assigneeId)}
                     <c:if test="${not empty ln.assigneeDept}"><div class="h-meta">${ln.assigneeDept}</div></c:if>
                 </td>
                 <td><span class="badge st-${fn:toLowerCase(ln.status)}">${empty ln.statusNm ? ln.status : ln.statusNm}</span></td>
@@ -108,12 +109,12 @@
         <c:if test="${empty shares}"><tr><td colspan="4" class="empty">공유 내역이 없습니다.</td></tr></c:if>
         <c:forEach var="sh" items="${shares}">
             <tr>
-                <td>${empty sh.userNm ? sh.userId : sh.userNm}
+                <td>${uf:nm(userNameMap, sh.userId)}
                     <c:if test="${not empty sh.userDept}"><div class="h-meta">${sh.userDept}</div></c:if>
                 </td>
                 <td>${empty sh.shareMemo ? '-' : sh.shareMemo}</td>
                 <td><span class="badge ${sh.readAt == 'Y' ? 'st-approved' : 'st-pending'}">${sh.readAt == 'Y' ? '열람' : '미열람'}</span></td>
-                <td>${empty sh.sharedByNm ? sh.sharedBy : sh.sharedByNm}<div class="h-meta">${sh.sharedDt}</div></td>
+                <td>${uf:nm(userNameMap, sh.sharedBy)}<div class="h-meta">${sh.sharedDt}</div></td>
             </tr>
         </c:forEach>
         </tbody>

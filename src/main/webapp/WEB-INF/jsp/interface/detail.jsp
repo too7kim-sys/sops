@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="연계 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -39,8 +40,8 @@
                 &nbsp;
                 <span class="badge st-${fn:toLowerCase(itf.status)}">${itf.statusNm}</span>
             </td></tr>
-            <tr><th>요청자 / 요청일시</th><td><span>${itf.reqId}</span> / <span>${itf.reqDt}</span></td></tr>
-            <tr><th>담당자</th><td>${empty itf.chargerId ? '-' : itf.chargerId}</td></tr>
+            <tr><th>요청자 / 요청일시</th><td><span>${uf:nm(userNameMap, itf.reqId)}</span> / <span>${itf.reqDt}</span></td></tr>
+            <tr><th>담당자</th><td>${empty itf.chargerId ? '-' : uf:nm(userNameMap, itf.chargerId)}</td></tr>
             <tr><th>예정일 / 완료일시</th><td><span>${empty itf.planDt ? '-' : itf.planDt}</span> / <span>${empty itf.completeDt ? '-' : itf.completeDt}</span></td></tr>
             <tr><th>연계 데이터</th><td><div class="rte-view">${empty itf.dataDesc ? '-' : itf.dataDesc}</div></td></tr>
             <tr><th>처리 결과</th><td><div class="rte-view">${empty itf.result ? '-' : itf.result}</div></td></tr>
@@ -79,7 +80,7 @@
                     <li>
                         <span class="badge st-${fn:toLowerCase(h.status)}">${h.statusNm}</span>
                         <span style="white-space:pre-line;">${h.content}</span>
-                        <div class="h-meta"><span>${h.procId}</span> · <span>${h.procDt}</span></div>
+                        <div class="h-meta"><span>${uf:nm(userNameMap, h.procId)}</span> · <span>${h.procDt}</span></div>
                     </li>
                 </c:forEach>
                 <c:if test="${empty itf.historyList}"><li style="border:none;">이력이 없습니다.</li></c:if>

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="운영점검"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -54,7 +55,7 @@
                 <td><a href="${ctx}/check/detail/${c.chkId}">${c.sysNm}</a></td>
                 <td class="center">${c.chkTypeNm}</td>
                 <td class="center">${c.chkDt}</td>
-                <td class="center">${c.chkrId}</td>
+                <td class="center">${uf:nm(userNameMap, c.chkrId)}</td>
                 <td class="center"><span class="badge st-${fn:toLowerCase(c.result)}">${c.resultNm}</span></td>
                 <td class="center"><span>${c.itemCnt}</span> / <b class="${c.abnormalCnt > 0 ? 'st-abnormal' : ''}">${c.abnormalCnt}</b></td>
             </tr>

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="배포관리"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -62,7 +63,7 @@
                         <jsp:param name="mode" value="mini"/>
                     </jsp:include>
                 </td>
-                <td class="center">${r.chargerId}</td>
+                <td class="center">${uf:nm(userNameMap, r.chargerId)}</td>
                 <td class="center">${r.planDt}</td>
             </tr>
         </c:forEach>

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="운영점검 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -23,7 +24,7 @@
         <tr><th>대상 시스템</th><td>${check.sysNm}</td>
             <th>점검 유형</th><td>${check.chkTypeNm}</td></tr>
         <tr><th>점검 일자</th><td>${check.chkDt}</td>
-            <th>점검자</th><td>${empty check.chkrId ? '-' : check.chkrId}</td></tr>
+            <th>점검자</th><td>${empty check.chkrId ? '-' : uf:nm(userNameMap, check.chkrId)}</td></tr>
         <tr><th>종합 결과</th><td>
                 <span class="badge st-${fn:toLowerCase(check.result)}">${check.resultNm}</span>
             </td>

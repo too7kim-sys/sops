@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="변경 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -39,12 +40,12 @@
                 &nbsp;
                 <span class="badge st-${fn:toLowerCase(change.status)}">${change.statusNm}</span>
             </td></tr>
-            <tr><th>요청자 / 요청일시</th><td>${empty change.reqId ? '-' : change.reqId} / ${empty change.reqDt ? '-' : change.reqDt}</td></tr>
+            <tr><th>요청자 / 요청일시</th><td>${empty change.reqId ? '-' : uf:nm(userNameMap, change.reqId)} / ${empty change.reqDt ? '-' : change.reqDt}</td></tr>
             <tr><th>적용 예정일</th><td>${empty change.planDt ? '-' : change.planDt}</td></tr>
             <tr><th>적용 일시</th><td>${empty change.applyDt ? '-' : change.applyDt}</td></tr>
             <tr><th>변경 사유</th><td><div class="rte-view">${empty change.reason ? '-' : change.reason}</div></td></tr>
             <tr><th>변경 내용</th><td><div class="rte-view">${empty change.content ? '-' : change.content}</div></td></tr>
-            <tr><th>심의자 / 심의일시</th><td>${empty change.apprId ? '-' : change.apprId} / ${empty change.apprDt ? '-' : change.apprDt}</td></tr>
+            <tr><th>심의자 / 심의일시</th><td>${empty change.apprId ? '-' : uf:nm(userNameMap, change.apprId)} / ${empty change.apprDt ? '-' : change.apprDt}</td></tr>
             <tr><th>심의 의견</th><td><div class="rte-view">${empty change.apprOpinion ? '-' : change.apprOpinion}</div></td></tr>
         </table>
     </div>
@@ -116,7 +117,7 @@
             <tr>
                 <td><span class="badge st-${fn:toLowerCase(cab.decision)}">${empty cab.decisionNm ? cab.decision : cab.decisionNm}</span></td>
                 <td><div class="rte-view">${empty cab.opinion ? '-' : cab.opinion}</div></td>
-                <td>${empty cab.reviewer ? '-' : cab.reviewer}</td>
+                <td>${empty cab.reviewer ? '-' : uf:nm(userNameMap, cab.reviewer)}</td>
                 <td>${empty cab.cabDt ? '-' : cab.cabDt}</td>
             </tr>
         </c:forEach>

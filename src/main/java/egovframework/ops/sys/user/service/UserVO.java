@@ -25,6 +25,9 @@ public class UserVO extends ComDefaultVO {
     /** 권한 : ADMIN(운영관리자), OPERATOR(운영자), USER(일반사용자) */
     private String role;
 
+    /** 직급 (성명(직급) 표기용) */
+    private String positn;
+
     /** 소속 부서코드 (OPS_DEPT.DEPT_CD) — 저장/매핑 기준 */
     private String deptCd;
 

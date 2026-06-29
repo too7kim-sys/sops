@@ -17,7 +17,7 @@
     <!-- 부서는 코드(DEPT_CD)로 저장하고 화면 표시는 OPS_DEPT 조인으로 부서명을 함께 조회 -->
     <select id="selectUserList" parameterType="egovframework.ops.sys.user.service.UserVO"
             resultType="egovframework.ops.sys.user.service.UserVO">
-        SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.ROLE AS role,
+        SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.ROLE AS role, U.POSITN AS positn,
                U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
                U.EMAIL AS email, U.TELNO AS telno, U.USE_AT AS useAt,
                TO_CHAR(U.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
@@ -41,7 +41,7 @@
     <select id="selectUser" parameterType="string"
             resultType="egovframework.ops.sys.user.service.UserVO">
         SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.PASSWORD AS password,
-               U.ROLE AS role, U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
+               U.ROLE AS role, U.POSITN AS positn, U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
                U.EMAIL AS email, U.TELNO AS telno, U.USE_AT AS useAt,
                TO_CHAR(U.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
           FROM OPS_USER U
@@ -49,9 +49,16 @@
          WHERE U.USER_ID = #{userId}
     </select>
 
+    <!-- 성명(직급) 매핑용 : 활성 사용자 표시정보 -->
+    <select id="selectUserDisplayList" resultType="egovframework.ops.sys.user.service.UserVO">
+        SELECT USER_ID AS userId, USER_NM AS userNm, POSITN AS positn
+          FROM OPS_USER
+         WHERE USE_AT = 'Y'
+    </select>
+
     <insert id="insertUser" parameterType="egovframework.ops.sys.user.service.UserVO">
-        INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, DEPT_CD, EMAIL, TELNO, USE_AT, REG_DT)
-        VALUES (#{userId}, #{userNm}, #{password}, #{role}, #{deptCd}, #{email}, #{telno},
+        INSERT INTO OPS_USER (USER_ID, USER_NM, PASSWORD, ROLE, POSITN, DEPT_CD, EMAIL, TELNO, USE_AT, REG_DT)
+        VALUES (#{userId}, #{userNm}, #{password}, #{role}, #{positn}, #{deptCd}, #{email}, #{telno},
                 #{useAt}, CURRENT_TIMESTAMP)
     </insert>
 
@@ -59,6 +66,7 @@
         UPDATE OPS_USER
            SET USER_NM = #{userNm},
                ROLE    = #{role},
+               POSITN  = #{positn},
                DEPT_CD = #{deptCd},
                EMAIL   = #{email},
                TELNO   = #{telno},

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="요청 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -51,9 +52,9 @@
             <tr><th>상태</th><td>
                 <span class="badge st-${fn:toLowerCase(csr.status)}">${csr.statusNm}</span>
             </td></tr>
-            <tr><th>요청자 / 요청일시</th><td><span>${empty csr.reqId ? '-' : csr.reqId}</span> / <span>${empty csr.reqDt ? '-' : csr.reqDt}</span></td></tr>
+            <tr><th>요청자 / 요청일시</th><td><span>${empty csr.reqId ? '-' : uf:nm(userNameMap, csr.reqId)}</span> / <span>${empty csr.reqDt ? '-' : csr.reqDt}</span></td></tr>
             <tr><th>완료요구일</th><td>${empty csr.dueDt ? '-' : csr.dueDt}</td></tr>
-            <tr><th>담당자</th><td>${empty csr.chargerId ? '-' : csr.chargerId}</td></tr>
+            <tr><th>담당자</th><td>${empty csr.chargerId ? '-' : uf:nm(userNameMap, csr.chargerId)}</td></tr>
             <tr><th>처리일시</th><td>${empty csr.procDt ? '-' : csr.procDt}</td></tr>
             <tr><th>요청 내용</th><td><div class="rte-view">${csr.content}</div></td></tr>
             <tr><th>처리 내용</th><td><div class="rte-view">${empty csr.procContent ? '-' : csr.procContent}</div></td></tr>
@@ -92,7 +93,7 @@
                     <li>
                         <span class="badge st-${fn:toLowerCase(h.status)}">${h.statusNm}</span>
                         <span style="white-space:pre-line;">${h.content}</span>
-                        <div class="h-meta"><span>${h.procId}</span> · <span>${h.procDt}</span></div>
+                        <div class="h-meta"><span>${uf:nm(userNameMap, h.procId)}</span> · <span>${h.procDt}</span></div>
                     </li>
                 </c:forEach>
                 <c:if test="${empty csr.historyList}"><li style="border:none;">이력이 없습니다.</li></c:if>

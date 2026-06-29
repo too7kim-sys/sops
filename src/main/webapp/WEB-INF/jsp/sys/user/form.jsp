@@ -46,6 +46,10 @@
                 </td>
             </tr>
             <tr>
+                <th>직급</th>
+                <td colspan="3"><input type="text" name="positn" value="${user.positn}" placeholder="예) 과장 · 대리 (요청자/처리자 등 성명(직급) 표기에 사용)" style="max-width:280px;"/></td>
+            </tr>
+            <tr>
                 <th>부서</th>
                 <td>
                     <span class="dept-search">

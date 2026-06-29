@@ -7,7 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 사용자(운영자) 관리 서비스 구현체.
@@ -65,5 +67,21 @@ public class EgovUserServiceImpl extends EgovAbstractServiceImpl implements Egov
     @Transactional
     public void deleteUser(String userId) {
         userMapper.deleteUser(userId);
+    }
+
+    @Override
+    public Map<String, String> selectUserNameMap() {
+        Map<String, String> map = new LinkedHashMap<>();
+        for (UserVO u : userMapper.selectUserDisplayList()) {
+            String nm = u.getUserNm();
+            if (nm == null) {
+                nm = u.getUserId();
+            }
+            if (u.getPositn() != null && !u.getPositn().isBlank()) {
+                nm = nm + "(" + u.getPositn() + ")";
+            }
+            map.put(u.getUserId(), nm);
+        }
+        return map;
     }
 }

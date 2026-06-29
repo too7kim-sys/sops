@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="uf" uri="http://egovframework.ops/userfn" %>
 <c:set var="pageTitle" value="문제 상세"/>
 <jsp:include page="/WEB-INF/jsp/include/header.jsp"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -38,7 +39,7 @@
                 &nbsp;
                 <span class="badge st-${fn:toLowerCase(problem.status)}">${problem.statusNm}</span>
             </td></tr>
-            <tr><th>담당자</th><td>${empty problem.chargerId ? '-' : problem.chargerId}</td></tr>
+            <tr><th>담당자</th><td>${empty problem.chargerId ? '-' : uf:nm(userNameMap, problem.chargerId)}</td></tr>
             <tr><th>등록 / 해결</th><td>${problem.regDt} / ${empty problem.resolveDt ? '-' : problem.resolveDt}</td></tr>
             <tr><th>문제 내용</th><td><div class="rte-view">${problem.content}</div></td></tr>
             <tr><th>근본 원인</th><td><div class="rte-view">${empty problem.rootCause ? '-' : problem.rootCause}</div></td></tr>
@@ -79,7 +80,7 @@
                     <li>
                         <span class="badge st-${fn:toLowerCase(h.status)}">${h.statusNm}</span>
                         <span style="white-space:pre-line;">${h.content}</span>
-                        <div class="h-meta">${h.procId} · ${h.procDt}</div>
+                        <div class="h-meta">${uf:nm(userNameMap, h.procId)} · ${h.procDt}</div>
                     </li>
                 </c:forEach>
                 <c:if test="${empty problem.historyList}"><li style="border:none;">이력이 없습니다.</li></c:if>
