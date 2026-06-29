@@ -73,6 +73,13 @@ table.form input[type=datetime-local], table.form select, table.form textarea {
 }
 table.form textarea { resize: vertical; min-height: 70px; }
 
+/* 체크박스 선택 레이어(다중 선택) */
+.chk-layer { display: flex; flex-wrap: wrap; gap: 8px 16px; max-height: 168px; overflow-y: auto;
+    border: 1px solid #cfd5dd; border-radius: 6px; padding: 10px 12px; background: #fff; }
+.chk-layer label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
+    color: #334; cursor: pointer; white-space: nowrap; }
+.chk-layer input[type=checkbox] { width: auto; margin: 0; }
+
 /* ---------- 버튼 ---------- */
 .btn { display: inline-block; padding: 8px 16px; border: 1px solid transparent; border-radius: 5px;
     font-size: 13px; cursor: pointer; font-family: inherit; }

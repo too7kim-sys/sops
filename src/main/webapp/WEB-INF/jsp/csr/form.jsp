@@ -18,12 +18,12 @@
             <tr>
                 <th>대상 시스템 <span class="required">*</span></th>
                 <td>
-                    <select name="sysIds" id="sysIds" multiple required size="5" style="min-width:240px;">
+                    <div class="chk-layer" id="sysIdsBox">
                         <c:forEach var="s" items="${systemList}">
-                            <option value="${s.sysId}" ${csr.sysIds.contains(s.sysId) ? 'selected' : ''}>${s.sysNm}</option>
+                            <label><input type="checkbox" name="sysIds" value="${s.sysId}" ${csr.sysIds.contains(s.sysId) ? 'checked' : ''}/> ${s.sysNm}</label>
                         </c:forEach>
-                    </select>
-                    <div class="h-meta">Ctrl(⌘)/Shift 로 여러 시스템을 선택할 수 있습니다.</div>
+                    </div>
+                    <div class="h-meta">필요한 대상 시스템을 모두 체크하세요. (1개 이상)</div>
                 </td>
                 <th>요청 대분류 <span class="required">*</span></th>
                 <td>
@@ -129,6 +129,18 @@
     fill();
     // 신규 등록 시 최초 진입한 소분류 템플릿을 자동 표시(에디터 준비 후)
     if (isNew && window.jQuery) { jQuery(function () { applyTpl(sub.value); }); }
+
+    // 대상 시스템(체크박스) — 1개 이상 선택 검증
+    var box = document.getElementById('sysIdsBox');
+    var form = box ? box.closest('form') : null;
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            if (!box.querySelector('input[name=sysIds]:checked')) {
+                e.preventDefault();
+                alert('대상 시스템을 1개 이상 선택하세요.');
+            }
+        });
+    }
 })();
 </script>
 
