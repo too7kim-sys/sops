@@ -39,7 +39,7 @@
             <tr><th>형상 상태</th><td>
                 <span class="badge st-${fn:toLowerCase(ci.ciStatus)}">${ci.ciStatusNm}</span>
             </td></tr>
-            <tr><th>담당자</th><td>${empty ci.ownerId ? '-' : ci.ownerId}</td></tr>
+            <tr><th>처리자</th><td>${empty ci.ownerId ? '-' : uf:nm(userNameMap, ci.ownerId)}</td></tr>
             <tr><th>저장 위치</th><td>${empty ci.location ? '-' : ci.location}</td></tr>
             <tr><th>등록 일시</th><td>${ci.regDt}</td></tr>
             <tr><th>설명</th><td><div class="rte-view">${empty ci.ciDesc ? '-' : ci.ciDesc}</div></td></tr>

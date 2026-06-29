@@ -41,7 +41,7 @@
                 <span class="badge st-${fn:toLowerCase(itf.status)}">${itf.statusNm}</span>
             </td></tr>
             <tr><th>요청자 / 요청일시</th><td><span>${uf:nm(userNameMap, itf.reqId)}</span> / <span>${itf.reqDt}</span></td></tr>
-            <tr><th>담당자</th><td>${empty itf.chargerId ? '-' : uf:nm(userNameMap, itf.chargerId)}</td></tr>
+            <tr><th>처리자</th><td>${empty itf.chargerId ? '-' : uf:nm(userNameMap, itf.chargerId)}</td></tr>
             <tr><th>예정일 / 완료일시</th><td><span>${empty itf.planDt ? '-' : itf.planDt}</span> / <span>${empty itf.completeDt ? '-' : itf.completeDt}</span></td></tr>
             <tr><th>연계 데이터</th><td><div class="rte-view">${empty itf.dataDesc ? '-' : itf.dataDesc}</div></td></tr>
             <tr><th>처리 결과</th><td><div class="rte-view">${empty itf.result ? '-' : itf.result}</div></td></tr>
@@ -63,7 +63,7 @@
                                 </c:forEach>
                             </select>
                         </td></tr>
-                    <tr><th>담당자</th><td><input type="text" name="chargerId" value="${itf.chargerId}"/></td></tr>
+                    <tr><th>처리자</th><td><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == itf.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td></tr>
                     <tr><th>처리 결과</th><td><textarea class="wysiwyg" name="result" rows="4">${itf.result}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">

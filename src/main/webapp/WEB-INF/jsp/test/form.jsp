@@ -56,7 +56,7 @@
                 <th>예정일</th>
                 <td><input type="date" name="planDt" value="${test.planDt}"/></td>
                 <th>테스터</th>
-                <td><input type="text" name="testerId" value="${test.testerId}" placeholder="미입력 시 로그인 사용자"/></td>
+                <td><select name="testerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == test.testerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td>
             </tr>
         </table>
     </div>

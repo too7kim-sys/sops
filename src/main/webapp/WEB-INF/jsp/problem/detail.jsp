@@ -39,7 +39,7 @@
                 &nbsp;
                 <span class="badge st-${fn:toLowerCase(problem.status)}">${problem.statusNm}</span>
             </td></tr>
-            <tr><th>담당자</th><td>${empty problem.chargerId ? '-' : uf:nm(userNameMap, problem.chargerId)}</td></tr>
+            <tr><th>처리자</th><td>${empty problem.chargerId ? '-' : uf:nm(userNameMap, problem.chargerId)}</td></tr>
             <tr><th>등록 / 해결</th><td>${problem.regDt} / ${empty problem.resolveDt ? '-' : problem.resolveDt}</td></tr>
             <tr><th>문제 내용</th><td><div class="rte-view">${problem.content}</div></td></tr>
             <tr><th>근본 원인</th><td><div class="rte-view">${empty problem.rootCause ? '-' : problem.rootCause}</div></td></tr>
@@ -62,7 +62,7 @@
                                 </c:forEach>
                             </select>
                         </td></tr>
-                    <tr><th>담당자</th><td><input type="text" name="chargerId" value="${problem.chargerId}"/></td></tr>
+                    <tr><th>처리자</th><td><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == problem.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td></tr>
                     <tr><th>근본 원인</th><td><textarea class="wysiwyg" name="rootCause" rows="3">${problem.rootCause}</textarea></td></tr>
                     <tr><th>해결책</th><td><textarea class="wysiwyg" name="solution" rows="3">${problem.solution}</textarea></td></tr>
                 </table>

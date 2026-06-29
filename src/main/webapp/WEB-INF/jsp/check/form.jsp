@@ -38,7 +38,7 @@
                 <th>점검 일자 <span class="required">*</span></th>
                 <td><input type="date" name="chkDt" value="${check.chkDt}" required/></td>
                 <th>점검자</th>
-                <td><input type="text" name="chkrId" value="${check.chkrId}" placeholder="미입력 시 로그인 사용자"/></td>
+                <td><select name="chkrId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == check.chkrId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td>
             </tr>
             <tr>
                 <th>비고</th>

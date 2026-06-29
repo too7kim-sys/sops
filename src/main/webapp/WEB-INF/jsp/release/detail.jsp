@@ -41,7 +41,7 @@
             </td></tr>
             <tr><th>연계 변경ID</th><td>${empty release.chgId ? '-' : release.chgId}</td></tr>
             <tr><th>배포 예정 / 일시</th><td>${empty release.planDt ? '-' : release.planDt} / ${empty release.deployDt ? '-' : release.deployDt}</td></tr>
-            <tr><th>담당자</th><td>${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
+            <tr><th>처리자</th><td>${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
             <tr><th>배포 내용</th><td><div class="rte-view">${release.content}</div></td></tr>
             <tr><th>배포 결과</th><td><div class="rte-view">${empty release.result ? '-' : release.result}</div></td></tr>
         </table>
@@ -63,7 +63,7 @@
                                 </c:forEach>
                             </select>
                         </td></tr>
-                    <tr><th>담당자</th><td><input type="text" name="chargerId" value="${release.chargerId}"/></td></tr>
+                    <tr><th>처리자</th><td><select name="chargerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == release.chargerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td></tr>
                     <tr><th>배포 결과</th><td><textarea class="wysiwyg" name="result" rows="4">${release.result}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">

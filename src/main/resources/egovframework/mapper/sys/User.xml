@@ -49,11 +49,12 @@
          WHERE U.USER_ID = #{userId}
     </select>
 
-    <!-- 성명(직급) 매핑용 : 활성 사용자 표시정보 -->
+    <!-- 성명(직급) 매핑/처리자 선택용 : 활성 사용자 표시정보 -->
     <select id="selectUserDisplayList" resultType="egovframework.ops.sys.user.service.UserVO">
         SELECT USER_ID AS userId, USER_NM AS userNm, POSITN AS positn
           FROM OPS_USER
          WHERE USE_AT = 'Y'
+         ORDER BY CASE ROLE WHEN 'ADMIN' THEN 1 WHEN 'OPERATOR' THEN 2 ELSE 3 END, USER_NM
     </select>
 
     <insert id="insertUser" parameterType="egovframework.ops.sys.user.service.UserVO">

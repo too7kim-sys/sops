@@ -43,8 +43,8 @@
             <tr>
                 <th>버전</th>
                 <td><input type="text" name="ver" value="${ci.ver}" placeholder="예: 1.0.0"/></td>
-                <th>담당자</th>
-                <td><input type="text" name="ownerId" value="${ci.ownerId}" placeholder="미입력 시 로그인 사용자"/></td>
+                <th>처리자</th>
+                <td><select name="ownerId"><option value="">선택</option><c:forEach var="__u" items="${userNameMap}"><option value="${__u.key}" ${__u.key == ci.ownerId ? 'selected' : ''}>${__u.value}</option></c:forEach></select></td>
             </tr>
             <tr>
                 <th>저장 위치</th>
