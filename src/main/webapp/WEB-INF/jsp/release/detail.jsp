@@ -9,6 +9,7 @@
 <div class="page-head">
     <div class="page-title">배포 상세 <span style="color:#888;font-weight:400;">(REL-${release.relId})</span></div>
     <div class="toolbar">
+        <a href="${ctx}/release/list" class="btn btn-default">목록</a>
         <a href="${ctx}/release/edit/${release.relId}" class="btn btn-default">수정</a>
         <form action="${ctx}/release/delete/${release.relId}" method="post"
               onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
@@ -206,7 +207,7 @@
     </form>
 </div>
 
-<div class="toolbar"><a href="${ctx}/release/list" class="btn btn-default">＜ 목록</a></div>
+<div class="toolbar" style="justify-content:flex-end;"><a href="${ctx}/release/list" class="btn btn-default">목록 ＞</a></div>
 
 <%-- 결재선(검토/승인/처리자) · 병렬 처리 · 공유 --%>
 <c:import url="/appr/panel" charEncoding="UTF-8">

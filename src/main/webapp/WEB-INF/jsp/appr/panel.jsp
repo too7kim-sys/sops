@@ -18,9 +18,6 @@
                     <button type="submit" class="btn btn-default btn-sm">기본 결재선/공유 적용</button>
                 </form>
                 </c:if>
-                <c:if test="${isAdmin}">
-                    <a href="${ctx}/appr/template?bizType=${bizType}" class="btn btn-ghost btn-sm" style="color:#1b3a6b;border-color:#cbd5e2;">기본 설정 관리</a>
-                </c:if>
             </span>
         </c:if>
     </h3>
@@ -121,7 +118,7 @@
     </table>
 
     <div class="h-meta" style="margin-top:8px;">※ 결재선/공유는 <b>결재 기본설정</b>에 따라 자동 구성됩니다. 변경하려면
-        <c:choose><c:when test="${isAdmin}"><a href="${ctx}/appr/template?bizType=${bizType}">기본 설정 관리</a>에서 수정하세요.</c:when>
+        <c:choose><c:when test="${isAdmin}">상단 메뉴의 <b>[결재 기본설정]</b> 에서 수정하세요.</c:when>
         <c:otherwise>운영관리자에게 문의하세요.</c:otherwise></c:choose>
     </div>
 </div>

@@ -9,6 +9,7 @@
 <div class="page-head">
     <div class="page-title">운영점검 상세 <span style="color:#888;font-weight:400;">(CHK-${check.chkId})</span></div>
     <div class="toolbar">
+        <a href="${ctx}/check/list" class="btn btn-default">목록</a>
         <form action="${ctx}/check/delete/${check.chkId}" method="post"
               onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
             <button type="submit" class="btn btn-danger">삭제</button>
@@ -56,6 +57,6 @@
     </table>
 </div>
 
-<div class="toolbar"><a href="${ctx}/check/list" class="btn btn-default">＜ 목록</a></div>
+<div class="toolbar" style="justify-content:flex-end;"><a href="${ctx}/check/list" class="btn btn-default">목록 ＞</a></div>
 
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

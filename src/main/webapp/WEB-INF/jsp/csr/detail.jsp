@@ -9,6 +9,7 @@
 <div class="page-head">
     <div class="page-title">요청 상세 <span style="color:#888;font-weight:400;">(CSR-${csr.csrId})</span></div>
     <div class="toolbar">
+        <a href="${ctx}/csr/list" class="btn btn-default">목록</a>
         <a href="${ctx}/csr/edit/${csr.csrId}" class="btn btn-default">수정</a>
         <form action="${ctx}/csr/delete/${csr.csrId}" method="post"
               onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
@@ -90,7 +91,7 @@
     </div>
 </div>
 
-<div class="toolbar"><a href="${ctx}/csr/list" class="btn btn-default">＜ 목록</a></div>
+<div class="toolbar" style="justify-content:flex-end;"><a href="${ctx}/csr/list" class="btn btn-default">목록 ＞</a></div>
 
 <%-- 결재선(검토/승인/처리자) · 병렬 처리 · 공유 --%>
 <c:import url="/appr/panel" charEncoding="UTF-8">

@@ -8,6 +8,7 @@
 <div class="page-head">
     <div class="page-title">응용시스템 상세 <span style="color:#888;font-weight:400;">(${system.sysId})</span></div>
     <div class="toolbar">
+        <a href="${ctx}/system/list" class="btn btn-default">목록</a>
         <a href="${ctx}/system/edit/${system.sysId}" class="btn btn-default">수정</a>
         <form action="${ctx}/system/delete/${system.sysId}" method="post"
               onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
@@ -37,6 +38,6 @@
     </table>
 </div>
 
-<div class="toolbar"><a href="${ctx}/system/list" class="btn btn-default">＜ 목록</a></div>
+<div class="toolbar" style="justify-content:flex-end;"><a href="${ctx}/system/list" class="btn btn-default">목록 ＞</a></div>
 
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>
