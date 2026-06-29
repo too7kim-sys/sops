@@ -18,12 +18,22 @@
             <tr>
                 <th>대상 시스템 <span class="required">*</span></th>
                 <td>
-                    <div class="chk-layer" id="sysIdsBox">
-                        <c:forEach var="s" items="${systemList}">
-                            <label><input type="checkbox" name="sysIds" value="${s.sysId}" ${csr.sysIds.contains(s.sysId) ? 'checked' : ''}/> ${s.sysNm}</label>
-                        </c:forEach>
+                    <div class="syschooser">
+                        <div class="syschooser-top">
+                            <input type="text" id="sysFilter" class="syschooser-search" placeholder="시스템명 검색…" autocomplete="off"/>
+                            <span class="h-meta" id="sysCount" style="white-space:nowrap;">선택 0</span>
+                            <button type="button" class="btn btn-ghost btn-sm" id="sysCheckAll">표시 전체선택</button>
+                            <button type="button" class="btn btn-ghost btn-sm" id="sysClear">표시 해제</button>
+                        </div>
+                        <div class="syschooser-chips" id="sysChips"></div>
+                        <div class="chk-layer" id="sysIdsBox">
+                            <c:forEach var="s" items="${systemList}">
+                                <label data-nm="${fn:escapeXml(s.sysNm)}"><input type="checkbox" name="sysIds" value="${s.sysId}" ${csr.sysIds.contains(s.sysId) ? 'checked' : ''}/> ${s.sysNm}</label>
+                            </c:forEach>
+                            <div class="chk-empty" id="sysNoMatch" style="display:none;">검색 결과가 없습니다.</div>
+                        </div>
                     </div>
-                    <div class="h-meta">필요한 대상 시스템을 모두 체크하세요. (1개 이상)</div>
+                    <div class="h-meta">검색으로 좁혀 체크하세요. 선택 항목은 위에 칩으로 표시됩니다. (1개 이상)</div>
                 </td>
                 <th>요청 대분류 <span class="required">*</span></th>
                 <td>
@@ -141,6 +151,65 @@
             }
         });
     }
+})();
+</script>
+
+<%-- 대상 시스템 선택기 : 검색 필터 + 선택 칩 + 표시중 일괄선택 (시스템 다수 대응) --%>
+<script>
+(function () {
+    var box = document.getElementById('sysIdsBox');
+    if (!box) return;
+    var filterEl = document.getElementById('sysFilter');
+    var chipsEl  = document.getElementById('sysChips');
+    var countEl  = document.getElementById('sysCount');
+    var noMatch  = document.getElementById('sysNoMatch');
+    var labels = Array.prototype.slice.call(box.querySelectorAll('label'));
+
+    function cbOf(l)  { return l.querySelector('input[type=checkbox]'); }
+    function nameOf(l){ return (l.getAttribute('data-nm') || l.textContent).trim(); }
+
+    function refreshChips() {
+        chipsEl.innerHTML = '';
+        var n = 0;
+        labels.forEach(function (l) {
+            var cb = cbOf(l);
+            if (!cb.checked) return;
+            n++;
+            var chip = document.createElement('span');
+            chip.className = 'sys-chip';
+            chip.appendChild(document.createTextNode(nameOf(l)));
+            var x = document.createElement('button');
+            x.type = 'button'; x.className = 'sys-chip-x'; x.textContent = '×';
+            x.title = '제거';
+            x.addEventListener('click', function () { cb.checked = false; refreshChips(); });
+            chip.appendChild(x);
+            chipsEl.appendChild(chip);
+        });
+        countEl.textContent = '선택 ' + n;
+    }
+
+    function applyFilter() {
+        var q = (filterEl.value || '').toLowerCase();
+        var shown = 0;
+        labels.forEach(function (l) {
+            var ok = !q || nameOf(l).toLowerCase().indexOf(q) >= 0;
+            l.style.display = ok ? '' : 'none';
+            if (ok) shown++;
+        });
+        if (noMatch) noMatch.style.display = shown ? 'none' : '';
+    }
+
+    box.addEventListener('change', refreshChips);
+    filterEl.addEventListener('input', applyFilter);
+    document.getElementById('sysCheckAll').addEventListener('click', function () {
+        labels.forEach(function (l) { if (l.style.display !== 'none') cbOf(l).checked = true; });
+        refreshChips();
+    });
+    document.getElementById('sysClear').addEventListener('click', function () {
+        labels.forEach(function (l) { if (l.style.display !== 'none') cbOf(l).checked = false; });
+        refreshChips();
+    });
+    refreshChips();
 })();
 </script>
 
