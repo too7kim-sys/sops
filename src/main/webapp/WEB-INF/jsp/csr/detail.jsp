@@ -76,11 +76,12 @@
                 <table class="form">
                     <tr><th>처리 상태 <span class="required">*</span></th>
                         <td>
-                            <select name="status" required>
+                            <select name="status" id="procStatusSel" required>
                                 <c:forEach var="cd" items="${statusList}">
                                     <option value="${cd.codeId}" ${cd.codeId == csr.status ? 'selected' : ''}>${cd.codeNm}</option>
                                 </c:forEach>
                             </select>
+                            <span class="h-meta" id="classifyHint" style="display:none;margin-left:8px;color:#1b3a6b;">↘ 아래에서 이관 대상을 선택하세요</span>
                         </td></tr>
                     <tr><th>처리 내용</th><td><textarea class="wysiwyg" name="procContent" rows="4">${csr.procContent}</textarea></td></tr>
                 </table>
@@ -88,6 +89,49 @@
                     <button type="submit" class="btn btn-success">처리 등록</button>
                 </div>
             </form>
+
+            <%-- 분류 / 이관 : 처리 상태가 '분류완료(CLASSIFIED)'일 때 노출 --%>
+            <div id="transferBox" style="display:none;margin-top:14px;border-top:1px dashed #d8dee6;padding-top:14px;">
+                <h3 style="margin-top:0;">분류 / 이관</h3>
+                <c:if test="${not empty csr.linkedId}">
+                    <c:set var="linkTgt" value="${transferTargets[csr.linkedType]}"/>
+                    <c:set var="linkLabel" value="${empty linkTgt ? csr.linkedType : linkTgt.label}"/>
+                    <p style="margin-bottom:10px;">
+                        <span class="badge st-approved">이관됨</span>
+                        <b>${linkLabel}</b> 로 이관됨 &rarr;
+                        <a href="${ctx}${empty linkTgt ? '#' : linkTgt.urlPrefix}${csr.linkedId}" class="btn btn-default btn-sm">${linkLabel} #${csr.linkedId} 보기</a>
+                    </p>
+                </c:if>
+                <form method="post" action="${ctx}/csr/transfer" class="appr-add-row" style="align-items:center;gap:8px;"
+                      onsubmit="return confirm('선택한 업무로 이관(신규 생성)할까요?');">
+                    <input type="hidden" name="csrId" value="${csr.csrId}"/>
+                    <label>이관 대상
+                        <select name="targetType" required>
+                            <c:forEach var="t" items="${transferTargets}">
+                                <option value="${t.key}">${t.value.label}</option>
+                            </c:forEach>
+                        </select>
+                    </label>
+                    <button type="submit" class="btn btn-primary btn-sm">이관</button>
+                    <span class="h-meta">요청 제목·내용·대상시스템을 복사해 신규 등록하고 연계합니다.</span>
+                </form>
+            </div>
+
+            <script>
+            (function () {
+                var sel = document.getElementById('procStatusSel');
+                var box = document.getElementById('transferBox');
+                var hint = document.getElementById('classifyHint');
+                if (!sel || !box) return;
+                function toggle() {
+                    var on = (sel.value === 'CLASSIFIED');
+                    box.style.display = on ? '' : 'none';
+                    if (hint) hint.style.display = on ? '' : 'none';
+                }
+                sel.addEventListener('change', toggle);
+                toggle();
+            })();
+            </script>
         </div>
         </c:if>
 
@@ -105,35 +149,6 @@
             </ul>
         </div>
     </div>
-</div>
-
-<%-- 분류/이관 --%>
-<div class="panel">
-    <h3>분류 / 이관</h3>
-    <c:if test="${not empty csr.linkedId}">
-        <c:set var="linkTgt" value="${transferTargets[csr.linkedType]}"/>
-        <c:set var="linkLabel" value="${empty linkTgt ? csr.linkedType : linkTgt.label}"/>
-        <p style="margin-bottom:10px;">
-            <span class="badge st-approved">이관됨</span>
-            이 요청은 <b>${linkLabel}</b> 로 이관되었습니다 &rarr;
-            <a href="${ctx}${empty linkTgt ? '#' : linkTgt.urlPrefix}${csr.linkedId}" class="btn btn-default btn-sm">${linkLabel} #${csr.linkedId} 보기</a>
-        </p>
-    </c:if>
-    <c:if test="${csr.status != 'CLOSED' and csr.status != 'REJECTED'}">
-        <form method="post" action="${ctx}/csr/transfer" class="appr-add-row" style="align-items:center;gap:8px;"
-              onsubmit="return confirm('선택한 업무로 이관(신규 생성)할까요?');">
-            <input type="hidden" name="csrId" value="${csr.csrId}"/>
-            <label>이관 대상
-                <select name="targetType" required>
-                    <c:forEach var="t" items="${transferTargets}">
-                        <option value="${t.key}">${t.value.label}</option>
-                    </c:forEach>
-                </select>
-            </label>
-            <button type="submit" class="btn btn-primary btn-sm">이관</button>
-            <span class="h-meta">요청 제목·내용·대상시스템을 대상 업무에 복사해 신규 등록하고 연계합니다.</span>
-        </form>
-    </c:if>
 </div>
 
 <%-- 첨부파일 --%>
