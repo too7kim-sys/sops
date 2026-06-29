@@ -5,7 +5,9 @@
 
     <sql id="searchWhere">
         <if test="searchSysId != null and searchSysId != ''">
-            AND C.SYS_ID = #{searchSysId}
+            AND (C.SYS_ID = #{searchSysId}
+                 OR EXISTS (SELECT 1 FROM OPS_CSR_SYS CS
+                             WHERE CS.CSR_ID = C.CSR_ID AND CS.SYS_ID = #{searchSysId}))
         </if>
         <if test="searchStatus != null and searchStatus != ''">
             AND C.STATUS = #{searchStatus}
@@ -20,6 +22,7 @@
         SELECT C.CSR_ID   AS csrId,
                C.SYS_ID   AS sysId,
                S.SYS_NM   AS sysNm,
+               (SELECT COUNT(*) FROM OPS_CSR_SYS CS WHERE CS.CSR_ID = C.CSR_ID) AS sysCnt,
                C.TITLE    AS title,
                C.CSR_TYPE AS csrType,
                TC.CODE_NM AS csrTypeNm,
@@ -142,6 +145,25 @@
 
     <delete id="deleteCsrHis" parameterType="long">
         DELETE FROM OPS_CSR_HIS WHERE CSR_ID = #{csrId}
+    </delete>
+
+    <!-- ===================== 요청 ↔ 대상 시스템(다중) ===================== -->
+
+    <select id="selectCsrSysList" parameterType="long"
+            resultType="egovframework.ops.system.service.SystemVO">
+        SELECT CS.SYS_ID AS sysId, S.SYS_NM AS sysNm
+          FROM OPS_CSR_SYS CS
+          LEFT JOIN OPS_SYSTEM S ON S.SYS_ID = CS.SYS_ID
+         WHERE CS.CSR_ID = #{csrId}
+         ORDER BY S.SYS_NM, CS.SYS_ID
+    </select>
+
+    <insert id="insertCsrSys">
+        INSERT INTO OPS_CSR_SYS (CSR_ID, SYS_ID) VALUES (#{csrId}, #{sysId})
+    </insert>
+
+    <delete id="deleteCsrSys" parameterType="long">
+        DELETE FROM OPS_CSR_SYS WHERE CSR_ID = #{csrId}
     </delete>
 
     <!-- ===================== 요청내용 템플릿 ===================== -->

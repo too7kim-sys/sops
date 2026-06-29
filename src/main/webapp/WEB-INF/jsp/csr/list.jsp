@@ -51,7 +51,7 @@
         <c:forEach var="c" items="${csrList}">
             <tr>
                 <td class="center">${c.csrId}</td>
-                <td>${c.sysNm}</td>
+                <td>${c.sysNm}<c:if test="${c.sysCnt > 1}"> <span class="h-meta">외 ${c.sysCnt - 1}</span></c:if></td>
                 <td><a href="${ctx}/csr/detail/${c.csrId}">${c.title}</a></td>
                 <td class="center">${c.csrTypeNm}<c:if test="${not empty c.csrSubTypeNm}"><div class="h-meta">${c.csrSubTypeNm}</div></c:if></td>
                 <td class="center">${c.priorityNm}</td>

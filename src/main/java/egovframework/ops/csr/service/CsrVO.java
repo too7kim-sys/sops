@@ -1,9 +1,11 @@
 package egovframework.ops.csr.service;
 
 import egovframework.com.cmm.ComDefaultVO;
+import egovframework.ops.system.service.SystemVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,11 +23,20 @@ public class CsrVO extends ComDefaultVO {
     /** 요청 ID */
     private Long csrId;
 
-    /** 응용시스템 ID */
+    /** 대표 응용시스템 ID (다중 선택 시 첫번째) */
     private String sysId;
 
-    /** 응용시스템 명 (조인) */
+    /** 대표 응용시스템 명 (조인) */
     private String sysNm;
+
+    /** 대상 응용시스템 ID 목록 (다중 선택 — 폼 바인딩/수정 선택) */
+    private List<String> sysIds = new ArrayList<>();
+
+    /** 대상 응용시스템 목록 (조인 — 상세 표시) */
+    private List<SystemVO> sysList = new ArrayList<>();
+
+    /** 대상 응용시스템 수 (목록 표시 '외 N') */
+    private int sysCnt;
 
     /** 요청 제목 */
     private String title;

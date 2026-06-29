@@ -32,7 +32,14 @@
     <div class="panel">
         <h3>요청 정보</h3>
         <table class="form">
-            <tr><th>대상 시스템</th><td>${csr.sysNm}</td></tr>
+            <tr><th>대상 시스템</th><td>
+                <c:choose>
+                    <c:when test="${not empty csr.sysList}">
+                        <c:forEach var="s" items="${csr.sysList}"><span class="badge" style="margin:2px 4px 2px 0;">${s.sysNm}</span></c:forEach>
+                    </c:when>
+                    <c:otherwise>${csr.sysNm}</c:otherwise>
+                </c:choose>
+            </td></tr>
             <tr><th>제목</th><td>${csr.title}</td></tr>
             <tr><th>요청 분류</th><td>
                 <span class="badge">${csr.csrTypeNm}</span>

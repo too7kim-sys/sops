@@ -3,7 +3,9 @@ package egovframework.ops.csr.service.impl;
 import egovframework.ops.csr.service.CsrHisVO;
 import egovframework.ops.csr.service.CsrTplVO;
 import egovframework.ops.csr.service.CsrVO;
+import egovframework.ops.system.service.SystemVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -32,6 +34,15 @@ public interface CsrMapper {
     void deleteCsr(Long csrId);
 
     void deleteCsrHis(Long csrId);
+
+    /* ===== 요청 ↔ 대상 시스템(다중) ===== */
+
+    /** 요청의 대상 시스템 목록(시스템명 조인) */
+    List<SystemVO> selectCsrSysList(Long csrId);
+
+    void insertCsrSys(@Param("csrId") Long csrId, @Param("sysId") String sysId);
+
+    void deleteCsrSys(Long csrId);
 
     /* ===== 요청 소분류별 요청내용 템플릿 ===== */
 

@@ -263,6 +263,12 @@ INSERT INTO OPS_CSR_HIS (CSR_ID, STATUS, CONTENT, PROC_ID) VALUES
  (1, 'PROCESSED', '화면 항목 추가 반영', 'oper01'),
  (2, 'REQUESTED', '요청 등록', 'user01'),
  (2, 'CLOSED',    '업무 안내 후 종료', 'oper02');
+-- 요청 대상 시스템(다중) : 대표 SYS_ID 와 일치 + 1번은 2개 시스템 데모
+INSERT INTO OPS_CSR_SYS (CSR_ID, SYS_ID) VALUES
+ (1, 'SYS001'),
+ (1, 'SYS002'),
+ (2, 'SYS002'),
+ (3, 'SYS004');
 
 -- ④ 테스트관리
 INSERT INTO OPS_TEST (SYS_ID, CHG_ID, TITLE, TEST_TYPE, TEST_ENV, STATUS, PLAN_DT, TESTER_ID, RESULT_SUMMARY) VALUES

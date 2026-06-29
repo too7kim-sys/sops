@@ -18,12 +18,12 @@
             <tr>
                 <th>대상 시스템 <span class="required">*</span></th>
                 <td>
-                    <select name="sysId" required>
-                        <option value="">선택</option>
+                    <select name="sysIds" id="sysIds" multiple required size="5" style="min-width:240px;">
                         <c:forEach var="s" items="${systemList}">
-                            <option value="${s.sysId}" ${s.sysId == csr.sysId ? 'selected' : ''}>${s.sysNm}</option>
+                            <option value="${s.sysId}" ${csr.sysIds.contains(s.sysId) ? 'selected' : ''}>${s.sysNm}</option>
                         </c:forEach>
                     </select>
+                    <div class="h-meta">Ctrl(⌘)/Shift 로 여러 시스템을 선택할 수 있습니다.</div>
                 </td>
                 <th>요청 대분류 <span class="required">*</span></th>
                 <td>
