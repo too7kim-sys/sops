@@ -43,6 +43,7 @@
             <th>제목</th>
             <th class="center" style="width:140px;">유형</th>
             <th class="center" style="width:90px;">우선순위</th>
+            <th class="center" style="width:110px;">완료요구일</th>
             <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:110px;">요청자</th>
         </tr>
@@ -55,6 +56,7 @@
                 <td><a href="${ctx}/csr/detail/${c.csrId}">${c.title}</a></td>
                 <td class="center">${c.csrTypeNm}<c:if test="${not empty c.csrSubTypeNm}"><div class="h-meta">${c.csrSubTypeNm}</div></c:if></td>
                 <td class="center">${c.priorityNm}</td>
+                <td class="center">${empty c.dueDt ? '-' : c.dueDt}</td>
                 <td>
                     <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
                         <jsp:param name="type" value="CSR"/>
@@ -66,7 +68,7 @@
                 <td class="center">${c.reqId}</td>
             </tr>
         </c:forEach>
-        <c:if test="${empty csrList}"><tr><td colspan="7" class="empty">등록된 요청이 없습니다.</td></tr></c:if>
+        <c:if test="${empty csrList}"><tr><td colspan="8" class="empty">등록된 요청이 없습니다.</td></tr></c:if>
         </tbody>
     </table>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/csr/list"/></jsp:include>

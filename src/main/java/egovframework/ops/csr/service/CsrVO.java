@@ -74,6 +74,9 @@ public class CsrVO extends ComDefaultVO {
     /** 요청 일시 */
     private String reqDt;
 
+    /** 완료요구일 (YYYY-MM-DD) */
+    private String dueDt;
+
     /** 처리 담당자 ID */
     private String chargerId;
 

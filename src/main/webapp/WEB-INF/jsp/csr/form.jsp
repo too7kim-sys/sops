@@ -51,8 +51,12 @@
                         </c:forEach>
                     </select>
                 </td>
+                <th>완료요구일</th>
+                <td><input type="date" name="dueDt" value="${csr.dueDt}"/></td>
+            </tr>
+            <tr>
                 <th>담당자</th>
-                <td><input type="text" name="chargerId" value="${csr.chargerId}" placeholder="처리 담당자 ID"/></td>
+                <td colspan="3"><input type="text" name="chargerId" value="${csr.chargerId}" placeholder="처리 담당자 ID"/></td>
             </tr>
             <tr>
                 <th>제목 <span class="required">*</span></th>

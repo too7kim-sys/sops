@@ -186,6 +186,7 @@ CREATE TABLE OPS_CSR (
     STATUS      VARCHAR(20)   NOT NULL,   -- REQUESTED/RECEIVED/CLASSIFIED/IN_PROGRESS/PROCESSED/CLOSED/REJECTED
     REQ_ID      VARCHAR(20),              -- 요청자
     REQ_DT      TIMESTAMP,
+    DUE_DT      DATE,                     -- 완료요구일
     CHARGER_ID  VARCHAR(20),              -- 처리담당자
     PROC_CONTENT VARCHAR(8000),           -- 처리내용
     PROC_DT     TIMESTAMP,

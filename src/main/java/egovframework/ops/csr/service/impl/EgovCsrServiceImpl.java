@@ -59,6 +59,7 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
         if (vo.getStatus() == null) {
             vo.setStatus("REQUESTED");
         }
+        normalizeDueDt(vo);
         applyRepresentativeSys(vo);
         csrMapper.insertCsr(vo);
         saveCsrSys(vo);
@@ -75,6 +76,7 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
     @Override
     @Transactional
     public void updateCsr(CsrVO vo) {
+        normalizeDueDt(vo);
         applyRepresentativeSys(vo);
         csrMapper.updateCsr(vo);
         csrMapper.deleteCsrSys(vo.getCsrId());
@@ -101,6 +103,13 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
         csrMapper.deleteCsrSys(csrId);
         csrMapper.deleteCsrHis(csrId);
         csrMapper.deleteCsr(csrId);
+    }
+
+    /** 완료요구일 빈값을 null 로 정규화 (DATE 캐스팅 안전) */
+    private void normalizeDueDt(CsrVO vo) {
+        if (vo.getDueDt() != null && vo.getDueDt().isBlank()) {
+            vo.setDueDt(null);
+        }
     }
 
     /** 다중 선택의 첫번째를 대표 SYS_ID 로 설정 (단일 select 호환·NOT NULL 보장) */

@@ -33,7 +33,8 @@
                C.STATUS   AS status,
                SC.CODE_NM AS statusNm,
                C.REQ_ID   AS reqId,
-               TO_CHAR(C.REQ_DT, 'YYYY-MM-DD HH24:MI') AS reqDt
+               TO_CHAR(C.REQ_DT, 'YYYY-MM-DD HH24:MI') AS reqDt,
+               TO_CHAR(C.DUE_DT, 'YYYY-MM-DD') AS dueDt
           FROM OPS_CSR C
           LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
           LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CSR_STATUS' AND SC.CODE_ID = C.STATUS
@@ -71,6 +72,7 @@
                SC.CODE_NM    AS statusNm,
                C.REQ_ID      AS reqId,
                TO_CHAR(C.REQ_DT,  'YYYY-MM-DD HH24:MI') AS reqDt,
+               TO_CHAR(C.DUE_DT,  'YYYY-MM-DD') AS dueDt,
                C.CHARGER_ID  AS chargerId,
                C.PROC_CONTENT AS procContent,
                TO_CHAR(C.PROC_DT, 'YYYY-MM-DD HH24:MI') AS procDt,
@@ -106,10 +108,10 @@
             useGeneratedKeys="true" keyProperty="csrId">
         INSERT INTO OPS_CSR
             (SYS_ID, TITLE, CONTENT, CSR_TYPE, CSR_SUB_TYPE, PRIORITY, STATUS, REQ_ID, REQ_DT,
-             CHARGER_ID, LINKED_TYPE, LINKED_ID, REG_DT)
+             DUE_DT, CHARGER_ID, LINKED_TYPE, LINKED_ID, REG_DT)
         VALUES
             (#{sysId}, #{title}, #{content}, #{csrType}, #{csrSubType}, #{priority}, #{status},
-             #{reqId}, CURRENT_TIMESTAMP, #{chargerId}, #{linkedType}, #{linkedId},
+             #{reqId}, CURRENT_TIMESTAMP, CAST(#{dueDt} AS DATE), #{chargerId}, #{linkedType}, #{linkedId},
              CURRENT_TIMESTAMP)
     </insert>
 
@@ -121,6 +123,7 @@
                CSR_TYPE = #{csrType},
                CSR_SUB_TYPE = #{csrSubType},
                PRIORITY = #{priority},
+               DUE_DT   = CAST(#{dueDt} AS DATE),
                CHARGER_ID = #{chargerId}
          WHERE CSR_ID = #{csrId}
     </update>

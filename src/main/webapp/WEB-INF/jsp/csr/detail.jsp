@@ -52,6 +52,7 @@
                 <span class="badge st-${fn:toLowerCase(csr.status)}">${csr.statusNm}</span>
             </td></tr>
             <tr><th>요청자 / 요청일시</th><td><span>${empty csr.reqId ? '-' : csr.reqId}</span> / <span>${empty csr.reqDt ? '-' : csr.reqDt}</span></td></tr>
+            <tr><th>완료요구일</th><td>${empty csr.dueDt ? '-' : csr.dueDt}</td></tr>
             <tr><th>담당자</th><td>${empty csr.chargerId ? '-' : csr.chargerId}</td></tr>
             <tr><th>처리일시</th><td>${empty csr.procDt ? '-' : csr.procDt}</td></tr>
             <tr><th>요청 내용</th><td><div class="rte-view">${csr.content}</div></td></tr>
