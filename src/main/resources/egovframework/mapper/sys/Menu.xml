@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.sys.menu.service.impl.MenuMapper">
+
+    <sql id="cols">
+        M.MENU_ID AS menuId, M.MENU_NM AS menuNm, M.MENU_URL AS menuUrl,
+        M.MENU_KEY AS menuKey, M.MENU_TYPE AS menuType, M.UPPER_ID AS upperId,
+        M.SORT_ORDR AS sortOrdr, M.USE_AT AS useAt
+    </sql>
+
+    <select id="selectMenuList" resultType="egovframework.ops.sys.menu.service.MenuVO">
+        SELECT <include refid="cols"/>, P.MENU_NM AS upperNm
+          FROM OPS_MENU M
+          LEFT JOIN OPS_MENU P ON P.MENU_ID = M.UPPER_ID
+         ORDER BY M.SORT_ORDR, M.MENU_ID
+    </select>
+
+    <select id="selectGroupList" resultType="egovframework.ops.sys.menu.service.MenuVO">
+        SELECT <include refid="cols"/>
+          FROM OPS_MENU M
+         WHERE M.MENU_TYPE = 'GROUP'
+         ORDER BY M.SORT_ORDR, M.MENU_ID
+    </select>
+
+    <select id="selectMenu" parameterType="long"
+            resultType="egovframework.ops.sys.menu.service.MenuVO">
+        SELECT <include refid="cols"/> FROM OPS_MENU M WHERE M.MENU_ID = #{menuId}
+    </select>
+
+    <insert id="insertMenu" parameterType="egovframework.ops.sys.menu.service.MenuVO">
+        <selectKey keyProperty="menuId" resultType="long" order="BEFORE">
+            SELECT COALESCE(MAX(MENU_ID), 0) + 1 FROM OPS_MENU
+        </selectKey>
+        INSERT INTO OPS_MENU (MENU_ID, MENU_NM, MENU_URL, MENU_KEY, MENU_TYPE, UPPER_ID, SORT_ORDR, USE_AT)
+        VALUES (#{menuId}, #{menuNm}, #{menuUrl}, #{menuKey}, #{menuType}, #{upperId}, #{sortOrdr}, #{useAt})
+    </insert>
+
+    <update id="updateMenu" parameterType="egovframework.ops.sys.menu.service.MenuVO">
+        UPDATE OPS_MENU
+           SET MENU_NM = #{menuNm}, MENU_URL = #{menuUrl}, MENU_KEY = #{menuKey},
+               MENU_TYPE = #{menuType}, UPPER_ID = #{upperId}, SORT_ORDR = #{sortOrdr}, USE_AT = #{useAt}
+         WHERE MENU_ID = #{menuId}
+    </update>
+
+    <delete id="deleteMenu" parameterType="long">
+        DELETE FROM OPS_MENU WHERE MENU_ID = #{menuId}
+    </delete>
+
+    <!-- 역할이 접근 가능한 메뉴 : 그룹은 모두, ITEM 은 권한 매핑된 것만 (사용중) -->
+    <select id="selectMenusByRole" parameterType="string"
+            resultType="egovframework.ops.sys.menu.service.MenuVO">
+        SELECT <include refid="cols"/>
+          FROM OPS_MENU M
+         WHERE M.USE_AT = 'Y'
+           AND ( M.MENU_TYPE = 'GROUP'
+                 OR EXISTS (SELECT 1 FROM OPS_MENU_AUTH A
+                             WHERE A.MENU_ID = M.MENU_ID AND A.ROLE_ID = #{role}) )
+         ORDER BY M.SORT_ORDR, M.MENU_ID
+    </select>
+
+    <!-- ===== 권한 ===== -->
+
+    <select id="selectAuthMenuIds" parameterType="string" resultType="long">
+        SELECT MENU_ID FROM OPS_MENU_AUTH WHERE ROLE_ID = #{role}
+    </select>
+
+    <delete id="deleteMenuAuthByRole" parameterType="string">
+        DELETE FROM OPS_MENU_AUTH WHERE ROLE_ID = #{roleId}
+    </delete>
+
+    <insert id="insertMenuAuth">
+        INSERT INTO OPS_MENU_AUTH (ROLE_ID, MENU_ID) VALUES (#{roleId}, #{menuId})
+    </insert>
+
+    <delete id="deleteMenuAuthByMenu" parameterType="long">
+        DELETE FROM OPS_MENU_AUTH WHERE MENU_ID = #{menuId}
+    </delete>
+
+</mapper>

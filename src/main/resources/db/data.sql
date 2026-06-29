@@ -371,3 +371,34 @@ INSERT INTO OPS_DEPT (DEPT_CD, DEPT_NM, UPPER_ID, MNGR_ID, SORT_ORDR, DEPT_DESC,
  ('D110', '시스템운영부', 1,    'oper01', 2, '인프라/시스템 운영', 'Y'),
  ('D120', '응용운영부',   1,    'oper02', 3, '응용프로그램 운영', 'Y'),
  ('D130', '민원지원과',   1,    NULL,     4, '대민 민원 지원', 'Y');
+
+-- 메뉴 마스터 -----------------------------------------------------------
+INSERT INTO OPS_MENU (MENU_ID, MENU_NM, MENU_URL, MENU_KEY, MENU_TYPE, UPPER_ID, SORT_ORDR, USE_AT) VALUES
+ (1,  '운영현황',      '/main',         'dashboard', 'ITEM',  NULL, 1,  'Y'),
+ (2,  '공유함',        '/appr/shared',  'shared',    'ITEM',  NULL, 2,  'Y'),
+ (10, '표준운영절차',  NULL,            NULL,        'GROUP', NULL, 10, 'Y'),
+ (11, '1. 요청관리',   '/csr/list',       'csr',       'ITEM', 10, 11, 'Y'),
+ (12, '2. 변경관리',   '/change/list',    'change',    'ITEM', 10, 12, 'Y'),
+ (13, '3. 배포관리',   '/release/list',   'release',   'ITEM', 10, 13, 'Y'),
+ (14, '4. 테스트관리', '/test/list',      'test',      'ITEM', 10, 14, 'Y'),
+ (15, '5. 연계관리',   '/interface/list', 'interface', 'ITEM', 10, 15, 'Y'),
+ (16, '6. 형상관리',   '/ci/list',        'ci',        'ITEM', 10, 16, 'Y'),
+ (17, '7. 운영상태관리','/event/list',    'event',     'ITEM', 10, 17, 'Y'),
+ (18, '8. 장애관리',   '/incident/list',  'incident',  'ITEM', 10, 18, 'Y'),
+ (19, '9. 문제관리',   '/problem/list',   'problem',   'ITEM', 10, 19, 'Y'),
+ (20, '· 운영점검',    '/check/list',     'check',     'ITEM', 10, 20, 'Y'),
+ (30, '기준정보 관리', NULL,            NULL,        'GROUP', NULL, 30, 'Y'),
+ (31, '응용시스템',    '/system/list',    'system',    'ITEM', 30, 31, 'Y'),
+ (32, '부서관리',      '/sys/dept/list',  'dept',      'ITEM', 30, 32, 'Y'),
+ (33, '사용자관리',    '/sys/user/list',  'user',      'ITEM', 30, 33, 'Y'),
+ (34, '공통코드',      '/sys/code/list',  'code',      'ITEM', 30, 34, 'Y'),
+ (35, '요청내용 템플릿','/csr/tpl',        'csrTpl',    'ITEM', 30, 35, 'Y'),
+ (36, '결재 기본설정', '/appr/template',  'apprTpl',   'ITEM', 30, 36, 'Y'),
+ (37, '메뉴관리',      '/sys/menu/list',  'menu',      'ITEM', 30, 37, 'Y'),
+ (38, '권한관리',      '/sys/auth',       'auth',      'ITEM', 30, 38, 'Y');
+
+-- 메뉴 권한(역할 ↔ 메뉴) -----------------------------------------------
+INSERT INTO OPS_MENU_AUTH (ROLE_ID, MENU_ID) VALUES
+ ('ADMIN',1),('ADMIN',2),('ADMIN',11),('ADMIN',12),('ADMIN',13),('ADMIN',14),('ADMIN',15),('ADMIN',16),('ADMIN',17),('ADMIN',18),('ADMIN',19),('ADMIN',20),('ADMIN',31),('ADMIN',32),('ADMIN',33),('ADMIN',34),('ADMIN',35),('ADMIN',36),('ADMIN',37),('ADMIN',38),
+ ('OPERATOR',1),('OPERATOR',2),('OPERATOR',11),('OPERATOR',12),('OPERATOR',13),('OPERATOR',14),('OPERATOR',15),('OPERATOR',16),('OPERATOR',17),('OPERATOR',18),('OPERATOR',19),('OPERATOR',20),('OPERATOR',31),
+ ('USER',1),('USER',2),('USER',11);
