@@ -28,7 +28,7 @@ public class DeployDemoBootstrap implements ApplicationListener<ContextRefreshed
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("${ops.deploy.workspace:${java.io.tmpdir}/egov-ops/deploy}")
+    @Value("${ops.deploy.workspace:${java.io.tmpdir}/egov-sop/deploy}")
     private String workspace;
 
     public DeployDemoBootstrap(JdbcTemplate jdbcTemplate) {
@@ -53,24 +53,24 @@ public class DeployDemoBootstrap implements ApplicationListener<ContextRefreshed
                     cfg.setBoolean("commit", null, "gpgsign", false);
                     cfg.setBoolean("tag", null, "gpgsign", false);
                     cfg.setString("gpg", null, "format", "openpgp");
-                    cfg.setString("user", null, "name", "egov-ops");
+                    cfg.setString("user", null, "name", "egov-sop");
                     cfg.setString("user", null, "email", "ops@egov.go.kr");
                     cfg.save();
 
                     Files.writeString(new File(demoSrc, "app.txt").toPath(),
-                            "egov-ops demo application\nversion=1.0.0\n");
+                            "egov-sop demo application\nversion=1.0.0\n");
                     git.add().addFilepattern(".").call();
                     git.commit().setMessage("init v1.0.0").setSign(false)
-                            .setAuthor("egov-ops", "ops@egov.go.kr")
-                            .setCommitter("egov-ops", "ops@egov.go.kr").call();
+                            .setAuthor("egov-sop", "ops@egov.go.kr")
+                            .setCommitter("egov-sop", "ops@egov.go.kr").call();
                     git.tag().setName("v1.0.0").setAnnotated(false).call();
 
                     Files.writeString(new File(demoSrc, "app.txt").toPath(),
-                            "egov-ops demo application\nversion=1.4.2\n- 민원포털 성능개선(인덱스/커넥션풀)\n");
+                            "egov-sop demo application\nversion=1.4.2\n- 민원포털 성능개선(인덱스/커넥션풀)\n");
                     git.add().addFilepattern(".").call();
                     git.commit().setMessage("release v1.4.2").setSign(false)
-                            .setAuthor("egov-ops", "ops@egov.go.kr")
-                            .setCommitter("egov-ops", "ops@egov.go.kr").call();
+                            .setAuthor("egov-sop", "ops@egov.go.kr")
+                            .setCommitter("egov-sop", "ops@egov.go.kr").call();
                     git.tag().setName("v1.4.2").setAnnotated(false).call();
 
                     branch = git.getRepository().getBranch();

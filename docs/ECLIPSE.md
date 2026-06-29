@@ -39,7 +39,7 @@
 2. 등록한 **Tomcat v9.0** 선택 → Finish
 3. 브라우저: <http://localhost:8080/> (톰캣 기본 포트). 로그인 화면으로 이동
    - 포트 변경: Servers 뷰의 서버 더블클릭 → **Ports** 의 HTTP 포트 수정
-   - 루트(`/`)가 아닌 컨텍스트로 뜨면(예: `/egov-ops`) 해당 경로로 접속하거나, 서버의 *Modules* 에서 Path 를 `/` 로 변경
+   - 루트(`/`)가 아닌 컨텍스트로 뜨면(예: `/egov-sop`) 해당 경로로 접속하거나, 서버의 *Modules* 에서 Path 를 `/` 로 변경
 
 **데모 계정**
 
@@ -56,7 +56,7 @@
 ## 4. 명령행 실행 (검증용, 톰캣 설치 없이)
 
 ```bash
-mvn clean package      # target/egov-ops.war
+mvn clean package      # target/egov-sop.war
 mvn cargo:run          # Tomcat 9.0 자동 내려받아 8085 포트로 구동 → http://localhost:8085/
 ```
 
@@ -64,12 +64,12 @@ mvn cargo:run          # Tomcat 9.0 자동 내려받아 8085 포트로 구동 �
 
 ## 5. 운영(PostgreSQL) 배포
 
-WAR(`target/egov-ops.war`)를 톰캣 9 `webapps/` 에 배포하고, 톰캣 기동 시 프로파일/접속정보를 주입합니다.
+WAR(`target/egov-sop.war`)를 톰캣 9 `webapps/` 에 배포하고, 톰캣 기동 시 프로파일/접속정보를 주입합니다.
 
 ```bash
 # $CATALINA_BASE/bin/setenv.sh (예)
 export JAVA_OPTS="$JAVA_OPTS -Dspring.profiles.active=prod \
-  -DDB_URL=jdbc:postgresql://DB:5432/egovops -DDB_USERNAME=egovops -DDB_PASSWORD=********"
+  -DDB_URL=jdbc:postgresql://DB:5432/egovsop -DDB_USERNAME=egovsop -DDB_PASSWORD=********"
 ```
 - 스키마/기준데이터는 비파괴적·멱등 적용. 자동 적재 끄기: `-DSQL_INIT_ENABLED=false`
 - 이클립스에서 운영 프로파일로 띄우려면 서버 실행설정(VM arguments)에 `-Dspring.profiles.active=prod` 와 DB 시스템속성 추가

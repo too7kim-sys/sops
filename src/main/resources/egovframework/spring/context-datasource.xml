@@ -10,7 +10,7 @@
     <beans profile="dev,default">
         <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
             <property name="driverClassName" value="org.h2.Driver"/>
-            <property name="url" value="jdbc:h2:mem:egovops;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"/>
+            <property name="url" value="jdbc:h2:mem:egovsop;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"/>
             <property name="username" value="sa"/>
             <property name="password" value=""/>
         </bean>
@@ -26,9 +26,9 @@
     <beans profile="prod">
         <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
             <property name="driverClassName" value="org.postgresql.Driver"/>
-            <property name="url" value="${DB_URL:jdbc:postgresql://localhost:5432/egovops}"/>
-            <property name="username" value="${DB_USERNAME:egovops}"/>
-            <property name="password" value="${DB_PASSWORD:egovops}"/>
+            <property name="url" value="${DB_URL:jdbc:postgresql://localhost:5432/egovsop}"/>
+            <property name="username" value="${DB_USERNAME:egovsop}"/>
+            <property name="password" value="${DB_PASSWORD:egovsop}"/>
             <property name="maxTotal" value="${DB_POOL_MAX:20}"/>
             <property name="initialSize" value="5"/>
         </bean>

@@ -1,4 +1,4 @@
-# 범정부 응용프로그램 운영관리시스템 (eGov-Ops)
+# 범정부 응용프로그램 운영관리시스템 (eGov-Sop)
 
 전자정부 표준프레임워크(eGovFrame)의 계층형 아키텍처와 **범정부 정보시스템 운영관리 매뉴얼의
 "응용프로그램 표준운영절차(SOP)"** 를 구현한 운영관리 웹 애플리케이션입니다.
@@ -58,7 +58,7 @@
 
 ```
 egovframework
-├─ EgovOpsApplication.java          # 부트 메인
+├─ EgovSopApplication.java          # 부트 메인
 ├─ rte.fdl.cmmn                     # 표준프레임워크 공통 기반(ServiceImpl 추상클래스)
 ├─ com                              # 공통 컴포넌트
 │  ├─ cmm                           # 공통 VO/페이징(ComDefaultVO, PaginationInfo, SessionVO)
@@ -102,7 +102,7 @@ WAR 로 패키징되어 **Apache Tomcat 9.x** 에서 구동된다. (Servlet `jav
 ### 4.2 명령행에서 즉시 실행 (내장 Tomcat 9, 검증용)
 
 ```bash
-mvn clean package          # target/egov-ops.war
+mvn clean package          # target/egov-sop.war
 mvn cargo:run              # Tomcat 9.0 자동 내려받아 8085 포트로 구동
 ```
 - 접속: <http://localhost:8085/> · 데모 계정 `admin / admin123!`
@@ -111,14 +111,14 @@ mvn cargo:run              # Tomcat 9.0 자동 내려받아 8085 포트로 구�
 ### 4.3 운영 (PostgreSQL) — `prod` 프로파일
 
 ```sql
-CREATE ROLE egovops LOGIN PASSWORD 'egovops';
-CREATE DATABASE egovops OWNER egovops;
+CREATE ROLE egovsop LOGIN PASSWORD 'egovsop';
+CREATE DATABASE egovsop OWNER egovsop;
 ```
 WAR 를 톰캣 9 `webapps/` 에 배포하고, 톰캣 기동 시 시스템속성/환경변수로 접속정보를 주입한다.
 ```bash
 # 예: $CATALINA_BASE/bin/setenv.sh
 export JAVA_OPTS="$JAVA_OPTS -Dspring.profiles.active=prod \
-  -DDB_URL=jdbc:postgresql://DB호스트:5432/egovops -DDB_USERNAME=egovops -DDB_PASSWORD=********"
+  -DDB_URL=jdbc:postgresql://DB호스트:5432/egovsop -DDB_USERNAME=egovsop -DDB_PASSWORD=********"
 ```
 - 스키마/기준데이터는 비파괴적(`CREATE TABLE IF NOT EXISTS`, `ON CONFLICT DO NOTHING`)으로 기동 시 멱등 적용.
   운영에는 샘플 거래데이터를 적재하지 않고 **기준정보(사용자/응용시스템/공통코드)** 만 시딩한다.

@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>${empty pageTitle ? 'eGov-Ops' : pageTitle} - 범정부 응용프로그램 운영관리시스템</title>
+    <title>${empty pageTitle ? 'eGov-Sop' : pageTitle} - 범정부 응용프로그램 운영관리시스템</title>
     <link rel="stylesheet" href="${ctx}/css/style.css"/>
 </head>
 <body>

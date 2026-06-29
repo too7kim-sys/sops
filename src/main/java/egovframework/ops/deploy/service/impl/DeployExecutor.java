@@ -29,7 +29,7 @@ public class DeployExecutor {
     private final DeployMapper deployMapper;
     private final GitDeployManager gitDeployManager;
 
-    @Value("${ops.deploy.workspace:${java.io.tmpdir}/egov-ops/deploy}")
+    @Value("${ops.deploy.workspace:${java.io.tmpdir}/egov-sop/deploy}")
     private String workspace;
 
     @Value("${ops.deploy.script-timeout-sec:60}")
