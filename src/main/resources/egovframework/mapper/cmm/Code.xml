@@ -9,10 +9,11 @@
         <result property="codeNm"    column="CODE_NM"/>
         <result property="sortOrdr"  column="SORT_ORDR"/>
         <result property="useAt"     column="USE_AT"/>
+        <result property="upperCode" column="UPPER_CODE"/>
     </resultMap>
 
     <select id="selectCodeList" parameterType="string" resultMap="codeMap">
-        SELECT CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT
+        SELECT CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT, UPPER_CODE
           FROM OPS_CODE
          WHERE CODE_GRP = #{codeGrp} AND USE_AT = 'Y'
          ORDER BY SORT_ORDR
@@ -20,7 +21,7 @@
 
     <select id="selectCodeMngList" parameterType="egovframework.ops.cmm.code.service.CodeVO"
             resultMap="codeMap">
-        SELECT CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT
+        SELECT CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT, UPPER_CODE
           FROM OPS_CODE
          WHERE 1 = 1
         <if test="searchCondition != null and searchCondition != ''">
@@ -47,13 +48,14 @@
     </select>
 
     <insert id="insertCode" parameterType="egovframework.ops.cmm.code.service.CodeVO">
-        INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT)
-        VALUES (#{codeGrp}, #{codeId}, #{codeNm}, #{sortOrdr}, #{useAt})
+        INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT, UPPER_CODE)
+        VALUES (#{codeGrp}, #{codeId}, #{codeNm}, #{sortOrdr}, #{useAt}, #{upperCode})
     </insert>
 
     <update id="updateCode" parameterType="egovframework.ops.cmm.code.service.CodeVO">
         UPDATE OPS_CODE
-           SET CODE_NM = #{codeNm}, SORT_ORDR = #{sortOrdr}, USE_AT = #{useAt}
+           SET CODE_NM = #{codeNm}, SORT_ORDR = #{sortOrdr}, USE_AT = #{useAt},
+               UPPER_CODE = #{upperCode}
          WHERE CODE_GRP = #{codeGrp} AND CODE_ID = #{codeId}
     </update>
 

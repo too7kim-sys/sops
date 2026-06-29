@@ -123,6 +123,8 @@ public class EgovCsrController {
     private void addFormCodes(Model model) {
         model.addAttribute("systemList", systemService.selectSystemAll());
         model.addAttribute("typeList", codeService.selectCodeList("CSR_TYPE"));
+        // 요청 소분류 — 대분류(upperCode)별로 폼에서 연동 필터링
+        model.addAttribute("subTypeList", codeService.selectCodeList("CSR_SUBTYPE"));
         model.addAttribute("priorityList", codeService.selectCodeList("PRIORITY"));
         model.addAttribute("statusList", codeService.selectCodeList("CSR_STATUS"));
     }

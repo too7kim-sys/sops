@@ -41,7 +41,7 @@
             <th class="center" style="width:70px;">번호</th>
             <th style="width:160px;">시스템</th>
             <th>제목</th>
-            <th class="center" style="width:90px;">유형</th>
+            <th class="center" style="width:140px;">유형</th>
             <th class="center" style="width:90px;">우선순위</th>
             <th class="center" style="width:210px;">현재 단계</th>
             <th class="center" style="width:110px;">요청자</th>
@@ -53,7 +53,7 @@
                 <td class="center">${c.csrId}</td>
                 <td>${c.sysNm}</td>
                 <td><a href="${ctx}/csr/detail/${c.csrId}">${c.title}</a></td>
-                <td class="center">${c.csrTypeNm}</td>
+                <td class="center">${c.csrTypeNm}<c:if test="${not empty c.csrSubTypeNm}"><div class="h-meta">${c.csrSubTypeNm}</div></c:if></td>
                 <td class="center">${c.priorityNm}</td>
                 <td>
                     <jsp:include page="/WEB-INF/jsp/include/stage.jsp">

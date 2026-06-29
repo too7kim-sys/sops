@@ -38,6 +38,13 @@
                     </select>
                 </td>
             </tr>
+            <tr>
+                <th>상위코드값</th>
+                <td colspan="3">
+                    <input type="text" name="upperCode" value="${code.upperCode}" placeholder="계층코드인 경우 상위 코드값(예: CSR_SUBTYPE → CSR_TYPE 코드)"/>
+                    <div class="h-meta">소분류 코드일 때만 입력합니다. 예) 요청 소분류(CSR_SUBTYPE)의 상위값은 요청 대분류(CSR_TYPE) 코드값(GENERAL/INCIDENT/CHANGE/BACKUP/CONFIG)</div>
+                </td>
+            </tr>
         </table>
     </div>
     <div class="toolbar right" style="justify-content:flex-end;">

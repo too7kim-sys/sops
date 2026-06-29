@@ -62,10 +62,11 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('CSR_STATUS', 'PROCESSED',   '처리완료', 5, 'Y'),
  ('CSR_STATUS', 'CLOSED',      '종료',     6, 'Y'),
  ('CSR_STATUS', 'REJECTED',    '반려',     7, 'Y'),
- ('CSR_TYPE', 'INQUIRY', '단순문의', 1, 'Y'),
- ('CSR_TYPE', 'CHANGE',  '변경요청', 2, 'Y'),
- ('CSR_TYPE', 'IMPROVE', '개선요청', 3, 'Y'),
- ('CSR_TYPE', 'WORK',    '작업요청', 4, 'Y'),
+ ('CSR_TYPE', 'GENERAL',  '일반 요청', 1, 'Y'),
+ ('CSR_TYPE', 'INCIDENT', '장애',      2, 'Y'),
+ ('CSR_TYPE', 'CHANGE',   '변경',      3, 'Y'),
+ ('CSR_TYPE', 'BACKUP',   '백업',      4, 'Y'),
+ ('CSR_TYPE', 'CONFIG',   '구성',      5, 'Y'),
  ('TEST_STATUS', 'PLANNED',  '계획',     1, 'Y'),
  ('TEST_STATUS', 'TESTING',  '수행중',   2, 'Y'),
  ('TEST_STATUS', 'ANALYZED', '분석완료', 3, 'Y'),
@@ -214,14 +215,37 @@ INSERT INTO OPS_CHECK_ITEM (CHK_ID, ITEM_NM, ITEM_RESULT, ITEM_REMARK) VALUES
  (3, 'DB 접속 상태',          'NORMAL', ''),
  (3, '디스크 사용률(80% 이하)', 'NORMAL', '55%');
 
+-- 요청 소분류(CSR_SUBTYPE) : UPPER_CODE = 대분류(CSR_TYPE) 코드 ----------
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT, UPPER_CODE) VALUES
+ ('CSR_SUBTYPE', 'GEN_INQUIRY',  '단순/사용법 문의',  1, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'GEN_DATA',     '단순 데이터 확인',  2, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'GEN_REVIEW',   '업무/작업 검토',    3, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'GEN_ETC',      '기타',              4, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'INC_FAIL',     '기능 불가',         1, 'Y', 'INCIDENT'),
+ ('CSR_SUBTYPE', 'INC_DEFECT',   '단순 오류/결함',    2, 'Y', 'INCIDENT'),
+ ('CSR_SUBTYPE', 'INC_ETC',      '기타',              3, 'Y', 'INCIDENT'),
+ ('CSR_SUBTYPE', 'CHG_NEW',      '신규 개발',         1, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_MOD',      '기능 수정/개발',    2, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_UIUX',     'UI/UX 변경',        3, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_DATA',     '데이터 변경',       4, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_INFO',     '정보/자료 요청',    5, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_SERVER',   '서버 작업 요청',    6, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_NETWORK',  '네트워크 작업 요청', 7, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_SECURITY', '보안 작업 요청',    8, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_DB',       'DB 작업 요청',      9, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_ETC',      '기타',             10, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'BAK_RESTORE',  '백업/복구 요청',    1, 'Y', 'BACKUP'),
+ ('CSR_SUBTYPE', 'CFG_MOD',      '구성정보 변경요청', 1, 'Y', 'CONFIG'),
+ ('CSR_SUBTYPE', 'CFG_ADD',      '구성정보 추가요청(신규)', 2, 'Y', 'CONFIG');
+
 -- 확장 모듈 샘플 데이터 (개발/데모) --------------------------------------
 -- ① 요청관리
-INSERT INTO OPS_CSR (SYS_ID, TITLE, CONTENT, CSR_TYPE, PRIORITY, STATUS, REQ_ID, REQ_DT, CHARGER_ID, PROC_CONTENT, PROC_DT) VALUES
- ('SYS001', '민원조회 화면 항목 추가 요청', '신청일자 컬럼 추가 요청', 'IMPROVE', 'MID', 'PROCESSED',
+INSERT INTO OPS_CSR (SYS_ID, TITLE, CONTENT, CSR_TYPE, CSR_SUB_TYPE, PRIORITY, STATUS, REQ_ID, REQ_DT, CHARGER_ID, PROC_CONTENT, PROC_DT) VALUES
+ ('SYS001', '민원조회 화면 항목 추가 요청', '신청일자 컬럼 추가 요청', 'CHANGE', 'CHG_UIUX', 'MID', 'PROCESSED',
    'user01', TIMESTAMP '2026-06-23 10:00:00', 'oper01', '화면 항목 추가 반영', TIMESTAMP '2026-06-23 15:00:00'),
- ('SYS002', '결재선 지정 오류 문의', '전결 규정 문의', 'INQUIRY', 'LOW', 'CLOSED',
+ ('SYS002', '결재선 지정 오류 문의', '전결 규정 문의', 'GENERAL', 'GEN_INQUIRY', 'LOW', 'CLOSED',
    'user01', TIMESTAMP '2026-06-24 09:30:00', 'oper02', '업무 안내 완료', TIMESTAMP '2026-06-24 10:10:00'),
- ('SYS004', '대용량 다운로드 기능 개선 요청', '엑셀 다운로드 속도 개선', 'CHANGE', 'HIGH', 'CLASSIFIED',
+ ('SYS004', '대용량 다운로드 기능 개선 요청', '엑셀 다운로드 속도 개선', 'CHANGE', 'CHG_MOD', 'HIGH', 'CLASSIFIED',
    'user01', TIMESTAMP '2026-06-24 11:00:00', 'oper02', NULL, NULL);
 INSERT INTO OPS_CSR_HIS (CSR_ID, STATUS, CONTENT, PROC_ID) VALUES
  (1, 'REQUESTED', '요청 등록', 'user01'),

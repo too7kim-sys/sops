@@ -34,9 +34,11 @@
         <table class="form">
             <tr><th>대상 시스템</th><td>${csr.sysNm}</td></tr>
             <tr><th>제목</th><td>${csr.title}</td></tr>
-            <tr><th>유형 / 우선순위</th><td>
-                <span>${csr.csrTypeNm}</span>
-                &nbsp;/&nbsp;
+            <tr><th>요청 분류</th><td>
+                <span class="badge">${csr.csrTypeNm}</span>
+                <c:if test="${not empty csr.csrSubTypeNm}">&nbsp;&gt;&nbsp;<span>${csr.csrSubTypeNm}</span></c:if>
+            </td></tr>
+            <tr><th>우선순위</th><td>
                 <span>${csr.priorityNm}</span>
             </td></tr>
             <tr><th>상태</th><td>

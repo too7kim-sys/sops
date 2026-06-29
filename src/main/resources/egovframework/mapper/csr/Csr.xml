@@ -23,6 +23,8 @@
                C.TITLE    AS title,
                C.CSR_TYPE AS csrType,
                TC.CODE_NM AS csrTypeNm,
+               C.CSR_SUB_TYPE AS csrSubType,
+               STC.CODE_NM AS csrSubTypeNm,
                C.PRIORITY AS priority,
                PC.CODE_NM AS priorityNm,
                C.STATUS   AS status,
@@ -33,6 +35,7 @@
           LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
           LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CSR_STATUS' AND SC.CODE_ID = C.STATUS
           LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE'   AND TC.CODE_ID = C.CSR_TYPE
+          LEFT JOIN OPS_CODE STC ON STC.CODE_GRP = 'CSR_SUBTYPE' AND STC.CODE_ID = C.CSR_SUB_TYPE
           LEFT JOIN OPS_CODE PC ON PC.CODE_GRP = 'PRIORITY'   AND PC.CODE_ID = C.PRIORITY
          WHERE 1 = 1
         <include refid="searchWhere"/>
@@ -57,6 +60,8 @@
                C.CONTENT     AS content,
                C.CSR_TYPE    AS csrType,
                TC.CODE_NM    AS csrTypeNm,
+               C.CSR_SUB_TYPE AS csrSubType,
+               STC.CODE_NM   AS csrSubTypeNm,
                C.PRIORITY    AS priority,
                PC.CODE_NM    AS priorityNm,
                C.STATUS      AS status,
@@ -74,6 +79,7 @@
           LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
           LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CSR_STATUS' AND SC.CODE_ID = C.STATUS
           LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE'   AND TC.CODE_ID = C.CSR_TYPE
+          LEFT JOIN OPS_CODE STC ON STC.CODE_GRP = 'CSR_SUBTYPE' AND STC.CODE_ID = C.CSR_SUB_TYPE
           LEFT JOIN OPS_CODE PC ON PC.CODE_GRP = 'PRIORITY'   AND PC.CODE_ID = C.PRIORITY
          WHERE C.CSR_ID = #{csrId}
     </select>
@@ -96,10 +102,10 @@
     <insert id="insertCsr" parameterType="egovframework.ops.csr.service.CsrVO"
             useGeneratedKeys="true" keyProperty="csrId">
         INSERT INTO OPS_CSR
-            (SYS_ID, TITLE, CONTENT, CSR_TYPE, PRIORITY, STATUS, REQ_ID, REQ_DT,
+            (SYS_ID, TITLE, CONTENT, CSR_TYPE, CSR_SUB_TYPE, PRIORITY, STATUS, REQ_ID, REQ_DT,
              CHARGER_ID, LINKED_TYPE, LINKED_ID, REG_DT)
         VALUES
-            (#{sysId}, #{title}, #{content}, #{csrType}, #{priority}, #{status},
+            (#{sysId}, #{title}, #{content}, #{csrType}, #{csrSubType}, #{priority}, #{status},
              #{reqId}, CURRENT_TIMESTAMP, #{chargerId}, #{linkedType}, #{linkedId},
              CURRENT_TIMESTAMP)
     </insert>
@@ -110,6 +116,7 @@
                TITLE    = #{title},
                CONTENT  = #{content},
                CSR_TYPE = #{csrType},
+               CSR_SUB_TYPE = #{csrSubType},
                PRIORITY = #{priority},
                CHARGER_ID = #{chargerId}
          WHERE CSR_ID = #{csrId}

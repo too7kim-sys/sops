@@ -27,4 +27,7 @@ public class CodeVO extends ComDefaultVO {
 
     /** 사용여부 */
     private String useAt;
+
+    /** 상위코드값 (계층코드 : 소분류→대분류 매핑, 예 CSR_SUBTYPE의 UPPER_CODE=CSR_TYPE) */
+    private String upperCode;
 }

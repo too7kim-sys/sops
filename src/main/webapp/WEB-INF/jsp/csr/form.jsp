@@ -25,12 +25,20 @@
                         </c:forEach>
                     </select>
                 </td>
-                <th>요청 유형 <span class="required">*</span></th>
+                <th>요청 대분류 <span class="required">*</span></th>
                 <td>
-                    <select name="csrType" required>
+                    <select name="csrType" id="csrType" required>
                         <c:forEach var="cd" items="${typeList}">
                             <option value="${cd.codeId}" ${cd.codeId == csr.csrType ? 'selected' : ''}>${cd.codeNm}</option>
                         </c:forEach>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>요청 소분류 <span class="required">*</span></th>
+                <td colspan="3">
+                    <select name="csrSubType" id="csrSubType" required style="min-width:240px;">
+                        <%-- 대분류 선택에 따라 스크립트로 채워짐 --%>
                     </select>
                 </td>
             </tr>
@@ -61,6 +69,36 @@
         <button type="submit" class="btn btn-primary">저장</button>
     </div>
 </form>
+
+<%-- 요청 대분류 → 소분류 연동 (코드 UPPER_CODE 기준 필터) --%>
+<script>
+(function () {
+    var SUBTYPES = [
+        <c:forEach var="st" items="${subTypeList}" varStatus="vs">{id:'${st.codeId}', nm:'${fn:escapeXml(st.codeNm)}', up:'${st.upperCode}'}<c:if test="${!vs.last}">,</c:if></c:forEach>
+    ];
+    var curSel = '${csr.csrSubType}';
+    var major = document.getElementById('csrType');
+    var sub = document.getElementById('csrSubType');
+    if (!major || !sub) return;
+    function fill() {
+        var maj = major.value;
+        sub.innerHTML = '';
+        SUBTYPES.filter(function (s) { return s.up === maj; }).forEach(function (s) {
+            var o = document.createElement('option');
+            o.value = s.id; o.textContent = s.nm;
+            if (s.id === curSel) o.selected = true;
+            sub.appendChild(o);
+        });
+        if (!sub.options.length) {
+            var o = document.createElement('option');
+            o.value = ''; o.textContent = '(소분류 없음)';
+            sub.appendChild(o);
+        }
+    }
+    major.addEventListener('change', function () { curSel = ''; fill(); });
+    fill();
+})();
+</script>
 
 <jsp:include page="/WEB-INF/jsp/include/editor.jsp"/>
 <jsp:include page="/WEB-INF/jsp/include/footer.jsp"/>

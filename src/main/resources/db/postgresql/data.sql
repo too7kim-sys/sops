@@ -56,10 +56,11 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('CSR_STATUS', 'PROCESSED',   '처리완료', 5, 'Y'),
  ('CSR_STATUS', 'CLOSED',      '종료',     6, 'Y'),
  ('CSR_STATUS', 'REJECTED',    '반려',     7, 'Y'),
- ('CSR_TYPE', 'INQUIRY', '단순문의', 1, 'Y'),
- ('CSR_TYPE', 'CHANGE',  '변경요청', 2, 'Y'),
- ('CSR_TYPE', 'IMPROVE', '개선요청', 3, 'Y'),
- ('CSR_TYPE', 'WORK',    '작업요청', 4, 'Y'),
+ ('CSR_TYPE', 'GENERAL',  '일반 요청', 1, 'Y'),
+ ('CSR_TYPE', 'INCIDENT', '장애',      2, 'Y'),
+ ('CSR_TYPE', 'CHANGE',   '변경',      3, 'Y'),
+ ('CSR_TYPE', 'BACKUP',   '백업',      4, 'Y'),
+ ('CSR_TYPE', 'CONFIG',   '구성',      5, 'Y'),
  ('TEST_STATUS', 'PLANNED',  '계획',     1, 'Y'),
  ('TEST_STATUS', 'TESTING',  '수행중',   2, 'Y'),
  ('TEST_STATUS', 'ANALYZED', '분석완료', 3, 'Y'),
@@ -120,6 +121,30 @@ INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT) VALUES
  ('PROBLEM_STATUS', 'RESOLVING',  '해결중',   4, 'Y'),
  ('PROBLEM_STATUS', 'RESOLVED',   '해결완료', 5, 'Y'),
  ('PROBLEM_STATUS', 'CLOSED',     '종료',     6, 'Y')
+ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;
+
+-- 요청 소분류(CSR_SUBTYPE) : UPPER_CODE = 대분류(CSR_TYPE) 코드 ----------
+INSERT INTO OPS_CODE (CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT, UPPER_CODE) VALUES
+ ('CSR_SUBTYPE', 'GEN_INQUIRY',  '단순/사용법 문의',  1, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'GEN_DATA',     '단순 데이터 확인',  2, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'GEN_REVIEW',   '업무/작업 검토',    3, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'GEN_ETC',      '기타',              4, 'Y', 'GENERAL'),
+ ('CSR_SUBTYPE', 'INC_FAIL',     '기능 불가',         1, 'Y', 'INCIDENT'),
+ ('CSR_SUBTYPE', 'INC_DEFECT',   '단순 오류/결함',    2, 'Y', 'INCIDENT'),
+ ('CSR_SUBTYPE', 'INC_ETC',      '기타',              3, 'Y', 'INCIDENT'),
+ ('CSR_SUBTYPE', 'CHG_NEW',      '신규 개발',         1, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_MOD',      '기능 수정/개발',    2, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_UIUX',     'UI/UX 변경',        3, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_DATA',     '데이터 변경',       4, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_INFO',     '정보/자료 요청',    5, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_SERVER',   '서버 작업 요청',    6, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_NETWORK',  '네트워크 작업 요청', 7, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_SECURITY', '보안 작업 요청',    8, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_DB',       'DB 작업 요청',      9, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'CHG_ETC',      '기타',             10, 'Y', 'CHANGE'),
+ ('CSR_SUBTYPE', 'BAK_RESTORE',  '백업/복구 요청',    1, 'Y', 'BACKUP'),
+ ('CSR_SUBTYPE', 'CFG_MOD',      '구성정보 변경요청', 1, 'Y', 'CONFIG'),
+ ('CSR_SUBTYPE', 'CFG_ADD',      '구성정보 추가요청(신규)', 2, 'Y', 'CONFIG')
 ON CONFLICT (CODE_GRP, CODE_ID) DO NOTHING;
 
 -- 현행 모듈 보강 공통코드 ----------------------------------------------

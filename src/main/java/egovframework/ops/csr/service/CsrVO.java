@@ -33,11 +33,17 @@ public class CsrVO extends ComDefaultVO {
     /** 요청 내용 */
     private String content;
 
-    /** 요청 유형 (INQUIRY/CHANGE/IMPROVE/WORK) */
+    /** 요청 대분류 (CSR_TYPE 코드 : GENERAL/INCIDENT/CHANGE/BACKUP/CONFIG) */
     private String csrType;
 
-    /** 요청 유형명 (조인) */
+    /** 요청 대분류명 (조인) */
     private String csrTypeNm;
+
+    /** 요청 소분류 (CSR_SUBTYPE 코드, UPPER_CODE=CSR_TYPE) */
+    private String csrSubType;
+
+    /** 요청 소분류명 (조인) */
+    private String csrSubTypeNm;
 
     /** 우선순위 (HIGH/MID/LOW) */
     private String priority;
