@@ -13,6 +13,7 @@
         <div class="page-desc">요청 → 접수 → 분류 → 처리 → 종결 표준 처리절차</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/csr/write" class="btn btn-primary">＋ 요청 등록</a>
     </div>
 </div>
@@ -36,7 +37,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>건</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th class="center" style="width:70px;">번호</th>
@@ -58,7 +59,7 @@
                 <td class="center">${c.csrTypeNm}<c:if test="${not empty c.csrSubTypeNm}"><div class="h-meta">${c.csrSubTypeNm}</div></c:if></td>
                 <td class="center">${c.priorityNm}</td>
                 <td class="center">${empty c.dueDt ? '-' : c.dueDt}</td>
-                <td>
+                <td data-export="${c.statusNm}">
                     <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
                         <jsp:param name="type" value="CSR"/>
                         <jsp:param name="status" value="${c.status}"/>
@@ -71,7 +72,7 @@
         </c:forEach>
         <c:if test="${empty csrList}"><tr><td colspan="8" class="empty">등록된 요청이 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/csr/list"/></jsp:include>
 </div>
 

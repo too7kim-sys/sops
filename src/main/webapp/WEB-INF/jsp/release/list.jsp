@@ -13,6 +13,7 @@
         <div class="page-desc">배포계획 → 승인 → 배포 → 완료/롤백 표준 처리절차</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/release/write" class="btn btn-primary">＋ 배포계획 등록</a>
     </div>
 </div>
@@ -36,7 +37,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>건</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th class="center" style="width:70px;">번호</th>
@@ -55,7 +56,7 @@
                 <td>${r.sysNm}</td>
                 <td class="center">${r.ver}</td>
                 <td><a href="${ctx}/release/detail/${r.relId}">${r.title}</a></td>
-                <td>
+                <td data-export="${r.statusNm}">
                     <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
                         <jsp:param name="type" value="RELEASE"/>
                         <jsp:param name="status" value="${r.status}"/>
@@ -69,7 +70,7 @@
         </c:forEach>
         <c:if test="${empty releaseList}"><tr><td colspan="7" class="empty">등록된 배포가 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/release/list"/></jsp:include>
 </div>
 

@@ -58,6 +58,13 @@ a { color: inherit; text-decoration: none; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
 /* ---------- 테이블 ---------- */
+/* 목록 스크롤 영역(상하 영역 고려) : 헤더 고정 + 본문 스크롤 */
+.list-scroll { max-height: calc(100vh - 330px); min-height: 200px; overflow: auto;
+    border: 1px solid #eef1f5; border-radius: 6px; }
+.list-scroll table.list { border: 0; }
+.list-scroll table.list thead th { position: sticky; top: 0; z-index: 3; background: #f5f7fa;
+    box-shadow: inset 0 -1px 0 #e4e7ec; }
+
 table.list { width: 100%; border-collapse: collapse; background: #fff; }
 table.list th, table.list td { border-bottom: 1px solid #e4e7ec; padding: 10px 12px; text-align: left; font-size: 13px; }
 table.list th { background: #f5f7fa; color: #445; font-weight: 600; }

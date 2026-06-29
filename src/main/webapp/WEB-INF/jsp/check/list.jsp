@@ -13,6 +13,7 @@
         <div class="page-desc">일일/정기 운영점검 등록 및 점검결과 관리</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/check/write" class="btn btn-primary">＋ 점검 등록</a>
     </div>
 </div>
@@ -36,7 +37,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>건</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th class="center" style="width:70px;">번호</th>
@@ -62,7 +63,7 @@
         </c:forEach>
         <c:if test="${empty checkList}"><tr><td colspan="7" class="empty">등록된 운영점검이 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/check/list"/></jsp:include>
 </div>
 

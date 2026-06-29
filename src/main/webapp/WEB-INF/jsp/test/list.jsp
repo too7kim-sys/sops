@@ -12,6 +12,7 @@
         <div class="page-desc">계획 → 수행 → 분석 → 종결 표준 테스트절차</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/test/write" class="btn btn-primary">＋ 테스트 등록</a>
     </div>
 </div>
@@ -35,7 +36,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>건</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th class="center" style="width:70px;">번호</th>
@@ -55,7 +56,7 @@
                 <td><a href="${ctx}/test/detail/${t.testId}">${t.title}</a></td>
                 <td class="center">${t.testTypeNm}</td>
                 <td class="center">${t.testEnvNm}</td>
-                <td>
+                <td data-export="${t.statusNm}">
                     <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
                         <jsp:param name="type" value="TEST"/>
                         <jsp:param name="status" value="${t.status}"/>
@@ -68,7 +69,7 @@
         </c:forEach>
         <c:if test="${empty testList}"><tr><td colspan="7" class="empty">등록된 테스트가 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/test/list"/></jsp:include>
 </div>
 

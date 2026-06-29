@@ -11,6 +11,7 @@
         <div class="page-desc">운영 조직(부서) 마스터 관리 — 결재선/공유 대상 지정에 사용</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/sys/dept/write" class="btn btn-primary">＋ 부서 등록</a>
     </div>
 </div>
@@ -27,7 +28,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>개</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th class="center" style="width:90px;">부서코드</th>
@@ -61,7 +62,7 @@
         </c:forEach>
         <c:if test="${empty deptList}"><tr><td colspan="8" class="empty">등록된 부서가 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/sys/dept/list"/></jsp:include>
 </div>
 

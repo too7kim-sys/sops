@@ -12,6 +12,7 @@
         <div class="page-desc">형상식별 → 기준선 → 체크아웃/체크인 → 형상감사 표준 형상통제절차</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/ci/write" class="btn btn-primary">＋ 형상항목 식별</a>
     </div>
 </div>
@@ -35,7 +36,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>건</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th class="center" style="width:70px;">번호</th>
@@ -55,7 +56,7 @@
                 <td><a href="${ctx}/ci/detail/${c.ciId}">${c.ciNm}</a></td>
                 <td class="center">${c.ciTypeNm}</td>
                 <td class="center">${empty c.ver ? '-' : c.ver}</td>
-                <td>
+                <td data-export="${c.ciStatusNm}">
                     <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
                         <jsp:param name="type" value="CI"/>
                         <jsp:param name="status" value="${c.ciStatus}"/>
@@ -68,7 +69,7 @@
         </c:forEach>
         <c:if test="${empty ciList}"><tr><td colspan="7" class="empty">등록된 형상항목이 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/ci/list"/></jsp:include>
 </div>
 

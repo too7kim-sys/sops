@@ -13,6 +13,7 @@
         <div class="page-desc">변경요청 → 심의/승인 → 적용 → 완료 표준 처리절차</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/change/write" class="btn btn-primary">＋ 변경요청</a>
     </div>
 </div>
@@ -36,7 +37,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>건</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th class="center" style="width:70px;">번호</th>
@@ -55,7 +56,7 @@
                 <td>${c.sysNm}</td>
                 <td><a href="${ctx}/change/detail/${c.chgId}">${c.title}</a></td>
                 <td class="center">${c.chgTypeNm}</td>
-                <td>
+                <td data-export="${c.statusNm}">
                     <jsp:include page="/WEB-INF/jsp/include/stage.jsp">
                         <jsp:param name="type" value="CHANGE"/>
                         <jsp:param name="status" value="${c.status}"/>
@@ -69,7 +70,7 @@
         </c:forEach>
         <c:if test="${empty changeList}"><tr><td colspan="7" class="empty">등록된 변경요청이 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/change/list"/></jsp:include>
 </div>
 

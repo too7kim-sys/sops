@@ -11,6 +11,7 @@
         <div class="page-desc">운영대상 응용시스템 기준정보 관리</div>
     </div>
     <div class="toolbar">
+        <button type="button" class="btn btn-default" onclick="exportListExcel()">⬇ 엑셀</button>
         <a href="${ctx}/system/write" class="btn btn-primary">＋ 시스템 등록</a>
     </div>
 </div>
@@ -28,7 +29,7 @@
 
 <div class="panel mb0">
     <p style="margin-bottom:10px;color:#777;font-size:13px;">총 <b>${totalCnt}</b>건</p>
-    <table class="list">
+    <div class="list-scroll"><table class="list">
         <thead>
         <tr>
             <th style="width:140px;">시스템ID</th>
@@ -61,7 +62,7 @@
         </c:forEach>
         <c:if test="${empty systemList}"><tr><td colspan="7" class="empty">등록된 시스템이 없습니다.</td></tr></c:if>
         </tbody>
-    </table>
+    </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/system/list"/></jsp:include>
 </div>
 
