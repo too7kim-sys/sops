@@ -111,16 +111,13 @@
         }
     }
 
-    // 선택 소분류의 요청내용 템플릿을 에디터에 주입 (비어있으면 바로, 내용 있으면 확인)
+    // 선택 소분류의 요청내용 템플릿을 에디터에 즉시 주입 (확인 없이 대체)
     function applyTpl(subCd) {
         var tpl = TEMPLATES[subCd];
         if (!tpl || !window.jQuery) return;
         var $c = jQuery('#content');
         if (!$c.length) return;
-        var empty = $c.data('summernote') ? $c.summernote('isEmpty') : !($c.val() && $c.val().trim());
-        if (empty || confirm('선택한 소분류의 요청내용 템플릿을 불러올까요?\n(기존 입력 내용이 대체됩니다)')) {
-            if ($c.data('summernote')) { $c.summernote('code', tpl); } else { $c.val(tpl); }
-        }
+        if ($c.data('summernote')) { $c.summernote('code', tpl); } else { $c.val(tpl); }
     }
 
     major.addEventListener('change', function () { curSel = ''; fill(); applyTpl(sub.value); });
