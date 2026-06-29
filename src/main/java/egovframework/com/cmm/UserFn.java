@@ -32,4 +32,27 @@ public final class UserFn {
         }
         return key;
     }
+
+    /** 콤마구분 사용자ID 목록 → "성명(직급), 성명(직급) …". 다중 심의위원 등 표시용. */
+    public static String nms(Object mapObj, Object ids) {
+        if (ids == null) {
+            return "";
+        }
+        String csv = String.valueOf(ids).trim();
+        if (csv.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String part : csv.split(",")) {
+            String id = part.trim();
+            if (id.isEmpty()) {
+                continue;
+            }
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(nm(mapObj, id));
+        }
+        return sb.toString();
+    }
 }

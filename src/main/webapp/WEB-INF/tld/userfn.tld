@@ -14,4 +14,11 @@
         <function-class>egovframework.com.cmm.UserFn</function-class>
         <function-signature>java.lang.String nm(java.lang.Object, java.lang.Object)</function-signature>
     </function>
+
+    <function>
+        <description>콤마구분 사용자ID 목록 → 성명(직급) 목록</description>
+        <name>nms</name>
+        <function-class>egovframework.com.cmm.UserFn</function-class>
+        <function-signature>java.lang.String nms(java.lang.Object, java.lang.Object)</function-signature>
+    </function>
 </taglib>

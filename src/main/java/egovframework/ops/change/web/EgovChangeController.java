@@ -61,11 +61,30 @@ public class EgovChangeController {
     /** 변경 상세 */
     @GetMapping("/detail/{chgId}")
     public String detail(@PathVariable Long chgId, Model model) {
-        model.addAttribute("change", changeService.selectChange(chgId));
+        ChangeVO change = changeService.selectChange(chgId);
+        model.addAttribute("change", change);
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
         model.addAttribute("cabDecisionList", codeService.selectCodeList("CAB_DECISION"));
+        // CAB 심의위원 기본값 : 요청자 + 심의자 + 결재선(검토/승인/처리) 대상자 (중복 제거, 순서 유지)
+        java.util.LinkedHashSet<String> members = new java.util.LinkedHashSet<>();
+        if (change != null) {
+            addMember(members, change.getReqId());
+            addMember(members, change.getApprId());
+        }
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", chgId)) {
+            addMember(members, ln.getAssigneeId());
+        }
+        model.addAttribute("cabMembers", new java.util.ArrayList<>(members));
+        model.addAttribute("userCandidates", apprService.selectAssigneeCandidates());
         model.addAttribute("menu", "change");
         return "change/detail";
+    }
+
+    /** 공백·중복 없이 심의위원 후보 추가 */
+    private void addMember(java.util.Set<String> set, String id) {
+        if (id != null && !id.isBlank()) {
+            set.add(id);
+        }
     }
 
     /** 변경요청 등록 폼 */

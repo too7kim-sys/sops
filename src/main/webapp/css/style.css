@@ -275,3 +275,26 @@ table.form .note-editor { margin: 0; max-width: 100%; }
     padding: 0 11px; border-radius: 4px; cursor: pointer; font-size: 12px; font-family: inherit; white-space: nowrap;
 }
 .dept-search .dept-search-alt:hover { background: #f1f3f6; }
+
+/* ===== 공용 모달(사용자 검색 등) ===== */
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(20, 28, 40, 0.45);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 8vh;
+}
+.modal-box {
+    width: 480px; max-width: 92vw; background: #fff; border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28); overflow: hidden;
+}
+.modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid #e7ebf0; background: #f7f9fc;
+}
+.modal-head b { font-size: 15px; color: #1b3a6b; }
+.modal-x {
+    border: none; background: none; font-size: 22px; line-height: 1; color: #889;
+    cursor: pointer; padding: 0 4px;
+}
+.modal-x:hover { color: #c0392b; }
+.modal-body { padding: 14px 16px; }

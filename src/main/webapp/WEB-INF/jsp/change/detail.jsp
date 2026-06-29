@@ -101,7 +101,20 @@
                     </select>
                 </td></tr>
             <tr><th>심의 의견</th><td><textarea class="wysiwyg" name="opinion" rows="3"></textarea></td></tr>
-            <tr><th>심의위원</th><td><input type="text" name="reviewer" placeholder="미입력 시 로그인 사용자"/></td></tr>
+            <tr><th>심의위원</th>
+                <td>
+                    <%-- 제출값(콤마구분 ID) : JS 가 칩 선택에 맞춰 갱신 --%>
+                    <input type="hidden" name="reviewer" id="cabReviewerVal"/>
+                    <div class="sysfind" style="cursor:default;">
+                        <div class="sysfind-box" id="cabMemberBox" style="cursor:default;">
+                            <span class="sysfind-tags" id="cabMemberTags"></span>
+                        </div>
+                    </div>
+                    <div style="margin-top:6px;">
+                        <button type="button" class="btn btn-default btn-sm" onclick="cabOpenUserSearch()">＋ 위원 검색/추가</button>
+                        <span class="h-meta">요청자·심의자·검토/승인/처리자가 기본 포함됩니다. 칩의 ×로 제외할 수 있습니다.</span>
+                    </div>
+                </td></tr>
         </table>
         <div class="right" style="margin-top:12px;">
             <button type="submit" class="btn btn-success">CAB 심의 등록</button>
@@ -127,13 +140,117 @@
             <tr>
                 <td><span class="badge st-${fn:toLowerCase(cab.decision)}">${empty cab.decisionNm ? cab.decision : cab.decisionNm}</span></td>
                 <td><div class="rte-view">${empty cab.opinion ? '-' : cab.opinion}</div></td>
-                <td>${empty cab.reviewer ? '-' : uf:nm(userNameMap, cab.reviewer)}</td>
+                <td>${empty cab.reviewer ? '-' : uf:nms(userNameMap, cab.reviewer)}</td>
                 <td>${empty cab.cabDt ? '-' : cab.cabDt}</td>
             </tr>
         </c:forEach>
         </tbody>
     </table>
 </div>
+
+<c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
+<%-- 심의위원 사용자 검색 팝업 --%>
+<div id="cabUserModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-head">
+            <b>심의위원 검색/추가</b>
+            <button type="button" class="modal-x" onclick="cabCloseUserSearch()">×</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="cabUserSearch" class="sysfind-search" style="width:100%;box-sizing:border-box;margin-bottom:8px;" placeholder="성명·ID·부서 검색…" autocomplete="off"/>
+            <div id="cabUserResults" class="sysfind-results" style="position:static;display:block;max-height:320px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var tagsEl = document.getElementById('cabMemberTags');
+    var valEl  = document.getElementById('cabReviewerVal');
+    if (!tagsEl || !valEl) return;
+
+    // 후보 사용자 : {id, nm, search}
+    var CANDS = [
+        <c:forEach var="u" items="${userCandidates}" varStatus="vs">{id:'${u.userId}', nm:'${fn:escapeXml(uf:nm(userNameMap, u.userId))}', search:'${fn:escapeXml(fn:toLowerCase(u.userId))} ${fn:escapeXml(fn:toLowerCase(u.userNm))} ${fn:escapeXml(fn:toLowerCase(u.deptNm))}'}<c:if test="${!vs.last}">,</c:if></c:forEach>
+    ];
+    var NAME = {};
+    CANDS.forEach(function (c) { NAME[c.id] = c.nm || c.id; });
+
+    // 선택된 위원(기본값 : 요청자/심의자/결재선 대상자)
+    var selected = [
+        <c:forEach var="m" items="${cabMembers}" varStatus="vs">'${m}'<c:if test="${!vs.last}">,</c:if></c:forEach>
+    ];
+
+    function nmeOf(id) { return NAME[id] || id; }
+
+    function render() {
+        tagsEl.innerHTML = '';
+        selected.forEach(function (id) {
+            var chip = document.createElement('span');
+            chip.className = 'sys-chip';
+            chip.appendChild(document.createTextNode(nmeOf(id)));
+            var x = document.createElement('button');
+            x.type = 'button'; x.className = 'sys-chip-x'; x.textContent = '×'; x.title = '제외';
+            x.addEventListener('click', function () {
+                selected = selected.filter(function (s) { return s !== id; });
+                render();
+            });
+            chip.appendChild(x);
+            tagsEl.appendChild(chip);
+        });
+        if (!selected.length) {
+            var none = document.createElement('span');
+            none.className = 'h-meta'; none.textContent = '심의위원을 추가하세요.';
+            tagsEl.appendChild(none);
+        }
+        valEl.value = selected.join(',');
+    }
+
+    var modal   = document.getElementById('cabUserModal');
+    var search  = document.getElementById('cabUserSearch');
+    var results = document.getElementById('cabUserResults');
+
+    function renderResults() {
+        var q = (search.value || '').toLowerCase().trim();
+        var matches = CANDS.filter(function (c) {
+            return selected.indexOf(c.id) < 0 && (!q || c.search.indexOf(q) >= 0);
+        });
+        results.innerHTML = '';
+        if (!matches.length) {
+            var n = document.createElement('div');
+            n.className = 'sysfind-none';
+            n.textContent = q ? '검색 결과가 없습니다.' : '추가할 사용자가 없습니다.';
+            results.appendChild(n);
+            return;
+        }
+        matches.slice(0, 100).forEach(function (c) {
+            var d = document.createElement('div');
+            d.className = 'sysfind-item';
+            d.textContent = c.nm + ' [' + c.id + ']';
+            d.addEventListener('click', function () {
+                selected.push(c.id);
+                render(); renderResults();
+            });
+            results.appendChild(d);
+        });
+    }
+
+    window.cabOpenUserSearch = function () {
+        modal.style.display = 'flex';
+        search.value = '';
+        renderResults();
+        search.focus();
+    };
+    window.cabCloseUserSearch = function () { modal.style.display = 'none'; };
+
+    search.addEventListener('input', renderResults);
+    modal.addEventListener('click', function (e) { if (e.target === modal) { cabCloseUserSearch(); } });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { cabCloseUserSearch(); } });
+
+    render();
+})();
+</script>
+</c:if>
 
 <%-- 이행후검토(PIR) --%>
 <c:if test="${change.status == 'APPLIED' or change.status == 'COMPLETED'}">
