@@ -161,6 +161,19 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
         }
     }
 
+    @Override
+    @Transactional
+    public void transferLink(Long csrId, String linkedType, Long linkedId, String actorId, String label) {
+        csrMapper.updateCsrLink(csrId, linkedType, linkedId);
+        CsrHisVO his = new CsrHisVO();
+        his.setCsrId(csrId);
+        his.setStatus("CLASSIFIED");
+        his.setContent(label + " 이관 (#" + linkedId + ")");
+        his.setProcId(actorId);
+        csrMapper.insertCsrHis(his);
+        log.debug("요청 이관 : CSR-{} -> {} #{}", csrId, linkedType, linkedId);
+    }
+
     /* ===== 요청 소분류별 요청내용 템플릿 ===== */
 
     @Override

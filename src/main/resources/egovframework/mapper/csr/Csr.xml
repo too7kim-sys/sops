@@ -150,6 +150,12 @@
         DELETE FROM OPS_CSR_HIS WHERE CSR_ID = #{csrId}
     </delete>
 
+    <update id="updateCsrLink">
+        UPDATE OPS_CSR
+           SET LINKED_TYPE = #{linkedType}, LINKED_ID = #{linkedId}, STATUS = 'CLASSIFIED'
+         WHERE CSR_ID = #{csrId}
+    </update>
+
     <!-- ===================== 요청 ↔ 대상 시스템(다중) ===================== -->
 
     <select id="selectCsrSysList" parameterType="long"

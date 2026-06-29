@@ -107,6 +107,35 @@
     </div>
 </div>
 
+<%-- 분류/이관 --%>
+<div class="panel">
+    <h3>분류 / 이관</h3>
+    <c:if test="${not empty csr.linkedId}">
+        <c:set var="linkTgt" value="${transferTargets[csr.linkedType]}"/>
+        <c:set var="linkLabel" value="${empty linkTgt ? csr.linkedType : linkTgt.label}"/>
+        <p style="margin-bottom:10px;">
+            <span class="badge st-approved">이관됨</span>
+            이 요청은 <b>${linkLabel}</b> 로 이관되었습니다 &rarr;
+            <a href="${ctx}${empty linkTgt ? '#' : linkTgt.urlPrefix}${csr.linkedId}" class="btn btn-default btn-sm">${linkLabel} #${csr.linkedId} 보기</a>
+        </p>
+    </c:if>
+    <c:if test="${csr.status != 'CLOSED' and csr.status != 'REJECTED'}">
+        <form method="post" action="${ctx}/csr/transfer" class="appr-add-row" style="align-items:center;gap:8px;"
+              onsubmit="return confirm('선택한 업무로 이관(신규 생성)할까요?');">
+            <input type="hidden" name="csrId" value="${csr.csrId}"/>
+            <label>이관 대상
+                <select name="targetType" required>
+                    <c:forEach var="t" items="${transferTargets}">
+                        <option value="${t.key}">${t.value.label}</option>
+                    </c:forEach>
+                </select>
+            </label>
+            <button type="submit" class="btn btn-primary btn-sm">이관</button>
+            <span class="h-meta">요청 제목·내용·대상시스템을 대상 업무에 복사해 신규 등록하고 연계합니다.</span>
+        </form>
+    </c:if>
+</div>
+
 <%-- 첨부파일 --%>
 <div class="panel">
     <h3>첨부파일 <span class="badge">${fn:length(fileList)}</span></h3>

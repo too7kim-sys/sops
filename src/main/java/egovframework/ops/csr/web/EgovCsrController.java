@@ -42,6 +42,7 @@ public class EgovCsrController {
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
     private final EgovApprService apprService;
+    private final egovframework.ops.csr.service.impl.CsrTransferService transferService;
 
     @Value("${ops.upload.dir:${java.io.tmpdir}/egov-sop/upload}")
     private String uploadDir;
@@ -49,11 +50,13 @@ public class EgovCsrController {
     public EgovCsrController(EgovCsrService csrService,
                              EgovSystemService systemService,
                              EgovCodeService codeService,
-                                EgovApprService apprService) {
+                                EgovApprService apprService,
+                             egovframework.ops.csr.service.impl.CsrTransferService transferService) {
         this.csrService = csrService;
         this.systemService = systemService;
         this.codeService = codeService;
         this.apprService = apprService;
+        this.transferService = transferService;
     }
 
     /** 요청 목록 */
@@ -83,8 +86,18 @@ public class EgovCsrController {
         model.addAttribute("csr", csrService.selectCsr(csrId));
         model.addAttribute("statusList", codeService.selectCodeList("CSR_STATUS"));
         model.addAttribute("fileList", csrService.selectCsrFileList(csrId));
+        model.addAttribute("transferTargets", egovframework.ops.csr.service.impl.CsrTransferService.TARGETS);
         model.addAttribute("menu", "csr");
         return "csr/detail";
+    }
+
+    /** 요청 이관 — 대상 모듈로 신규 레코드 생성 후 연계, 대상 상세로 이동 */
+    @PostMapping("/transfer")
+    public String transfer(@RequestParam Long csrId,
+                           @RequestParam String targetType,
+                           @AuthenticationPrincipal LoginUser loginUser) {
+        String detailUrl = transferService.transfer(csrId, targetType, loginUser.getUsername());
+        return "redirect:" + detailUrl;
     }
 
     /* ============================ 첨부파일 ============================ */

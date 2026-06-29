@@ -35,6 +35,11 @@ public interface CsrMapper {
 
     void deleteCsrHis(Long csrId);
 
+    /** 이관 연계 설정(대상유형/대상ID) + 상태 분류완료 */
+    void updateCsrLink(@Param("csrId") Long csrId,
+                       @Param("linkedType") String linkedType,
+                       @Param("linkedId") Long linkedId);
+
     /* ===== 요청 ↔ 대상 시스템(다중) ===== */
 
     /** 요청의 대상 시스템 목록(시스템명 조인) */

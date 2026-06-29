@@ -31,6 +31,9 @@ public interface EgovCsrService {
     /** 요청 삭제 */
     void deleteCsr(Long csrId);
 
+    /** 이관 연계 설정(대상유형/대상ID) + 상태 분류완료 + 이력 적재 */
+    void transferLink(Long csrId, String linkedType, Long linkedId, String actorId, String label);
+
     /* ===== 요청 소분류별 요청내용 템플릿 ===== */
 
     /** 소분류 전체 + 템플릿 목록 (관리화면) */
