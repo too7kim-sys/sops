@@ -76,12 +76,31 @@
                 <table class="form">
                     <tr><th>처리 상태 <span class="required">*</span></th>
                         <td>
-                            <select name="status" id="procStatusSel" required>
-                                <c:forEach var="cd" items="${statusList}">
-                                    <option value="${cd.codeId}" ${cd.codeId == csr.status ? 'selected' : ''}>${cd.codeNm}</option>
-                                </c:forEach>
-                            </select>
-                            <span class="h-meta" id="classifyHint" style="display:none;margin-left:8px;color:#1b3a6b;">↘ 아래에서 이관 대상을 선택하세요</span>
+                            <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <select name="status" id="procStatusSel" required>
+                                    <c:forEach var="cd" items="${statusList}">
+                                        <option value="${cd.codeId}" ${cd.codeId == csr.status ? 'selected' : ''}>${cd.codeNm}</option>
+                                    </c:forEach>
+                                </select>
+                                <%-- 분류완료(CLASSIFIED) 선택 시 처리상태 콤보 옆에 분류/이관 노출 --%>
+                                <span id="inlineTransfer" style="display:none;align-items:center;gap:6px;padding-left:10px;border-left:1px solid #e0e5ec;">
+                                    <span class="h-meta" style="color:#1b3a6b;">분류/이관 &rarr;</span>
+                                    <select id="inlineTargetType">
+                                        <c:forEach var="t" items="${transferTargets}">
+                                            <option value="${t.key}">${t.value.label}</option>
+                                        </c:forEach>
+                                    </select>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="csrTransfer()">이관</button>
+                                </span>
+                            </span>
+                            <c:if test="${not empty csr.linkedId}">
+                                <c:set var="linkTgt" value="${transferTargets[csr.linkedType]}"/>
+                                <c:set var="linkLabel" value="${empty linkTgt ? csr.linkedType : linkTgt.label}"/>
+                                <div class="h-meta" style="margin-top:6px;">
+                                    <span class="badge st-approved">이관됨</span>
+                                    <a href="${ctx}${empty linkTgt ? '#' : linkTgt.urlPrefix}${csr.linkedId}">${linkLabel} #${csr.linkedId} 보기</a>
+                                </div>
+                            </c:if>
                         </td></tr>
                     <tr><th>처리 내용</th><td><textarea class="wysiwyg" name="procContent" rows="4">${csr.procContent}</textarea></td></tr>
                 </table>
@@ -90,47 +109,28 @@
                 </div>
             </form>
 
-            <%-- 분류 / 이관 : 처리 상태가 '분류완료(CLASSIFIED)'일 때 노출 --%>
-            <div id="transferBox" style="display:none;margin-top:14px;border-top:1px dashed #d8dee6;padding-top:14px;">
-                <h3 style="margin-top:0;">분류 / 이관</h3>
-                <c:if test="${not empty csr.linkedId}">
-                    <c:set var="linkTgt" value="${transferTargets[csr.linkedType]}"/>
-                    <c:set var="linkLabel" value="${empty linkTgt ? csr.linkedType : linkTgt.label}"/>
-                    <p style="margin-bottom:10px;">
-                        <span class="badge st-approved">이관됨</span>
-                        <b>${linkLabel}</b> 로 이관됨 &rarr;
-                        <a href="${ctx}${empty linkTgt ? '#' : linkTgt.urlPrefix}${csr.linkedId}" class="btn btn-default btn-sm">${linkLabel} #${csr.linkedId} 보기</a>
-                    </p>
-                </c:if>
-                <form method="post" action="${ctx}/csr/transfer" class="appr-add-row" style="align-items:center;gap:8px;"
-                      onsubmit="return confirm('선택한 업무로 이관(신규 생성)할까요?');">
-                    <input type="hidden" name="csrId" value="${csr.csrId}"/>
-                    <label>이관 대상
-                        <select name="targetType" required>
-                            <c:forEach var="t" items="${transferTargets}">
-                                <option value="${t.key}">${t.value.label}</option>
-                            </c:forEach>
-                        </select>
-                    </label>
-                    <button type="submit" class="btn btn-primary btn-sm">이관</button>
-                    <span class="h-meta">요청 제목·내용·대상시스템을 복사해 신규 등록하고 연계합니다.</span>
-                </form>
-            </div>
-
             <script>
             (function () {
                 var sel = document.getElementById('procStatusSel');
-                var box = document.getElementById('transferBox');
-                var hint = document.getElementById('classifyHint');
+                var box = document.getElementById('inlineTransfer');
                 if (!sel || !box) return;
-                function toggle() {
-                    var on = (sel.value === 'CLASSIFIED');
-                    box.style.display = on ? '' : 'none';
-                    if (hint) hint.style.display = on ? '' : 'none';
-                }
+                function toggle() { box.style.display = (sel.value === 'CLASSIFIED') ? 'inline-flex' : 'none'; }
                 sel.addEventListener('change', toggle);
                 toggle();
             })();
+            // 이관 : 처리 폼과 별개로 /csr/transfer 로 POST (폼 중첩 회피)
+            function csrTransfer() {
+                var tt = document.getElementById('inlineTargetType').value;
+                if (!tt) { return; }
+                if (!confirm('선택한 업무로 이관(신규 생성)할까요?')) { return; }
+                var f = document.createElement('form');
+                f.method = 'post';
+                f.action = '${ctx}/csr/transfer';
+                f.innerHTML = '<input type="hidden" name="csrId" value="${csr.csrId}"/>'
+                            + '<input type="hidden" name="targetType" value="' + tt + '"/>';
+                document.body.appendChild(f);
+                f.submit();
+            }
             </script>
         </div>
         </c:if>
