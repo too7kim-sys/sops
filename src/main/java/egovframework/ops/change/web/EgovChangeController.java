@@ -60,9 +60,12 @@ public class EgovChangeController {
 
     /** 변경 상세 */
     @GetMapping("/detail/{chgId}")
-    public String detail(@PathVariable Long chgId, Model model) {
+    public String detail(@PathVariable Long chgId, Model model,
+                         @AuthenticationPrincipal LoginUser loginUser) {
         ChangeVO change = changeService.selectChange(chgId);
         model.addAttribute("change", change);
+        // CAB 심의는 검토자(결재선 REVIEW 담당자)·운영관리자만 수행 — 폼 노출 제어
+        model.addAttribute("canReview", canReview(chgId, loginUser));
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
         model.addAttribute("procTypeList", codeService.selectCodeList("CHANGE_PROC_TYPE"));
         model.addAttribute("cabDecisionList", codeService.selectCodeList("CAB_DECISION"));
@@ -86,6 +89,28 @@ public class EgovChangeController {
         if (id != null && !id.isBlank()) {
             set.add(id);
         }
+    }
+
+    /** 검토자 여부 — 결재선의 검토(REVIEW) 담당자 본인 */
+    private boolean isReviewer(Long chgId, LoginUser loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        String uid = loginUser.getUsername();
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", chgId)) {
+            if ("REVIEW".equals(ln.getLineType()) && uid.equals(ln.getAssigneeId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** CAB 심의 가능 여부 — 검토자 본인이거나 운영관리자 */
+    private boolean canReview(Long chgId, LoginUser loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        return "ADMIN".equals(loginUser.getUser().getRole()) || isReviewer(chgId, loginUser);
     }
 
     /** 변경요청 등록 폼 */
@@ -151,6 +176,10 @@ public class EgovChangeController {
     @PostMapping("/cab")
     public String cab(@ModelAttribute ChangeCabVO cabVO,
                       @AuthenticationPrincipal LoginUser loginUser) {
+        // CAB 심의는 검토자(결재선 REVIEW 담당자)·운영관리자만 수행
+        if (!canReview(cabVO.getChgId(), loginUser)) {
+            return "redirect:/change/detail/" + cabVO.getChgId();
+        }
         if (cabVO.getReviewer() == null || cabVO.getReviewer().isBlank()) {
             cabVO.setReviewer(loginUser.getUsername());
         }

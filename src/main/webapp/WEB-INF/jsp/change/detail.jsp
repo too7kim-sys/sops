@@ -98,10 +98,13 @@
     </c:if>
 </div>
 
-<%-- CAB(변경자문위원회) 심의 --%>
+<%-- CAB(변경자문위원회) 심의 — 검토자(결재선 REVIEW 담당자)만 수행 --%>
 <div class="panel">
     <h3>CAB 심의</h3>
-    <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
+    <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED' and not canReview}">
+        <div class="h-meta">CAB 심의는 <b>검토자</b>(결재선 검토 담당자)만 수행할 수 있습니다.</div>
+    </c:if>
+    <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED' and canReview}">
     <form method="post" action="${ctx}/change/cab">
         <input type="hidden" name="chgId" value="${change.chgId}"/>
         <table class="form">

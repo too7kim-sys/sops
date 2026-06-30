@@ -155,18 +155,22 @@ public class EgovApprController {
         model.addAttribute("bizId", bizId);
         model.addAttribute("bizTypeNm", bizTypeNm(bizType));
         model.addAttribute("returnUrl", returnUrl);
-        // 각 관리에서 처리(HANDLE)는 해당 업무 처리 화면에서 처리자가 수행하므로 결재선에서는 처리 라인을 숨긴다
+        // 각 관리에서 처리(HANDLE)는 업무 처리 화면에서 수행하므로 결재선에서 숨긴다.
+        // 변경관리는 검토(REVIEW)를 CAB 심의에서 검토자가 수행하므로 결재선에서 검토 라인도 숨긴다.
         boolean hideHandle = true;
-        List<ApprLineVO> displayLines = lines;
-        if (hideHandle) {
-            displayLines = new java.util.ArrayList<>();
-            for (ApprLineVO l : lines) {
-                if (!"HANDLE".equals(l.getLineType())) {
-                    displayLines.add(l);
-                }
+        boolean hideReview = "CHANGE".equals(bizType);
+        List<ApprLineVO> displayLines = new java.util.ArrayList<>();
+        for (ApprLineVO l : lines) {
+            if (hideHandle && "HANDLE".equals(l.getLineType())) {
+                continue;
             }
+            if (hideReview && "REVIEW".equals(l.getLineType())) {
+                continue;
+            }
+            displayLines.add(l);
         }
         model.addAttribute("hideHandle", hideHandle);
+        model.addAttribute("hideReview", hideReview);
         model.addAttribute("lineList", displayLines);
         // 현재 진행 단계 = 미완료(PENDING) 결재선 중 최소 단계. 같은 단계는 병렬, 단계는 순차 진행.
         model.addAttribute("currentStep", currentActiveStep(displayLines));
