@@ -33,23 +33,32 @@ public class EgovApprController {
         this.codeService = codeService;
     }
 
-    /** 업무 구분 → 한글명 / 상세 URL prefix */
+    /** 업무 구분 → 한글명 / 상세 URL prefix (메뉴 노출 순서대로 정의) */
     private static final Map<String, String[]> BIZ = new LinkedHashMap<>();
     static {
+        BIZ.put("CSR",       new String[]{"요청관리", "/csr/detail/"});
         BIZ.put("CHANGE",    new String[]{"변경관리", "/change/detail/"});
         BIZ.put("RELEASE",   new String[]{"배포관리", "/release/detail/"});
-        BIZ.put("CSR",       new String[]{"요청관리", "/csr/detail/"});
-        BIZ.put("INCIDENT",  new String[]{"장애관리", "/incident/detail/"});
-        BIZ.put("PROBLEM",   new String[]{"문제관리", "/problem/detail/"});
         BIZ.put("TEST",      new String[]{"테스트관리", "/test/detail/"});
         BIZ.put("INTERFACE", new String[]{"연계관리", "/interface/detail/"});
         BIZ.put("CI",        new String[]{"형상관리", "/ci/detail/"});
-        BIZ.put("EVENT",     new String[]{"운영상태", "/event/detail/"});
+        BIZ.put("EVENT",     new String[]{"운영상태관리", "/event/detail/"});
+        BIZ.put("INCIDENT",  new String[]{"장애관리", "/incident/detail/"});
+        BIZ.put("PROBLEM",   new String[]{"문제관리", "/problem/detail/"});
     }
 
     private String bizTypeNm(String bizType) {
         String[] m = BIZ.get(bizType);
         return m != null ? m[0] : bizType;
+    }
+
+    /** 업무구분 콤보용 코드→한글명 (메뉴순서 유지) */
+    private Map<String, String> bizTypeMap() {
+        Map<String, String> map = new LinkedHashMap<>();
+        for (Map.Entry<String, String[]> e : BIZ.entrySet()) {
+            map.put(e.getKey(), e.getValue()[0]);
+        }
+        return map;
     }
 
     private String defaultDetailUrl(String ctx, String bizType, Long bizId) {
@@ -293,10 +302,10 @@ public class EgovApprController {
     /** 기본 설정(템플릿) 관리 화면 — 운영관리자 */
     @GetMapping("/template")
     public String templateAdmin(@RequestParam(required = false) String bizType, Model model) {
-        String sel = (bizType == null || bizType.isBlank()) ? "CHANGE" : bizType;
+        String sel = (bizType == null || bizType.isBlank()) ? "CSR" : bizType;
         model.addAttribute("bizType", sel);
         model.addAttribute("bizTypeNm", bizTypeNm(sel));
-        model.addAttribute("bizTypes", BIZ.keySet());
+        model.addAttribute("bizTypes", bizTypeMap());
         model.addAttribute("templateList", apprService.selectTemplateList(sel));
         model.addAttribute("lineTypeList", codeService.selectCodeList("LINE_TYPE"));
         model.addAttribute("targetTypeList", codeService.selectCodeList("TARGET_TYPE"));

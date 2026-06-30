@@ -18,7 +18,7 @@
         <label>업무 구분
             <select name="bizType" onchange="this.form.submit()">
                 <c:forEach var="bt" items="${bizTypes}">
-                    <option value="${bt}" ${bt == bizType ? 'selected' : ''}>${bt}</option>
+                    <option value="${bt.key}" ${bt.key == bizType ? 'selected' : ''}>${bt.value}</option>
                 </c:forEach>
             </select>
         </label>
