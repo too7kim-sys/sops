@@ -101,10 +101,40 @@ public class CsrTransferService {
             throw new IllegalArgumentException("이관 대상이 아님: " + targetType);
         }
         CsrVO csr = csrService.selectCsr(csrId);
-        String sysId = csr.getSysId();
         String title = csr.getTitle();
         String content = csr.getContent();
 
+        // 선택한 대상 시스템별로 각각 이관(신규 생성). 다중 선택이 없으면 대표 시스템 1건.
+        java.util.List<String> sysIds = new java.util.ArrayList<>();
+        if (csr.getSysIds() != null) {
+            for (String s : csr.getSysIds()) {
+                if (s != null && !s.isBlank() && !sysIds.contains(s)) {
+                    sysIds.add(s);
+                }
+            }
+        }
+        if (sysIds.isEmpty() && csr.getSysId() != null && !csr.getSysId().isBlank()) {
+            sysIds.add(csr.getSysId());
+        }
+
+        Long firstId = null;
+        int cnt = 0;
+        for (String sysId : sysIds) {
+            Long newId = createTarget(targetType, sysId, title, content, actorId);
+            if (firstId == null) {
+                firstId = newId;
+            }
+            cnt++;
+        }
+
+        // CSR 연계정보는 대표(첫) 레코드로 기록하되, 다중이면 이력에 건수를 표기
+        String label = meta.getLabel() + (cnt > 1 ? " " + cnt + "건(시스템별)" : "");
+        csrService.transferLink(csrId, targetType, firstId, actorId, label);
+        return meta.getUrlPrefix() + firstId;
+    }
+
+    /** 대상 모듈에 시스템 1건의 신규 레코드를 생성하고 ID 반환 */
+    private Long createTarget(String targetType, String sysId, String title, String content, String actorId) {
         Long newId;
         switch (targetType) {
             case "CHANGE": {
@@ -158,8 +188,6 @@ public class CsrTransferService {
             default:
                 throw new IllegalArgumentException("이관 대상이 아님: " + targetType);
         }
-
-        csrService.transferLink(csrId, targetType, newId, actorId, meta.getLabel());
-        return meta.getUrlPrefix() + newId;
+        return newId;
     }
 }
