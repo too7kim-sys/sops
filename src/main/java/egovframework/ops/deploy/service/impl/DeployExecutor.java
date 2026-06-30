@@ -2,6 +2,7 @@ package egovframework.ops.deploy.service.impl;
 
 import egovframework.ops.deploy.service.DeployHisVO;
 import egovframework.ops.deploy.service.GitDeployManager;
+import egovframework.ops.deploy.service.SvnDeployManager;
 import egovframework.ops.release.service.ReleaseVO;
 import egovframework.ops.system.service.SystemVO;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ public class DeployExecutor {
 
     private final DeployMapper deployMapper;
     private final GitDeployManager gitDeployManager;
+    private final SvnDeployManager svnDeployManager;
 
     @Value("${ops.deploy.workspace:${java.io.tmpdir}/egov-sop/deploy}")
     private String workspace;
@@ -35,9 +37,11 @@ public class DeployExecutor {
     @Value("${ops.deploy.script-timeout-sec:60}")
     private int scriptTimeoutSec;
 
-    public DeployExecutor(DeployMapper deployMapper, GitDeployManager gitDeployManager) {
+    public DeployExecutor(DeployMapper deployMapper, GitDeployManager gitDeployManager,
+                          SvnDeployManager svnDeployManager) {
         this.deployMapper = deployMapper;
         this.gitDeployManager = gitDeployManager;
+        this.svnDeployManager = svnDeployManager;
     }
 
     /**
@@ -59,9 +63,14 @@ public class DeployExecutor {
         env.put("DEPLOY_PATH", dir.getAbsolutePath());
         env.put("DEPLOY_TYPE", type);
 
-        GitDeployManager.Outcome outcome = gitDeployManager.run(
-                sys.getGitUrl(), sys.getGitBranch(), refToUse, dir,
-                sys.getDeployScript(), scriptTimeoutSec, env);
+        // 형상관리 유형(GIT/SVN)에 따라 체크아웃 방식 분기
+        boolean isSvn = "SVN".equalsIgnoreCase(sys.getVcsType());
+        env.put("VCS_TYPE", isSvn ? "SVN" : "GIT");
+        GitDeployManager.Outcome outcome = isSvn
+                ? svnDeployManager.run(sys.getGitUrl(), refToUse, dir,
+                        sys.getDeployScript(), scriptTimeoutSec, env)
+                : gitDeployManager.run(sys.getGitUrl(), sys.getGitBranch(), refToUse, dir,
+                        sys.getDeployScript(), scriptTimeoutSec, env);
 
         String result = outcome.isSuccess() ? "SUCCESS" : "FAIL";
         String logText = truncate(outcome.getLogText(), 3900);

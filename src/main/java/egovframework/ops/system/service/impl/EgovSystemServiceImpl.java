@@ -46,6 +46,9 @@ public class EgovSystemServiceImpl extends EgovAbstractServiceImpl implements Eg
         if (vo.getUseAt() == null) {
             vo.setUseAt("Y");
         }
+        if (vo.getVcsType() == null || vo.getVcsType().isBlank()) {
+            vo.setVcsType("GIT");
+        }
         // 시스템ID 미입력 시 자동 채번 (SYS001, SYS002 …)
         if (vo.getSysId() == null || vo.getSysId().isBlank()) {
             vo.setSysId(generateSysId());
@@ -70,6 +73,9 @@ public class EgovSystemServiceImpl extends EgovAbstractServiceImpl implements Eg
     @Override
     @Transactional
     public void updateSystem(SystemVO vo) {
+        if (vo.getVcsType() == null || vo.getVcsType().isBlank()) {
+            vo.setVcsType("GIT");
+        }
         systemMapper.updateSystem(vo);
     }
 

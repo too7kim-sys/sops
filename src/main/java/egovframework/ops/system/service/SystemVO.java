@@ -31,10 +31,13 @@ public class SystemVO extends ComDefaultVO {
     /** 중요도 등급 (1~3) */
     private String grad;
 
-    /** 배포 git 저장소 URL */
+    /** 형상관리 유형 (GIT / SVN) */
+    private String vcsType;
+
+    /** 배포 저장소 URL (Git/SVN) */
     private String gitUrl;
 
-    /** 기본 브랜치 */
+    /** 기본 브랜치(Git) / 트렁크·브랜치 경로(SVN) */
     private String gitBranch;
 
     /** 배포(체크아웃) 대상 경로 */

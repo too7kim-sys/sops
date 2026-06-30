@@ -68,26 +68,59 @@
     </div>
 
     <div class="panel">
-        <h3>Git 자동배포 설정</h3>
+        <h3>자동배포 설정</h3>
+        <c:set var="vcs" value="${empty system.vcsType ? 'GIT' : system.vcsType}"/>
         <table class="form">
             <tr>
-                <th>Git 저장소 URL</th>
-                <td colspan="3"><input type="text" name="gitUrl" value="${system.gitUrl}"
+                <th>형상관리 <span class="required">*</span></th>
+                <td>
+                    <select name="vcsType" id="vcsType" required style="width:auto;">
+                        <option value="GIT" ${vcs == 'GIT' ? 'selected' : ''}>Git</option>
+                        <option value="SVN" ${vcs == 'SVN' ? 'selected' : ''}>SVN</option>
+                    </select>
+                </td>
+                <th><span class="vcs-git">기본 브랜치</span><span class="vcs-svn" style="display:none;">트렁크/브랜치 경로</span></th>
+                <td><input type="text" name="gitBranch" value="${system.gitBranch}"
+                        id="gitBranch" placeholder="main / master"/></td>
+            </tr>
+            <tr>
+                <th>저장소 URL</th>
+                <td colspan="3"><input type="text" name="gitUrl" value="${system.gitUrl}" id="gitUrl"
                         placeholder="예) https://git.example.go.kr/app.git 또는 file:///repo/app"/></td>
             </tr>
             <tr>
-                <th>기본 브랜치</th>
-                <td><input type="text" name="gitBranch" value="${system.gitBranch}" placeholder="main / master"/></td>
                 <th>배포 경로</th>
-                <td><input type="text" name="deployPath" value="${system.deployPath}" placeholder="체크아웃 대상 디렉터리(미입력 시 기본 작업영역)"/></td>
+                <td colspan="3"><input type="text" name="deployPath" value="${system.deployPath}"
+                        placeholder="체크아웃 대상 디렉터리(미입력 시 기본 작업영역)"/></td>
             </tr>
             <tr>
                 <th>배포 스크립트</th>
                 <td colspan="3"><textarea name="deployScript" rows="3"
-                        placeholder="체크아웃 후 실행할 셸 스크립트 (환경변수: $SYS_ID $VER $REF $DEPLOY_PATH $DEPLOY_TYPE)">${system.deployScript}</textarea></td>
+                        placeholder="체크아웃 후 실행할 셸 스크립트 (환경변수: $SYS_ID $VER $REF $DEPLOY_PATH $DEPLOY_TYPE $VCS_TYPE)">${system.deployScript}</textarea></td>
             </tr>
         </table>
+        <div class="h-meta" style="margin-top:6px;">※ Git: 브랜치/태그/커밋으로 체크아웃 · SVN: 저장소 URL(필요 시 리비전)로 체크아웃합니다.</div>
     </div>
+
+    <script>
+    (function () {
+        var sel = document.getElementById('vcsType');
+        if (!sel) return;
+        var gitBranch = document.getElementById('gitBranch');
+        var gitUrl = document.getElementById('gitUrl');
+        function apply() {
+            var svn = sel.value === 'SVN';
+            document.querySelectorAll('.vcs-git').forEach(function (e) { e.style.display = svn ? 'none' : ''; });
+            document.querySelectorAll('.vcs-svn').forEach(function (e) { e.style.display = svn ? '' : 'none'; });
+            if (gitBranch) { gitBranch.placeholder = svn ? 'trunk / branches/v1 (미입력 시 URL 그대로)' : 'main / master'; }
+            if (gitUrl) { gitUrl.placeholder = svn
+                ? '예) https://svn.example.go.kr/repo/app/trunk 또는 file:///repo/app'
+                : '예) https://git.example.go.kr/app.git 또는 file:///repo/app'; }
+        }
+        sel.addEventListener('change', apply);
+        apply();
+    })();
+    </script>
 
     <div class="toolbar right" style="justify-content:flex-end;">
         <a href="${ctx}/system/list" class="btn btn-default">목록</a>

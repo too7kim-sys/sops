@@ -36,8 +36,9 @@ CREATE TABLE OPS_SYSTEM (
     MNGR_NM    VARCHAR(50),               -- 운영담당자
     MNGR_DEPT  VARCHAR(100),              -- 운영부서
     GRAD       VARCHAR(20),               -- 중요도등급 (1~3등급)
-    GIT_URL       VARCHAR(300),           -- 배포 git 저장소 URL
-    GIT_BRANCH    VARCHAR(100),           -- 기본 브랜치
+    VCS_TYPE      VARCHAR(10) DEFAULT 'GIT', -- 형상관리 유형 (GIT/SVN)
+    GIT_URL       VARCHAR(300),           -- 배포 저장소 URL (Git/SVN)
+    GIT_BRANCH    VARCHAR(100),           -- 기본 브랜치(Git)/트렁크·경로(SVN)
     DEPLOY_PATH   VARCHAR(300),           -- 배포(체크아웃) 대상 경로
     DEPLOY_SCRIPT VARCHAR(4000),          -- 체크아웃 후 실행 배포 스크립트
     USE_AT     CHAR(1)       DEFAULT 'Y',
