@@ -11,8 +11,9 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 
-/* ---------- 상단바 ---------- */
-.topbar { background: #1b3a6b; color: #fff; height: 56px; }
+/* ---------- 상단바 (상단 고정) ---------- */
+.topbar { background: #1b3a6b; color: #fff; height: 56px;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
 .topbar-inner { display: flex; align-items: center; justify-content: space-between;
     height: 100%; padding: 0 20px; }
 .brand { display: flex; align-items: center; gap: 10px; color: #fff; }
@@ -24,9 +25,10 @@ a { color: inherit; text-decoration: none; }
 .role-badge { background: #2e5da8; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 4px; }
 .logout-form { display: inline; }
 
-/* ---------- 레이아웃 ---------- */
-.layout { display: flex; min-height: calc(100vh - 56px); }
-.sidebar { width: 210px; background: #243447; color: #c8d0db; padding: 16px 0; flex-shrink: 0; }
+/* ---------- 레이아웃 (상단 고정 / 좌측메뉴·본문 독립 스크롤) ---------- */
+.layout { display: flex; height: calc(100vh - 56px); margin-top: 56px; overflow: hidden; }
+.sidebar { width: 210px; background: #243447; color: #c8d0db; padding: 16px 0; flex-shrink: 0;
+    height: 100%; overflow-y: auto; }
 .menu { list-style: none; }
 .menu li a { display: block; padding: 11px 22px; color: #c8d0db; font-size: 14px; border-left: 3px solid transparent; }
 .menu li a:hover { background: #2d4054; color: #fff; }
@@ -34,7 +36,7 @@ a { color: inherit; text-decoration: none; }
 .menu-group { padding: 14px 22px 6px; font-size: 11px; color: #6f7f93; letter-spacing: 1px; }
 .sidebar-foot { margin-top: 30px; padding: 16px 22px; font-size: 11px; color: #6f7f93; }
 
-.content { flex: 1; padding: 24px 28px; overflow-x: auto; }
+.content { flex: 1; padding: 24px 28px; height: 100%; overflow-y: auto; overflow-x: auto; min-width: 0; }
 
 /* ---------- 페이지 헤더 ---------- */
 .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
