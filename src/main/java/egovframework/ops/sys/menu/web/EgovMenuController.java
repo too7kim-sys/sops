@@ -92,45 +92,27 @@ public class EgovMenuController {
         return "redirect:/sys/auth?role=" + role;
     }
 
-    /* ===== 역할 등록/수정/삭제 (팝업) ===== */
-
-    /** 역할 관리 팝업 화면 */
-    @GetMapping("/role/popup")
-    public String rolePopup(Model model) {
-        model.addAttribute("roleList", menuService.selectRoleList());
-        return "sys/role/popup";
-    }
+    /* ===== 역할 등록/수정/삭제 (레이어 팝업) ===== */
 
     @PostMapping("/role/save")
-    public String roleSave(@ModelAttribute RoleVO roleVO,
-                           @RequestParam(required = false) String from,
-                           RedirectAttributes ra) {
-        boolean popup = "popup".equals(from);
+    public String roleSave(@ModelAttribute RoleVO roleVO, RedirectAttributes ra) {
         if (roleVO.getRoleCd() == null || roleVO.getRoleCd().isBlank()
                 || roleVO.getRoleNm() == null || roleVO.getRoleNm().isBlank()) {
             ra.addFlashAttribute("roleMsg", "역할코드와 역할명을 입력하세요.");
-            return popup ? "redirect:/sys/role/popup" : "redirect:/sys/auth";
+        } else {
+            menuService.saveRole(roleVO);
         }
-        menuService.saveRole(roleVO);
-        if (popup) {
-            return "redirect:/sys/role/popup?changed=1";
-        }
-        return "redirect:/sys/auth?role=" + roleVO.getRoleCd().trim().toUpperCase();
+        // 처리 후 권한관리로 복귀하며 역할 관리 레이어를 다시 연다
+        return "redirect:/sys/auth?roleLayer=1";
     }
 
     @PostMapping("/role/delete")
-    public String roleDelete(@RequestParam String roleCd,
-                             @RequestParam(required = false) String from,
-                             RedirectAttributes ra) {
-        boolean popup = "popup".equals(from);
+    public String roleDelete(@RequestParam String roleCd, RedirectAttributes ra) {
         try {
             menuService.deleteRole(roleCd);
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("roleMsg", e.getMessage());
         }
-        if (popup) {
-            return "redirect:/sys/role/popup?changed=1";
-        }
-        return "redirect:/sys/auth";
+        return "redirect:/sys/auth?roleLayer=1";
     }
 }
