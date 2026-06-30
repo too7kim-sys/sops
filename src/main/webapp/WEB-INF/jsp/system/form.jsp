@@ -12,6 +12,7 @@
 
 <form method="post" action="${ctx}${isNew ? '/system/insert' : '/system/update'}">
     <div class="panel">
+        <h3>시스템 정보</h3>
         <table class="form">
             <tr>
                 <th>시스템ID</th>
@@ -26,6 +27,10 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
+                <th>시스템명 <span class="required">*</span></th>
+                <td><input type="text" name="sysNm" value="${system.sysNm}" required/></td>
+            </tr>
+            <tr>
                 <th>중요도등급 <span class="required">*</span></th>
                 <td>
                     <select name="grad" required>
@@ -34,10 +39,13 @@
                         <option value="3" ${system.grad == '3' ? 'selected' : ''}>3등급(하)</option>
                     </select>
                 </td>
-            </tr>
-            <tr>
-                <th>시스템명 <span class="required">*</span></th>
-                <td colspan="3"><input type="text" name="sysNm" value="${system.sysNm}" required/></td>
+                <th>사용여부</th>
+                <td>
+                    <select name="useAt">
+                        <option value="Y" ${(system.useAt == 'Y' or system.useAt == null or system.useAt == '') ? 'selected' : ''}>사용</option>
+                        <option value="N" ${system.useAt == 'N' ? 'selected' : ''}>미사용</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <th>운영담당자</th>
@@ -50,15 +58,6 @@
                         <input type="hidden" name="mngrDept" id="sysDept_val" data-dept-bind="nm" value="${system.mngrDept}"/>
                         <button type="button" class="dept-search-btn" onclick="openDeptPopup('sysDept')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
                     </span>
-                </td>
-            </tr>
-            <tr>
-                <th>사용여부</th>
-                <td colspan="3">
-                    <select name="useAt">
-                        <option value="Y" ${(system.useAt == 'Y' or system.useAt == null or system.useAt == '') ? 'selected' : ''}>사용</option>
-                        <option value="N" ${system.useAt == 'N' ? 'selected' : ''}>미사용</option>
-                    </select>
                 </td>
             </tr>
             <tr>
