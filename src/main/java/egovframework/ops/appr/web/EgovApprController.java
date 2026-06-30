@@ -140,8 +140,8 @@ public class EgovApprController {
         model.addAttribute("bizId", bizId);
         model.addAttribute("bizTypeNm", bizTypeNm(bizType));
         model.addAttribute("returnUrl", returnUrl);
-        // 요청관리는 처리(HANDLE)를 별도 '요청 처리' 패널에서 수행하므로 결재선에서는 처리 라인을 숨긴다
-        boolean hideHandle = "CSR".equals(bizType);
+        // 각 관리에서 처리(HANDLE)는 해당 업무 처리 화면에서 처리자가 수행하므로 결재선에서는 처리 라인을 숨긴다
+        boolean hideHandle = true;
         List<ApprLineVO> displayLines = lines;
         if (hideHandle) {
             displayLines = new java.util.ArrayList<>();
