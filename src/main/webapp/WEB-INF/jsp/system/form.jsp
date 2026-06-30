@@ -27,10 +27,6 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
-                <th>시스템명 <span class="required">*</span></th>
-                <td><input type="text" name="sysNm" value="${system.sysNm}" required/></td>
-            </tr>
-            <tr>
                 <th>중요도등급 <span class="required">*</span></th>
                 <td>
                     <select name="grad" required>
@@ -39,6 +35,10 @@
                         <option value="3" ${system.grad == '3' ? 'selected' : ''}>3등급(하)</option>
                     </select>
                 </td>
+            </tr>
+            <tr>
+                <th>시스템명 <span class="required">*</span></th>
+                <td><input type="text" name="sysNm" value="${system.sysNm}" required/></td>
                 <th>사용여부</th>
                 <td>
                     <select name="useAt">
