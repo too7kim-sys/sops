@@ -92,25 +92,44 @@ public class EgovMenuController {
         return "redirect:/sys/auth?role=" + role;
     }
 
-    /* ===== 역할 등록/수정/삭제 ===== */
+    /* ===== 역할 등록/수정/삭제 (팝업) ===== */
+
+    /** 역할 관리 팝업 화면 */
+    @GetMapping("/role/popup")
+    public String rolePopup(Model model) {
+        model.addAttribute("roleList", menuService.selectRoleList());
+        return "sys/role/popup";
+    }
 
     @PostMapping("/role/save")
-    public String roleSave(@ModelAttribute RoleVO roleVO, RedirectAttributes ra) {
+    public String roleSave(@ModelAttribute RoleVO roleVO,
+                           @RequestParam(required = false) String from,
+                           RedirectAttributes ra) {
+        boolean popup = "popup".equals(from);
         if (roleVO.getRoleCd() == null || roleVO.getRoleCd().isBlank()
                 || roleVO.getRoleNm() == null || roleVO.getRoleNm().isBlank()) {
             ra.addFlashAttribute("roleMsg", "역할코드와 역할명을 입력하세요.");
-            return "redirect:/sys/auth";
+            return popup ? "redirect:/sys/role/popup" : "redirect:/sys/auth";
         }
         menuService.saveRole(roleVO);
+        if (popup) {
+            return "redirect:/sys/role/popup?changed=1";
+        }
         return "redirect:/sys/auth?role=" + roleVO.getRoleCd().trim().toUpperCase();
     }
 
     @PostMapping("/role/delete")
-    public String roleDelete(@RequestParam String roleCd, RedirectAttributes ra) {
+    public String roleDelete(@RequestParam String roleCd,
+                             @RequestParam(required = false) String from,
+                             RedirectAttributes ra) {
+        boolean popup = "popup".equals(from);
         try {
             menuService.deleteRole(roleCd);
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("roleMsg", e.getMessage());
+        }
+        if (popup) {
+            return "redirect:/sys/role/popup?changed=1";
         }
         return "redirect:/sys/auth";
     }
