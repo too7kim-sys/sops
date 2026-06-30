@@ -281,17 +281,22 @@ table.form .note-editor { margin: 0; max-width: 100%; }
 /* ===== 공용 모달(사용자 검색 등) ===== */
 .modal-overlay {
     position: fixed; inset: 0; z-index: 1000;
-    background: rgba(20, 28, 40, 0.45);
+    background: rgba(17, 24, 39, 0.42); backdrop-filter: blur(1.5px);
     display: flex; align-items: flex-start; justify-content: center;
-    padding-top: 8vh;
+    padding-top: 8vh; animation: ov-fade .14s ease-out;
 }
 .modal-box {
-    width: 480px; max-width: 92vw; background: #fff; border-radius: 8px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28); overflow: hidden;
+    width: 480px; max-width: 92vw; background: #fff; border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.30), 0 2px 8px rgba(0, 0, 0, 0.12);
+    overflow: hidden; animation: pop-in .16s cubic-bezier(.2, .8, .25, 1);
 }
+@keyframes ov-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(-8px) scale(.985); }
+                    to   { opacity: 1; transform: translateY(0) scale(1); } }
 .modal-head {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px; border-bottom: 1px solid #e7ebf0; background: #f7f9fc;
+    padding: 13px 18px; border-bottom: 1px solid #eceff3;
+    background: linear-gradient(180deg, #f9fbfd 0%, #f4f7fa 100%);
 }
 .modal-head b { font-size: 15px; color: #1b3a6b; }
 .modal-x {
@@ -308,3 +313,51 @@ table.form .note-editor { margin: 0; max-width: 100%; }
 table.role-mng td { vertical-align: middle; }
 table.role-mng input[type=text],
 table.role-mng input[type=number] { padding: 5px 7px; }
+
+/* ===== 깔끔한 스크롤바 ===== */
+.content, .modal-body, .list-scroll, .popover-box .modal-body {
+    scrollbar-width: thin; scrollbar-color: #cdd5e0 transparent;
+}
+.content::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar,
+.list-scroll::-webkit-scrollbar { width: 11px; height: 11px; }
+.content::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track,
+.list-scroll::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb,
+.list-scroll::-webkit-scrollbar-thumb {
+    background: #cdd5e0; border-radius: 8px;
+    border: 3px solid transparent; background-clip: content-box;
+}
+.content::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover,
+.list-scroll::-webkit-scrollbar-thumb:hover {
+    background: #aab4c4; background-clip: content-box;
+}
+/* 사이드바(어두운 배경) 스크롤바 */
+.sidebar { scrollbar-width: thin; scrollbar-color: #3c5068 transparent; }
+.sidebar::-webkit-scrollbar { width: 9px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb {
+    background: #3c5068; border-radius: 8px;
+    border: 2px solid transparent; background-clip: content-box;
+}
+.sidebar::-webkit-scrollbar-thumb:hover { background: #4d637e; background-clip: content-box; }
+
+/* ===== 앵커 팝오버(레이어) — 클릭한 버튼 근처에 표시 ===== */
+.popover-layer { position: fixed; inset: 0; z-index: 1000; }
+.popover-backdrop { position: absolute; inset: 0; background: rgba(17, 24, 39, 0.12); }
+.popover-box {
+    position: absolute; background: #fff; border-radius: 12px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.26), 0 2px 8px rgba(0, 0, 0, 0.10);
+    overflow: hidden; display: flex; flex-direction: column;
+    animation: pop-in .14s cubic-bezier(.2, .8, .25, 1);
+}
+.popover-box .modal-body { flex: 1 1 auto; }
+.popover-arrow {
+    position: absolute; top: -7px; width: 13px; height: 13px;
+    background: linear-gradient(135deg, #f9fbfd, #f9fbfd); /* head 배경과 동일 톤 */
+    border-left: 1px solid #eceff3; border-top: 1px solid #eceff3;
+    transform: rotate(45deg); border-radius: 2px 0 0 0;
+}

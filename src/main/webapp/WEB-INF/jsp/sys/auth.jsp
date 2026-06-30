@@ -18,7 +18,7 @@
         <c:forEach var="r" items="${roles}">
             <a href="${ctx}/sys/auth?role=${r.key}" class="btn ${r.key == selectedRole ? 'btn-primary' : 'btn-default'} btn-sm">${r.value}</a>
         </c:forEach>
-        <button type="button" class="btn btn-default btn-sm" onclick="openRoleLayer()" style="margin-left:8px;">⚙ 역할 관리</button>
+        <button type="button" id="roleMgmtBtn" class="btn btn-default btn-sm" onclick="openRoleLayer()" style="margin-left:8px;">⚙ 역할 관리</button>
         <c:if test="${not empty selectedRole}">
             <span class="h-meta" style="margin-left:8px;">메뉴 권한 대상 : <b>${roles[selectedRole]}</b> (${selectedRole})</span>
         </c:if>
@@ -62,14 +62,16 @@
 </c:otherwise>
 </c:choose>
 
-<%-- ================= 역할 관리 레이어 팝업 ================= --%>
-<div id="roleLayer" class="modal-overlay" style="display:none;">
-    <div class="modal-box" style="width:760px;max-width:96vw;">
+<%-- ================= 역할 관리 레이어 팝업 (버튼 앵커 팝오버) ================= --%>
+<div id="roleLayer" class="popover-layer" style="display:none;">
+    <div class="popover-backdrop" onclick="closeRoleLayer()"></div>
+    <div class="popover-box" id="roleLayerBox" style="width:760px;max-width:94vw;">
+        <div class="popover-arrow" id="roleLayerArrow"></div>
         <div class="modal-head">
             <b>역할 관리</b>
             <button type="button" class="modal-x" onclick="closeRoleLayer()">×</button>
         </div>
-        <div class="modal-body" style="max-height:70vh;overflow:auto;">
+        <div class="modal-body" style="max-height:calc(100vh - 230px);overflow:auto;">
             <c:if test="${not empty roleMsg}">
                 <div style="border-left:4px solid #c0392b;background:#fdf2f2;color:#922;padding:8px 10px;margin-bottom:12px;border-radius:4px;">${roleMsg}</div>
             </c:if>
@@ -141,13 +143,36 @@
 </div>
 
 <script>
-    function openRoleLayer()  { document.getElementById('roleLayer').style.display = 'flex'; }
+    function openRoleLayer() {
+        document.getElementById('roleLayer').style.display = 'block';
+        positionRoleLayer();
+    }
     function closeRoleLayer() { document.getElementById('roleLayer').style.display = 'none'; }
+    // 클릭한 [역할 관리] 버튼 바로 아래에 팝오버를 배치하고 화살표를 버튼 중앙에 맞춘다
+    function positionRoleLayer() {
+        var btn = document.getElementById('roleMgmtBtn');
+        var box = document.getElementById('roleLayerBox');
+        var arrow = document.getElementById('roleLayerArrow');
+        if (!btn || !box) { return; }
+        var r = btn.getBoundingClientRect();
+        var bw = box.offsetWidth;
+        var left = r.left;
+        var maxLeft = window.innerWidth - bw - 12;
+        if (left > maxLeft) { left = Math.max(12, maxLeft); }
+        if (left < 12) { left = 12; }
+        box.style.left = left + 'px';
+        box.style.top = (r.bottom + 10) + 'px';
+        if (arrow) {
+            var aLeft = (r.left + r.width / 2) - left - 6;
+            aLeft = Math.max(14, Math.min(bw - 26, aLeft));
+            arrow.style.left = aLeft + 'px';
+        }
+    }
     (function () {
-        var layer = document.getElementById('roleLayer');
-        // 배경 클릭 시 닫기 / ESC 닫기
-        layer.addEventListener('click', function (e) { if (e.target === layer) { closeRoleLayer(); } });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeRoleLayer(); } });
+        window.addEventListener('resize', function () {
+            if (document.getElementById('roleLayer').style.display === 'block') { positionRoleLayer(); }
+        });
         // 역할 처리 후 복귀(roleLayer=1)면 레이어 자동 오픈
         if ('${param.roleLayer}' === '1') { openRoleLayer(); }
     })();
