@@ -46,6 +46,11 @@
                 <th>저장 위치</th><td>${empty ci.location ? '-' : ci.location}</td>
             </tr>
             <tr><th>등록 일시</th><td colspan="3">${ci.regDt}</td></tr>
+            <tr><th>소요일(근무일)</th><td colspan="3">
+                <c:set var="elapsedWd" value="${uf:wdays(ci.regDt, '')}"/>
+                <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                <c:otherwise><b>${elapsedWd}</b>일 <span class="h-meta">(등록일 ~ 오늘 기준)</span></c:otherwise></c:choose>
+            </td></tr>
             <tr><th>설명</th><td colspan="3"><div class="rte-view">${empty ci.ciDesc ? '-' : ci.ciDesc}</div></td></tr>
         </table>
     </div>

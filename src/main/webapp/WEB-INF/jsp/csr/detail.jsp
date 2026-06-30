@@ -62,6 +62,14 @@
                 <th>처리자</th><td>${empty csr.chargerId ? '-' : uf:nm(userNameMap, csr.chargerId)}</td>
                 <th>처리일시</th><td>${empty csr.procDt ? '-' : csr.procDt}</td>
             </tr>
+            <tr>
+                <th>소요일(근무일)</th>
+                <td colspan="3">
+                    <c:set var="elapsedWd" value="${uf:wdays(csr.reqDt, csr.procDt)}"/>
+                    <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                    <c:otherwise><b>${elapsedWd}</b>일<c:if test="${uf:ongoing(csr.procDt)}"> <span class="h-meta">(진행중 · 오늘 기준)</span></c:if></c:otherwise></c:choose>
+                </td>
+            </tr>
             <tr><th>요청 내용</th><td colspan="3"><div class="rte-view">${csr.content}</div></td></tr>
             <tr><th>처리 내용</th><td colspan="3"><div class="rte-view">${empty csr.procContent ? '-' : csr.procContent}</div></td></tr>
         </table>

@@ -20,12 +20,13 @@
             <th style="width:110px;">대분류</th>
             <th style="width:170px;">소분류</th>
             <th>요청내용 템플릿</th>
+            <th class="center" style="width:100px;">완료요구<br/>소요일</th>
             <th class="center" style="width:70px;">사용</th>
             <th class="center" style="width:80px;"></th>
         </tr>
         </thead>
         <tbody>
-        <c:if test="${empty tplList}"><tr><td colspan="5" class="empty">등록된 소분류가 없습니다.</td></tr></c:if>
+        <c:if test="${empty tplList}"><tr><td colspan="6" class="empty">등록된 소분류가 없습니다.</td></tr></c:if>
         <c:forEach var="t" items="${tplList}">
             <tr>
                 <td><span class="badge">${t.csrTypeNm}</span></td>
@@ -36,6 +37,7 @@
                         <c:otherwise><div class="rte-view">${t.content}</div></c:otherwise>
                     </c:choose>
                 </td>
+                <td class="center"><c:choose><c:when test="${empty t.leadDays}">-</c:when><c:otherwise>${t.leadDays} 근무일</c:otherwise></c:choose></td>
                 <td class="center">
                     <span class="badge ${t.useAt == 'N' ? 'st-pending' : 'st-approved'}">${t.useAt == 'N' ? 'N' : 'Y'}</span>
                 </td>

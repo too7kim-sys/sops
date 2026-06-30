@@ -50,6 +50,14 @@
                 <th>적용 일시</th><td>${empty change.applyDt ? '-' : change.applyDt}</td>
             </tr>
             <tr>
+                <th>소요일(근무일)</th>
+                <td colspan="3">
+                    <c:set var="elapsedWd" value="${uf:wdays(change.reqDt, change.applyDt)}"/>
+                    <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                    <c:otherwise><b>${elapsedWd}</b>일<c:if test="${uf:ongoing(change.applyDt)}"> <span class="h-meta">(진행중 · 오늘 기준)</span></c:if></c:otherwise></c:choose>
+                </td>
+            </tr>
+            <tr>
                 <th>심의자</th><td>${empty change.apprId ? '-' : uf:nm(userNameMap, change.apprId)}</td>
                 <th>심의일시</th><td>${empty change.apprDt ? '-' : change.apprDt}</td>
             </tr>

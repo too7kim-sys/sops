@@ -23,11 +23,16 @@
             </tr>
             <tr>
                 <th>사용여부 <span class="required">*</span></th>
-                <td colspan="3">
+                <td>
                     <select name="useAt" required>
                         <option value="Y" ${(tpl.useAt == 'Y' or empty tpl.useAt) ? 'selected' : ''}>Y</option>
                         <option value="N" ${tpl.useAt == 'N' ? 'selected' : ''}>N</option>
                     </select>
+                </td>
+                <th>완료요구 소요일</th>
+                <td>
+                    <input type="number" name="leadDays" value="${tpl.leadDays}" min="0" style="width:90px;"/> 근무일
+                    <div class="h-meta">요청 등록 시 완료요구일을 <b>오늘 + 소요 근무일(주말 제외)</b>로 자동설정합니다. 비우면 자동설정 안 함.</div>
                 </td>
             </tr>
             <tr>

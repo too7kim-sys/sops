@@ -52,6 +52,14 @@
                 <th>예정일</th><td>${empty itf.planDt ? '-' : itf.planDt}</td>
                 <th>완료일시</th><td>${empty itf.completeDt ? '-' : itf.completeDt}</td>
             </tr>
+            <tr>
+                <th>소요일(근무일)</th>
+                <td colspan="3">
+                    <c:set var="elapsedWd" value="${uf:wdays(itf.reqDt, itf.completeDt)}"/>
+                    <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                    <c:otherwise><b>${elapsedWd}</b>일<c:if test="${uf:ongoing(itf.completeDt)}"> <span class="h-meta">(진행중 · 오늘 기준)</span></c:if></c:otherwise></c:choose>
+                </td>
+            </tr>
             <tr><th>연계 데이터</th><td colspan="3"><div class="rte-view">${empty itf.dataDesc ? '-' : itf.dataDesc}</div></td></tr>
             <tr><th>처리 결과</th><td colspan="3"><div class="rte-view">${empty itf.result ? '-' : itf.result}</div></td></tr>
         </table>

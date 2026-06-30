@@ -223,6 +223,7 @@ DROP TABLE IF EXISTS OPS_CSR_TPL;
 CREATE TABLE OPS_CSR_TPL (
     SUB_TYPE  VARCHAR(30)  NOT NULL,    -- CSR_SUBTYPE 코드
     CONTENT   VARCHAR(8000),            -- 요청내용 템플릿(리치텍스트)
+    LEAD_DAYS INT,                      -- 완료요구일 자동설정용 소요 근무일(영업일)
     USE_AT    CHAR(1)      DEFAULT 'Y',
     REG_DT    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT PK_OPS_CSR_TPL PRIMARY KEY (SUB_TYPE)

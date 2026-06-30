@@ -219,6 +219,7 @@
                SC.UPPER_CODE AS csrType,
                TC.CODE_NM    AS csrTypeNm,
                T.CONTENT     AS content,
+               T.LEAD_DAYS   AS leadDays,
                COALESCE(T.USE_AT, 'Y') AS useAt
           FROM OPS_CODE SC
           LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE' AND TC.CODE_ID = SC.UPPER_CODE
@@ -227,11 +228,11 @@
          ORDER BY TC.SORT_ORDR, SC.SORT_ORDR
     </select>
 
-    <!-- 등록폼 자동주입용 : 사용중·내용 있는 템플릿만 -->
+    <!-- 등록폼 자동주입용 : 사용중 템플릿(내용/소요일) -->
     <select id="selectCsrTplActive" resultType="egovframework.ops.csr.service.CsrTplVO">
-        SELECT SUB_TYPE AS subType, CONTENT AS content
+        SELECT SUB_TYPE AS subType, CONTENT AS content, LEAD_DAYS AS leadDays
           FROM OPS_CSR_TPL
-         WHERE USE_AT = 'Y' AND CONTENT IS NOT NULL
+         WHERE USE_AT = 'Y' AND (CONTENT IS NOT NULL OR LEAD_DAYS IS NOT NULL)
     </select>
 
     <select id="selectCsrTpl" parameterType="string"
@@ -241,6 +242,7 @@
                SC.UPPER_CODE AS csrType,
                TC.CODE_NM    AS csrTypeNm,
                T.CONTENT     AS content,
+               T.LEAD_DAYS   AS leadDays,
                COALESCE(T.USE_AT, 'Y') AS useAt
           FROM OPS_CODE SC
           LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CSR_TYPE' AND TC.CODE_ID = SC.UPPER_CODE
@@ -250,13 +252,13 @@
 
     <update id="updateCsrTpl" parameterType="egovframework.ops.csr.service.CsrTplVO">
         UPDATE OPS_CSR_TPL
-           SET CONTENT = #{content}, USE_AT = #{useAt}
+           SET CONTENT = #{content}, LEAD_DAYS = #{leadDays}, USE_AT = #{useAt}
          WHERE SUB_TYPE = #{subType}
     </update>
 
     <insert id="insertCsrTpl" parameterType="egovframework.ops.csr.service.CsrTplVO">
-        INSERT INTO OPS_CSR_TPL (SUB_TYPE, CONTENT, USE_AT, REG_DT)
-        VALUES (#{subType}, #{content}, #{useAt}, CURRENT_TIMESTAMP)
+        INSERT INTO OPS_CSR_TPL (SUB_TYPE, CONTENT, LEAD_DAYS, USE_AT, REG_DT)
+        VALUES (#{subType}, #{content}, #{leadDays}, #{useAt}, CURRENT_TIMESTAMP)
     </insert>
 
 </mapper>

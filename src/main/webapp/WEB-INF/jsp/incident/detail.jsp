@@ -50,6 +50,14 @@
                 <th>조치완료</th><td>${empty incident.resolveDt ? '-' : incident.resolveDt}</td>
             </tr>
             <tr>
+                <th>소요일(근무일)</th>
+                <td colspan="3">
+                    <c:set var="elapsedWd" value="${uf:wdays(incident.rcptDt, incident.resolveDt)}"/>
+                    <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                    <c:otherwise><b>${elapsedWd}</b>일<c:if test="${uf:ongoing(incident.resolveDt)}"> <span class="h-meta">(진행중 · 오늘 기준)</span></c:if></c:otherwise></c:choose>
+                </td>
+            </tr>
+            <tr>
                 <th>처리자</th><td>${empty incident.chargerId ? '-' : uf:nm(userNameMap, incident.chargerId)}</td>
                 <th>연계 문제</th><td><c:choose><c:when test="${incident.refPrbId != null}">PRB-${incident.refPrbId}</c:when><c:otherwise>-</c:otherwise></c:choose></td>
             </tr>

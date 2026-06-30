@@ -44,6 +44,14 @@
                 <th>등록일시</th><td>${problem.regDt}</td>
                 <th>해결일시</th><td>${empty problem.resolveDt ? '-' : problem.resolveDt}</td>
             </tr>
+            <tr>
+                <th>소요일(근무일)</th>
+                <td colspan="3">
+                    <c:set var="elapsedWd" value="${uf:wdays(problem.regDt, problem.resolveDt)}"/>
+                    <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                    <c:otherwise><b>${elapsedWd}</b>일<c:if test="${uf:ongoing(problem.resolveDt)}"> <span class="h-meta">(진행중 · 오늘 기준)</span></c:if></c:otherwise></c:choose>
+                </td>
+            </tr>
             <tr><th>처리자</th><td colspan="3">${empty problem.chargerId ? '-' : uf:nm(userNameMap, problem.chargerId)}</td></tr>
             <tr><th>문제 내용</th><td colspan="3"><div class="rte-view">${problem.content}</div></td></tr>
             <tr><th>근본 원인</th><td colspan="3"><div class="rte-view">${empty problem.rootCause ? '-' : problem.rootCause}</div></td></tr>

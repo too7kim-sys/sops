@@ -45,6 +45,14 @@
                 <th>예정일</th><td>${empty test.planDt ? '-' : test.planDt}</td>
                 <th>등록 일시</th><td>${test.regDt}</td>
             </tr>
+            <tr>
+                <th>소요일(근무일)</th>
+                <td colspan="3">
+                    <c:set var="elapsedWd" value="${uf:wdays(test.regDt, '')}"/>
+                    <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                    <c:otherwise><b>${elapsedWd}</b>일 <span class="h-meta">(등록일 ~ 오늘 기준)</span></c:otherwise></c:choose>
+                </td>
+            </tr>
             <tr><th>테스터</th><td colspan="3">${empty test.testerId ? '-' : uf:nm(userNameMap, test.testerId)}</td></tr>
             <tr><th>결과 요약</th><td colspan="3"><div class="rte-view">${empty test.resultSummary ? '-' : test.resultSummary}</div></td></tr>
         </table>

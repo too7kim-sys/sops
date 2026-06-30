@@ -33,6 +33,9 @@ public class CsrTplVO extends ComDefaultVO {
     /** 사용여부 (Y/N) */
     private String useAt;
 
+    /** 완료요구일 자동설정용 소요 근무일(영업일) */
+    private Integer leadDays;
+
     /** 등록 일시 */
     private String regDt;
 }

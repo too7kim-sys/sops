@@ -1,5 +1,6 @@
 package egovframework.ops.csr.service.impl;
 
+import egovframework.com.cmm.WorkDays;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.ops.csr.service.EgovCsrService;
 import egovframework.ops.csr.service.CsrFileVO;
@@ -61,6 +62,7 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
             vo.setStatus("REQUESTED");
         }
         normalizeDueDt(vo);
+        applyAutoDueDt(vo);
         applyRepresentativeSys(vo);
         csrMapper.insertCsr(vo);
         saveCsrSys(vo);
@@ -135,6 +137,20 @@ public class EgovCsrServiceImpl extends EgovAbstractServiceImpl implements EgovC
     private void normalizeDueDt(CsrVO vo) {
         if (vo.getDueDt() != null && vo.getDueDt().isBlank()) {
             vo.setDueDt(null);
+        }
+    }
+
+    /** 완료요구일 미입력 시 소분류 소요 근무일(영업일) 기준으로 자동설정 */
+    private void applyAutoDueDt(CsrVO vo) {
+        if (vo.getDueDt() != null && !vo.getDueDt().isBlank()) {
+            return; // 사용자가 직접 지정한 경우 존중
+        }
+        if (vo.getCsrSubType() == null || vo.getCsrSubType().isBlank()) {
+            return;
+        }
+        CsrTplVO tpl = csrMapper.selectCsrTpl(vo.getCsrSubType());
+        if (tpl != null && tpl.getLeadDays() != null && tpl.getLeadDays() > 0) {
+            vo.setDueDt(WorkDays.addWorkDays(java.time.LocalDate.now(), tpl.getLeadDays()).toString());
         }
     }
 

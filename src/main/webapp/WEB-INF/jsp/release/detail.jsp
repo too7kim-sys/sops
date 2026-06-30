@@ -46,6 +46,14 @@
                 <th>배포 예정일</th><td>${empty release.planDt ? '-' : release.planDt}</td>
                 <th>배포 일시</th><td>${empty release.deployDt ? '-' : release.deployDt}</td>
             </tr>
+            <tr>
+                <th>소요일(근무일)</th>
+                <td colspan="3">
+                    <c:set var="elapsedWd" value="${uf:wdays(release.planDt, release.deployDt)}"/>
+                    <c:choose><c:when test="${empty elapsedWd}">-</c:when>
+                    <c:otherwise><b>${elapsedWd}</b>일<c:if test="${uf:ongoing(release.deployDt)}"> <span class="h-meta">(진행중 · 오늘 기준)</span></c:if></c:otherwise></c:choose>
+                </td>
+            </tr>
             <tr><th>처리자</th><td colspan="3">${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
             <tr><th>배포 내용</th><td colspan="3"><div class="rte-view">${release.content}</div></td></tr>
             <tr><th>배포 결과</th><td colspan="3"><div class="rte-view">${empty release.result ? '-' : release.result}</div></td></tr>

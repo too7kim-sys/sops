@@ -21,4 +21,18 @@
         <function-class>egovframework.com.cmm.UserFn</function-class>
         <function-signature>java.lang.String nms(java.lang.Object, java.lang.Object)</function-signature>
     </function>
+
+    <function>
+        <description>소요 근무일(영업일). to 비면 오늘까지</description>
+        <name>wdays</name>
+        <function-class>egovframework.com.cmm.WorkDays</function-class>
+        <function-signature>java.lang.String wdays(java.lang.Object, java.lang.Object)</function-signature>
+    </function>
+
+    <function>
+        <description>종료일 미정(진행중) 여부</description>
+        <name>ongoing</name>
+        <function-class>egovframework.com.cmm.WorkDays</function-class>
+        <function-signature>boolean ongoing(java.lang.Object)</function-signature>
+    </function>
 </taglib>

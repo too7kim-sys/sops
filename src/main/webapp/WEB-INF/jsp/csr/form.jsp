@@ -60,7 +60,10 @@
                     </select>
                 </td>
                 <th>완료요구일</th>
-                <td><input type="date" name="dueDt" value="${csr.dueDt}"/></td>
+                <td>
+                    <input type="date" name="dueDt" id="dueDt" value="${csr.dueDt}"/>
+                    <span class="h-meta" id="dueAuto" style="display:none;">소분류 기준 자동설정</span>
+                </td>
             </tr>
             <tr>
                 <th>제목 <span class="required">*</span></th>
@@ -100,7 +103,7 @@
 <%-- 소분류별 요청내용 템플릿 원본(HTML) : textarea 에 담아 브라우저가 엔티티를 복원하면 .value 로 원본 HTML 획득 --%>
 <div style="display:none;">
     <c:forEach var="t" items="${csrTplList}">
-        <textarea class="csr-tpl-data" data-sub="${t.subType}">${fn:escapeXml(t.content)}</textarea>
+        <textarea class="csr-tpl-data" data-sub="${t.subType}" data-lead="${t.leadDays}">${fn:escapeXml(t.content)}</textarea>
     </c:forEach>
 </div>
 
@@ -111,8 +114,11 @@
         <c:forEach var="st" items="${subTypeList}" varStatus="vs">{id:'${st.codeId}', nm:'${fn:escapeXml(st.codeNm)}', up:'${st.upperCode}'}<c:if test="${!vs.last}">,</c:if></c:forEach>
     ];
     var TEMPLATES = {};
+    var LEADDAYS = {};
     Array.prototype.forEach.call(document.querySelectorAll('.csr-tpl-data'), function (t) {
         TEMPLATES[t.getAttribute('data-sub')] = t.value;
+        var ld = parseInt(t.getAttribute('data-lead'), 10);
+        if (!isNaN(ld) && ld > 0) { LEADDAYS[t.getAttribute('data-sub')] = ld; }
     });
     var curSel = '${csr.csrSubType}';
     var isNew = ${csr.csrId == null};
@@ -145,11 +151,38 @@
         if ($c.data('summernote')) { $c.summernote('code', tpl); } else { $c.val(tpl); }
     }
 
-    major.addEventListener('change', function () { curSel = ''; fill(); applyTpl(sub.value); });
-    sub.addEventListener('change', function () { applyTpl(sub.value); });
+    // 오늘 + n 근무일(주말 제외) → 'yyyy-MM-dd'
+    function addWorkdays(n) {
+        var d = new Date(); var added = 0;
+        while (added < n) {
+            d.setDate(d.getDate() + 1);
+            var w = d.getDay();
+            if (w !== 0 && w !== 6) { added++; }
+        }
+        var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+        var dd = ('0' + d.getDate()).slice(-2);
+        return d.getFullYear() + '-' + mm + '-' + dd;
+    }
+    // 소분류 소요일이 있으면 완료요구일 자동설정 (신규 등록 시)
+    function applyDue(subCd) {
+        var due = document.getElementById('dueDt');
+        var hint = document.getElementById('dueAuto');
+        if (!due) return;
+        var n = LEADDAYS[subCd];
+        if (isNew && n) {
+            due.value = addWorkdays(n);
+            if (hint) { hint.style.display = ''; hint.textContent = '소분류 기준 자동설정(근무일 ' + n + '일)'; }
+        } else if (hint) {
+            hint.style.display = 'none';
+        }
+    }
+
+    major.addEventListener('change', function () { curSel = ''; fill(); applyTpl(sub.value); applyDue(sub.value); });
+    sub.addEventListener('change', function () { applyTpl(sub.value); applyDue(sub.value); });
     fill();
-    // 신규 등록 시 최초 진입한 소분류 템플릿을 자동 표시(에디터 준비 후)
+    // 신규 등록 시 최초 진입한 소분류 템플릿/완료요구일 자동 표시(에디터 준비 후)
     if (isNew && window.jQuery) { jQuery(function () { applyTpl(sub.value); }); }
+    if (isNew) { applyDue(sub.value); }
 
     // 대상 시스템(체크박스) — 1개 이상 선택 검증
     var box = document.getElementById('sysIdsBox');
