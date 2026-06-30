@@ -28,7 +28,7 @@
     <div class="statbar" style="margin-bottom:10px;">
         <span class="chip">검토 <b>${reviewDone}/${reviewTotal}</b></span>
         <span class="chip">승인 <b>${approveDone}/${approveTotal}</b></span>
-        <span class="chip">처리 <b>${handleDone}/${handleTotal}</b></span>
+        <c:if test="${not hideHandle}"><span class="chip">처리 <b>${handleDone}/${handleTotal}</b></span></c:if>
         <c:if test="${myPending > 0}"><span class="chip" style="background:#fde9e9;color:#c0392b;">내 처리대기 <b>${myPending}</b></span></c:if>
     </div>
 

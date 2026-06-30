@@ -12,7 +12,9 @@
     <div class="page-title">요청 상세 <span style="color:#888;font-weight:400;">(CSR-${csr.csrId})</span></div>
     <div class="toolbar">
         <a href="${ctx}/csr/list" class="btn btn-default">목록</a>
+        <c:if test="${not isHandler}">
         <a href="${ctx}/csr/edit/${csr.csrId}" class="btn btn-default">수정</a>
+        </c:if>
         <form action="${ctx}/csr/delete/${csr.csrId}" method="post"
               onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
             <button type="submit" class="btn btn-danger">삭제</button>

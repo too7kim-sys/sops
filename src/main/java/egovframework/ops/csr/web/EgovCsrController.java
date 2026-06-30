@@ -90,17 +90,16 @@ public class EgovCsrController {
         model.addAttribute("transferTargets", egovframework.ops.csr.service.impl.CsrTransferService.TARGETS);
         // 요청 처리는 처리자(결재선 HANDLE 담당자)만 가능 — 화면 노출 제어용
         model.addAttribute("canProcess", canProcess(csrId, loginUser));
+        // 처리자는 요청서를 수정할 수 없음 — 수정 버튼 노출 제어용
+        model.addAttribute("isHandler", isHandler(csrId, loginUser));
         model.addAttribute("menu", "csr");
         return "csr/detail";
     }
 
-    /** 처리자 여부 — 결재선의 처리(HANDLE) 담당자이거나 운영관리자면 처리 가능 */
-    private boolean canProcess(Long csrId, LoginUser loginUser) {
+    /** 처리자 여부 — 결재선의 처리(HANDLE) 담당자 본인 */
+    private boolean isHandler(Long csrId, LoginUser loginUser) {
         if (loginUser == null) {
             return false;
-        }
-        if ("ADMIN".equals(loginUser.getUser().getRole())) {
-            return true;
         }
         String uid = loginUser.getUsername();
         for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CSR", csrId)) {
@@ -109,6 +108,14 @@ public class EgovCsrController {
             }
         }
         return false;
+    }
+
+    /** 처리 가능 여부 — 처리자 본인이거나 운영관리자(대리처리) */
+    private boolean canProcess(Long csrId, LoginUser loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        return "ADMIN".equals(loginUser.getUser().getRole()) || isHandler(csrId, loginUser);
     }
 
     /** 요청 이관 — 대상 모듈로 신규 레코드 생성 후 연계, 대상 상세로 이동 */
@@ -225,9 +232,13 @@ public class EgovCsrController {
         return "redirect:/csr/detail/" + csrVO.getCsrId();
     }
 
-    /** 요청 기본정보 수정 폼 */
+    /** 요청 기본정보 수정 폼 (처리자는 수정 불가) */
     @GetMapping("/edit/{csrId}")
-    public String editForm(@PathVariable Long csrId, Model model) {
+    public String editForm(@PathVariable Long csrId, Model model,
+                           @AuthenticationPrincipal LoginUser loginUser) {
+        if (isHandler(csrId, loginUser)) {
+            return "redirect:/csr/detail/" + csrId;
+        }
         model.addAttribute("csr", csrService.selectCsr(csrId));
         model.addAttribute("fileList", csrService.selectCsrFileList(csrId));
         addFormCodes(model);
@@ -240,6 +251,10 @@ public class EgovCsrController {
     public String update(@ModelAttribute CsrVO csrVO,
                          @RequestParam(value = "files", required = false) MultipartFile[] files,
                          @AuthenticationPrincipal LoginUser loginUser) throws IOException {
+        // 처리자는 요청서 수정 불가
+        if (isHandler(csrVO.getCsrId(), loginUser)) {
+            return "redirect:/csr/detail/" + csrVO.getCsrId();
+        }
         csrService.updateCsr(csrVO);
         storeFiles(csrVO.getCsrId(), files, loginUser.getUsername());
         return "redirect:/csr/detail/" + csrVO.getCsrId();

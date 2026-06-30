@@ -140,7 +140,19 @@ public class EgovApprController {
         model.addAttribute("bizId", bizId);
         model.addAttribute("bizTypeNm", bizTypeNm(bizType));
         model.addAttribute("returnUrl", returnUrl);
-        model.addAttribute("lineList", lines);
+        // 요청관리는 처리(HANDLE)를 별도 '요청 처리' 패널에서 수행하므로 결재선에서는 처리 라인을 숨긴다
+        boolean hideHandle = "CSR".equals(bizType);
+        List<ApprLineVO> displayLines = lines;
+        if (hideHandle) {
+            displayLines = new java.util.ArrayList<>();
+            for (ApprLineVO l : lines) {
+                if (!"HANDLE".equals(l.getLineType())) {
+                    displayLines.add(l);
+                }
+            }
+        }
+        model.addAttribute("hideHandle", hideHandle);
+        model.addAttribute("lineList", displayLines);
         model.addAttribute("shares", shares);
         model.addAttribute("candidates", apprService.selectAssigneeCandidates());
         model.addAttribute("lineTypeList", codeService.selectCodeList("LINE_TYPE"));
