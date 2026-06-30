@@ -14,11 +14,11 @@
     <div class="panel">
         <table class="form">
             <tr>
-                <th>시스템ID <span class="required">*</span></th>
+                <th>시스템ID</th>
                 <td>
                     <c:choose>
                         <c:when test="${isNew}">
-                            <input type="text" name="sysId" value="${system.sysId}" required/>
+                            <span class="h-meta">저장 시 자동 생성됩니다 (SYS###)</span>
                         </c:when>
                         <c:otherwise>
                             <input type="hidden" name="sysId" value="${system.sysId}"/>

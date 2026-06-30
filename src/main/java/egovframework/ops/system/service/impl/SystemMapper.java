@@ -17,6 +17,9 @@ public interface SystemMapper {
 
     List<SystemVO> selectSystemAll();
 
+    /** 시스템ID 자동 채번용 — 전체(비활성 포함) SYS_ID 목록 */
+    List<String> selectAllSysIds();
+
     SystemVO selectSystem(String sysId);
 
     void insertSystem(SystemVO vo);

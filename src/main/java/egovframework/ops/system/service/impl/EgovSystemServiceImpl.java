@@ -46,7 +46,25 @@ public class EgovSystemServiceImpl extends EgovAbstractServiceImpl implements Eg
         if (vo.getUseAt() == null) {
             vo.setUseAt("Y");
         }
+        // 시스템ID 미입력 시 자동 채번 (SYS001, SYS002 …)
+        if (vo.getSysId() == null || vo.getSysId().isBlank()) {
+            vo.setSysId(generateSysId());
+        }
         systemMapper.insertSystem(vo);
+    }
+
+    /** 다음 시스템ID 생성 — 기존 'SYS###' 중 최대 일련번호 +1 (비활성 포함, DB 무관) */
+    private String generateSysId() {
+        int max = 0;
+        for (String id : systemMapper.selectAllSysIds()) {
+            if (id != null && id.matches("SYS\\d+")) {
+                int n = Integer.parseInt(id.substring(3));
+                if (n > max) {
+                    max = n;
+                }
+            }
+        }
+        return String.format("SYS%03d", max + 1);
     }
 
     @Override

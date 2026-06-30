@@ -39,6 +39,10 @@
          ORDER BY SYS_ID
     </select>
 
+    <select id="selectAllSysIds" resultType="string">
+        SELECT SYS_ID FROM OPS_SYSTEM
+    </select>
+
     <select id="selectSystem" parameterType="string"
             resultType="egovframework.ops.system.service.SystemVO">
         SELECT SYS_ID AS sysId, SYS_NM AS sysNm, SYS_DESC AS sysDesc,
