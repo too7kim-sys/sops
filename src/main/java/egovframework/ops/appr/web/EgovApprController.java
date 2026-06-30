@@ -74,6 +74,21 @@ public class EgovApprController {
         return defaultDetailUrl(ctx, bizType, bizId);
     }
 
+    /** 현재 진행 단계 = 미완료(PENDING) 결재선 중 최소 단계 (처리 라인 제외). 없으면 null. */
+    private Integer currentActiveStep(List<ApprLineVO> lines) {
+        Integer cur = null;
+        for (ApprLineVO l : lines) {
+            if ("HANDLE".equals(l.getLineType()) || !"PENDING".equals(l.getStatus())) {
+                continue;
+            }
+            int s = (l.getStepNo() == null) ? 1 : l.getStepNo();
+            if (cur == null || s < cur) {
+                cur = s;
+            }
+        }
+        return cur;
+    }
+
     private boolean isManager(LoginUser user) {
         String role = user.getUser().getRole();
         return "ADMIN".equals(role) || "OPERATOR".equals(role);
@@ -153,6 +168,8 @@ public class EgovApprController {
         }
         model.addAttribute("hideHandle", hideHandle);
         model.addAttribute("lineList", displayLines);
+        // 현재 진행 단계 = 미완료(PENDING) 결재선 중 최소 단계. 같은 단계는 병렬, 단계는 순차 진행.
+        model.addAttribute("currentStep", currentActiveStep(displayLines));
         model.addAttribute("shares", shares);
         model.addAttribute("candidates", apprService.selectAssigneeCandidates());
         model.addAttribute("lineTypeList", codeService.selectCodeList("LINE_TYPE"));
@@ -231,6 +248,13 @@ public class EgovApprController {
         }
         boolean allowed = loginUser.getUsername().equals(line.getAssigneeId())
                 || "ADMIN".equals(loginUser.getUser().getRole());
+        // 단계 게이트 : 결재선(비처리)은 현재 진행 단계에서만 처리 가능(이전 단계 미완료 시 대기)
+        if (allowed && !"HANDLE".equals(line.getLineType())) {
+            Integer cur = currentActiveStep(apprService.selectLineList(line.getBizType(), line.getBizId()));
+            if (cur != null && line.getStepNo() != null && !cur.equals(line.getStepNo())) {
+                allowed = false;
+            }
+        }
         if (allowed) {
             String status;
             switch (action) {
@@ -343,6 +367,21 @@ public class EgovApprController {
     }
 
     /** 템플릿 행 삭제 */
+    /** 기본 결재선 행 수정 (라인유형/단계/순서/메모) */
+    @PostMapping("/template/update")
+    public String updateTemplate(@ModelAttribute ApprTemplateVO vo,
+                                 @AuthenticationPrincipal LoginUser loginUser) {
+        if ("ADMIN".equals(loginUser.getUser().getRole())) {
+            if ("SHARE".equals(vo.getKind())) {
+                vo.setLineType(null);
+            }
+            if (vo.getStepNo() == null) vo.setStepNo(1);
+            if (vo.getSortNo() == null) vo.setSortNo(1);
+            apprService.updateTemplate(vo);
+        }
+        return "redirect:" + ctx() + "/appr/template?bizType=" + vo.getBizType();
+    }
+
     @PostMapping("/template/delete")
     public String deleteTemplate(@RequestParam Long tplId,
                                  @RequestParam String bizType,

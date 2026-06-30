@@ -81,6 +81,8 @@ public interface EgovApprService {
 
     void insertTemplate(ApprTemplateVO vo);
 
+    void updateTemplate(ApprTemplateVO vo);
+
     void deleteTemplate(Long tplId);
 
     /** 업무 구분별 기본 템플릿을 해당 레코드에 전개·적용(생성 건수 반환) */

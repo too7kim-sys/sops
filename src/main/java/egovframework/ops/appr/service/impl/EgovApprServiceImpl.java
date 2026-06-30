@@ -250,6 +250,11 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
     }
 
     @Override
+    public void updateTemplate(ApprTemplateVO vo) {
+        apprMapper.updateTemplate(vo);
+    }
+
+    @Override
     public void deleteTemplate(Long tplId) {
         apprMapper.deleteTemplate(tplId);
     }

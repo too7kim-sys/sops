@@ -28,25 +28,51 @@
 
 <div class="panel">
     <h3>기본 결재선 / 공유 목록 — ${bizTypeNm}</h3>
+    <div class="h-meta" style="margin-bottom:8px;">※ 같은 <b>단계</b>의 결재선은 <b>병렬</b>로 진행되고, 단계는 번호 순서대로 순차 진행됩니다. 라인유형·단계·순서·메모는 행에서 바로 수정할 수 있습니다.</div>
+    <%-- 행별 수정/삭제 폼은 표 밖에 선언하고 input 은 form= 으로 연결 --%>
+    <c:forEach var="t" items="${templateList}">
+        <form id="tplU_${t.tplId}" method="post" action="${ctx}/appr/template/update">
+            <input type="hidden" name="bizType" value="${bizType}"/>
+            <input type="hidden" name="tplId" value="${t.tplId}"/>
+            <input type="hidden" name="kind" value="${t.kind}"/>
+        </form>
+        <form id="tplD_${t.tplId}" method="post" action="${ctx}/appr/template/delete" onsubmit="return confirm('삭제할까요?');">
+            <input type="hidden" name="tplId" value="${t.tplId}"/>
+            <input type="hidden" name="bizType" value="${bizType}"/>
+        </form>
+    </c:forEach>
     <table class="list">
         <thead>
         <tr>
-            <th style="width:80px;">종류</th>
-            <th style="width:90px;">라인유형</th>
-            <th class="center" style="width:60px;">단계</th>
-            <th style="width:90px;">대상유형</th>
+            <th style="width:70px;">종류</th>
+            <th style="width:110px;">라인유형</th>
+            <th class="center" style="width:64px;">단계</th>
+            <th class="center" style="width:64px;">순서</th>
+            <th style="width:80px;">대상유형</th>
             <th>대상값</th>
             <th>메모</th>
-            <th style="width:60px;"></th>
+            <th class="center" style="width:110px;">관리</th>
         </tr>
         </thead>
         <tbody>
-        <c:if test="${empty templateList}"><tr><td colspan="7" class="empty">정의된 기본설정이 없습니다.</td></tr></c:if>
+        <c:if test="${empty templateList}"><tr><td colspan="8" class="empty">정의된 기본설정이 없습니다.</td></tr></c:if>
         <c:forEach var="t" items="${templateList}">
             <tr>
                 <td><span class="badge ${t.kind == 'SHARE' ? 'lt-handle' : 'lt-review'}">${t.kind == 'SHARE' ? '공유' : '결재선'}</span></td>
-                <td>${empty t.lineTypeNm ? '-' : t.lineTypeNm}</td>
-                <td class="center">${t.stepNo}</td>
+                <td>
+                    <c:choose>
+                        <c:when test="${t.kind == 'SHARE'}">-</c:when>
+                        <c:otherwise>
+                            <select name="lineType" form="tplU_${t.tplId}" style="width:100%;">
+                                <c:forEach var="lty" items="${lineTypeList}">
+                                    <option value="${lty.codeId}" ${lty.codeId == t.lineType ? 'selected' : ''}>${lty.codeNm}</option>
+                                </c:forEach>
+                            </select>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                <td class="center"><input type="number" name="stepNo" value="${t.stepNo}" min="1" style="width:52px;text-align:center;" form="tplU_${t.tplId}"/></td>
+                <td class="center"><input type="number" name="sortNo" value="${t.sortNo}" min="1" style="width:52px;text-align:center;" form="tplU_${t.tplId}"/></td>
                 <td>${t.targetTypeNm}</td>
                 <td>
                     <c:choose>
@@ -54,18 +80,16 @@
                         <c:otherwise>${empty t.targetValue ? '-' : t.targetValue}</c:otherwise>
                     </c:choose>
                 </td>
-                <td>${empty t.memo ? '-' : t.memo}</td>
-                <td>
-                    <form method="post" action="${ctx}/appr/template/delete" onsubmit="return confirm('삭제할까요?');">
-                        <input type="hidden" name="tplId" value="${t.tplId}"/>
-                        <input type="hidden" name="bizType" value="${bizType}"/>
-                        <button type="submit" class="btn btn-danger btn-sm">×</button>
-                    </form>
+                <td><input type="text" name="memo" value="${t.memo}" style="width:100%;" form="tplU_${t.tplId}"/></td>
+                <td class="center" style="white-space:nowrap;">
+                    <button type="submit" class="btn btn-primary btn-sm" form="tplU_${t.tplId}">저장</button>
+                    <button type="submit" class="btn btn-danger btn-sm" form="tplD_${t.tplId}">삭제</button>
                 </td>
             </tr>
         </c:forEach>
         </tbody>
     </table>
+    <div class="h-meta" style="margin-top:6px;">※ 대상(유형/값) 변경은 행 삭제 후 아래에서 다시 추가하세요.</div>
 </div>
 
 <div class="panel">

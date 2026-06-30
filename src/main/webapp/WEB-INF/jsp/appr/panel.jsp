@@ -50,7 +50,9 @@
         <c:set var="prevStep" value="-1"/>
         <c:forEach var="ln" items="${lineList}">
             <%-- 처리 버튼 권한: 본인 담당 라인(차례)만 노출, 운영관리자는 대리처리 가능 --%>
-            <c:set var="canAct" value="${(ln.assigneeId == loginId or isAdmin) and ln.status == 'PENDING'}"/>
+            <%-- 단계 게이트: 현재 진행 단계의 결재선만 처리(같은 단계는 병렬, 이전 단계 미완료면 대기) --%>
+            <c:set var="atStep" value="${empty currentStep or ln.stepNo == currentStep}"/>
+            <c:set var="canAct" value="${(ln.assigneeId == loginId or isAdmin) and ln.status == 'PENDING' and atStep}"/>
             <tr<c:if test="${ln.stepNo ne prevStep and prevStep ne -1}"> class="step-sep"</c:if>>
                 <td>
                     <c:choose>
@@ -85,6 +87,9 @@
                                 </c:otherwise>
                             </c:choose>
                         </form>
+                    </c:if>
+                    <c:if test="${ln.status == 'PENDING' and not atStep and (ln.assigneeId == loginId or isAdmin)}">
+                        <span class="h-meta">이전 단계 진행 중 — 대기</span>
                     </c:if>
                 </td>
                 <td>${empty ln.actDt ? '-' : ln.actDt}</td>

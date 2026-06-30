@@ -92,5 +92,7 @@ public interface ApprMapper {
 
     void insertTemplate(ApprTemplateVO vo);
 
+    void updateTemplate(ApprTemplateVO vo);
+
     void deleteTemplate(Long tplId);
 }

@@ -238,6 +238,12 @@
             (#{bizType}, #{kind}, #{lineType}, #{stepNo}, #{sortNo}, #{targetType}, #{targetValue}, #{memo}, CURRENT_TIMESTAMP)
     </insert>
 
+    <update id="updateTemplate" parameterType="egovframework.ops.appr.service.ApprTemplateVO">
+        UPDATE OPS_APPR_TEMPLATE
+           SET LINE_TYPE = #{lineType}, STEP_NO = #{stepNo}, SORT_NO = #{sortNo}, MEMO = #{memo}
+         WHERE TPL_ID = #{tplId}
+    </update>
+
     <delete id="deleteTemplate" parameterType="long">
         DELETE FROM OPS_APPR_TEMPLATE WHERE TPL_ID = #{tplId}
     </delete>
