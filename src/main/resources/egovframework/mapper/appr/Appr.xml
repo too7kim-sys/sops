@@ -213,6 +213,10 @@
             resultType="egovframework.ops.appr.service.ApprTemplateVO">
         SELECT T.TPL_ID      AS tplId,
                T.BIZ_TYPE    AS bizType,
+               T.SYS_ID      AS sysId,
+               S.SYS_NM      AS sysNm,
+               T.CLASS_CD    AS classCd,
+               CC.CODE_NM    AS classNm,
                T.KIND        AS kind,
                T.LINE_TYPE   AS lineType,
                LC.CODE_NM    AS lineTypeNm,
@@ -227,15 +231,20 @@
           LEFT JOIN OPS_CODE LC ON LC.CODE_GRP = 'LINE_TYPE'   AND LC.CODE_ID = T.LINE_TYPE
           LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'TARGET_TYPE' AND TC.CODE_ID = T.TARGET_TYPE
           LEFT JOIN OPS_DEPT TD ON T.TARGET_TYPE = 'DEPT' AND TD.DEPT_CD = T.TARGET_VALUE
+          LEFT JOIN OPS_SYSTEM S ON S.SYS_ID = T.SYS_ID
+          LEFT JOIN OPS_CODE CC ON CC.CODE_ID = T.CLASS_CD AND CC.CODE_GRP =
+               CASE T.BIZ_TYPE WHEN 'CSR' THEN 'CSR_TYPE' WHEN 'CHANGE' THEN 'CHANGE_TYPE'
+                    WHEN 'TEST' THEN 'TEST_TYPE' WHEN 'INTERFACE' THEN 'INTF_TYPE'
+                    WHEN 'CI' THEN 'CI_TYPE' WHEN 'EVENT' THEN 'EVENT_TYPE' ELSE NULL END
          WHERE T.BIZ_TYPE = #{bizType}
          ORDER BY T.KIND DESC, T.STEP_NO, T.SORT_NO, T.TPL_ID
     </select>
 
     <insert id="insertTemplate" parameterType="egovframework.ops.appr.service.ApprTemplateVO">
         INSERT INTO OPS_APPR_TEMPLATE
-            (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO, REG_DT)
+            (BIZ_TYPE, SYS_ID, CLASS_CD, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO, REG_DT)
         VALUES
-            (#{bizType}, #{kind}, #{lineType}, #{stepNo}, #{sortNo}, #{targetType}, #{targetValue}, #{memo}, CURRENT_TIMESTAMP)
+            (#{bizType}, #{sysId}, #{classCd}, #{kind}, #{lineType}, #{stepNo}, #{sortNo}, #{targetType}, #{targetValue}, #{memo}, CURRENT_TIMESTAMP)
     </insert>
 
     <update id="updateTemplate" parameterType="egovframework.ops.appr.service.ApprTemplateVO">

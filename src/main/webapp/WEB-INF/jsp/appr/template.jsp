@@ -28,7 +28,7 @@
 
 <div class="panel">
     <h3>기본 결재선 / 공유 목록 — ${bizTypeNm}</h3>
-    <div class="h-meta" style="margin-bottom:8px;">※ 같은 <b>단계</b>의 결재선은 <b>병렬</b>로 진행되고, 단계는 번호 순서대로 순차 진행됩니다. 라인유형·단계·순서·메모는 행에서 바로 수정할 수 있습니다.</div>
+    <div class="h-meta" style="margin-bottom:8px;">※ 같은 <b>단계</b>의 결재선은 <b>병렬</b>, 단계는 순차 진행됩니다. 대상 <b>시스템·요청 분류</b>로 스코프를 지정하면, 적용 시 <b>가장 구체적인 설정</b>(시스템+분류 &gt; 시스템 &gt; 분류 &gt; 전체)이 선택됩니다. 라인유형·단계·순서·메모는 행에서 바로 수정할 수 있습니다.</div>
     <%-- 행별 수정/삭제 폼은 표 밖에 선언하고 input 은 form= 으로 연결 --%>
     <c:forEach var="t" items="${templateList}">
         <form id="tplU_${t.tplId}" method="post" action="${ctx}/appr/template/update">
@@ -45,20 +45,24 @@
         <thead>
         <tr>
             <th style="width:70px;">종류</th>
-            <th style="width:110px;">라인유형</th>
-            <th class="center" style="width:64px;">단계</th>
-            <th class="center" style="width:64px;">순서</th>
-            <th style="width:80px;">대상유형</th>
+            <th style="width:130px;">대상 시스템</th>
+            <th style="width:110px;">요청 분류</th>
+            <th style="width:100px;">라인유형</th>
+            <th class="center" style="width:56px;">단계</th>
+            <th class="center" style="width:56px;">순서</th>
+            <th style="width:74px;">대상유형</th>
             <th>대상값</th>
             <th>메모</th>
             <th class="center" style="width:110px;">관리</th>
         </tr>
         </thead>
         <tbody>
-        <c:if test="${empty templateList}"><tr><td colspan="8" class="empty">정의된 기본설정이 없습니다.</td></tr></c:if>
+        <c:if test="${empty templateList}"><tr><td colspan="10" class="empty">정의된 기본설정이 없습니다.</td></tr></c:if>
         <c:forEach var="t" items="${templateList}">
             <tr>
                 <td><span class="badge ${t.kind == 'SHARE' ? 'lt-handle' : 'lt-review'}">${t.kind == 'SHARE' ? '공유' : '결재선'}</span></td>
+                <td>${empty t.sysId ? '전체' : (empty t.sysNm ? t.sysId : t.sysNm)}</td>
+                <td>${empty t.classCd ? '전체' : (empty t.classNm ? t.classCd : t.classNm)}</td>
                 <td>
                     <c:choose>
                         <c:when test="${t.kind == 'SHARE'}">-</c:when>
@@ -97,6 +101,22 @@
     <form method="post" action="${ctx}/appr/template/add" class="appr-add" data-target-form id="tplForm">
         <input type="hidden" name="bizType" value="${bizType}"/>
         <div class="appr-add-row">
+            <label>대상 시스템
+                <select name="sysId">
+                    <option value="">전체</option>
+                    <c:forEach var="s" items="${systemList}">
+                        <option value="${s.sysId}">${s.sysNm}</option>
+                    </c:forEach>
+                </select>
+            </label>
+            <label>요청 분류
+                <select name="classCd" ${empty classList ? 'disabled' : ''}>
+                    <option value="">전체</option>
+                    <c:forEach var="cc" items="${classList}">
+                        <option value="${cc.codeId}">${cc.codeNm}</option>
+                    </c:forEach>
+                </select>
+            </label>
             <label>종류
                 <select name="kind" class="tpl-kind">
                     <option value="LINE">결재선</option>

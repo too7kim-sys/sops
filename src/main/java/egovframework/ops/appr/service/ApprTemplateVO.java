@@ -25,6 +25,18 @@ public class ApprTemplateVO extends ComDefaultVO {
     /** 업무 구분 명 */
     private String bizTypeNm;
 
+    /** 대상 시스템 (null=전체) */
+    private String sysId;
+
+    /** 대상 시스템명 (조인) */
+    private String sysNm;
+
+    /** 요청 분류(업무유형 코드, null=전체) */
+    private String classCd;
+
+    /** 요청 분류명 (조인) */
+    private String classNm;
+
     /** 종류 (LINE/SHARE) */
     private String kind;
 

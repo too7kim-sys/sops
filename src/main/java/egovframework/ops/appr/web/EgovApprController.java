@@ -6,6 +6,7 @@ import egovframework.ops.appr.service.ApprTemplateVO;
 import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.appr.service.ShareVO;
 import egovframework.ops.cmm.code.service.EgovCodeService;
+import egovframework.ops.system.service.EgovSystemService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,10 +28,24 @@ public class EgovApprController {
 
     private final EgovApprService apprService;
     private final EgovCodeService codeService;
+    private final EgovSystemService systemService;
 
-    public EgovApprController(EgovApprService apprService, EgovCodeService codeService) {
+    public EgovApprController(EgovApprService apprService, EgovCodeService codeService,
+                             EgovSystemService systemService) {
         this.apprService = apprService;
         this.codeService = codeService;
+        this.systemService = systemService;
+    }
+
+    /** 업무구분별 요청 분류(업무유형) 코드그룹 */
+    private static final Map<String, String> CLASS_GRP = new LinkedHashMap<>();
+    static {
+        CLASS_GRP.put("CSR", "CSR_TYPE");
+        CLASS_GRP.put("CHANGE", "CHANGE_TYPE");
+        CLASS_GRP.put("TEST", "TEST_TYPE");
+        CLASS_GRP.put("INTERFACE", "INTF_TYPE");
+        CLASS_GRP.put("CI", "CI_TYPE");
+        CLASS_GRP.put("EVENT", "EVENT_TYPE");
     }
 
     /** 업무 구분 → 한글명 / 상세 URL prefix (메뉴 노출 순서대로 정의) */
@@ -351,6 +366,10 @@ public class EgovApprController {
         model.addAttribute("targetTypeList", codeService.selectCodeList("TARGET_TYPE"));
         model.addAttribute("deptList", apprService.selectDeptList());
         model.addAttribute("candidates", apprService.selectAssigneeCandidates());
+        // 결재선 스코프 : 대상 시스템 / 요청 분류(업무유형) 선택지
+        model.addAttribute("systemList", systemService.selectSystemAll());
+        String classGrp = CLASS_GRP.get(sel);
+        model.addAttribute("classList", classGrp == null ? java.util.List.of() : codeService.selectCodeList(classGrp));
         model.addAttribute("menu", "apprTpl");
         return "appr/template";
     }
@@ -365,6 +384,9 @@ public class EgovApprController {
             }
             if (vo.getStepNo() == null) vo.setStepNo(1);
             if (vo.getSortNo() == null) vo.setSortNo(1);
+            // 빈값(전체)은 null 로 정규화
+            if (vo.getSysId() != null && vo.getSysId().isBlank()) vo.setSysId(null);
+            if (vo.getClassCd() != null && vo.getClassCd().isBlank()) vo.setClassCd(null);
             apprService.insertTemplate(vo);
         }
         return "redirect:" + ctx() + "/appr/template?bizType=" + vo.getBizType();

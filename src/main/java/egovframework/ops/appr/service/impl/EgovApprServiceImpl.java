@@ -9,6 +9,7 @@ import egovframework.ops.sys.user.service.UserVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,7 +264,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
     @Transactional
     public int applyTemplate(String bizType, Long bizId, String actorId) {
         int created = 0;
-        for (ApprTemplateVO t : apprMapper.selectTemplateList(bizType)) {
+        for (ApprTemplateVO t : selectScopedTemplates(bizType, bizId)) {
             List<String> ids = resolveTargets(bizType, bizId, t.getTargetType(), t.getTargetValue());
             int sort = 1;
             java.util.Set<String> seen = new java.util.LinkedHashSet<>(ids);
@@ -295,5 +296,79 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
             }
         }
         return created;
+    }
+
+    /** 스코프 규칙 : bizType → {table, idCol, sysCol, classCol(nullable)} */
+    private static final Map<String, String[]> SCOPE_RULE = new LinkedHashMap<>();
+    static {
+        SCOPE_RULE.put("CSR",       new String[]{"OPS_CSR",       "CSR_ID",  "SYS_ID", "CSR_TYPE"});
+        SCOPE_RULE.put("CHANGE",    new String[]{"OPS_CHANGE",    "CHG_ID",  "SYS_ID", "CHG_TYPE"});
+        SCOPE_RULE.put("RELEASE",   new String[]{"OPS_RELEASE",   "REL_ID",  "SYS_ID", null});
+        SCOPE_RULE.put("TEST",      new String[]{"OPS_TEST",      "TEST_ID", "SYS_ID", "TEST_TYPE"});
+        SCOPE_RULE.put("INTERFACE", new String[]{"OPS_INTERFACE", "INTF_ID", "SYS_ID", "IF_TYPE"});
+        SCOPE_RULE.put("CI",        new String[]{"OPS_CI",        "CI_ID",   "SYS_ID", "CI_TYPE"});
+        SCOPE_RULE.put("EVENT",     new String[]{"OPS_EVENT",     "EVT_ID",  "SYS_ID", "EVT_TYPE"});
+        SCOPE_RULE.put("INCIDENT",  new String[]{"OPS_INCIDENT",  "INC_ID",  "SYS_ID", null});
+        SCOPE_RULE.put("PROBLEM",   new String[]{"OPS_PROBLEM",   "PRB_ID",  "SYS_ID", null});
+    }
+
+    /** 업무 레코드의 (시스템, 분류) 스코프 조회 — 컬럼은 내부 화이트리스트 */
+    private String[] resolveScope(String bizType, Long bizId) {
+        String[] r = SCOPE_RULE.get(bizType);
+        if (r == null) {
+            return new String[]{null, null};
+        }
+        String sysId = (r[2] != null) ? apprMapper.selectBizRequester(r[0], r[1], r[2], bizId) : null;
+        String classCd = (r[3] != null) ? apprMapper.selectBizRequester(r[0], r[1], r[3], bizId) : null;
+        return new String[]{sysId, classCd};
+    }
+
+    /**
+     * 업무 레코드의 시스템·분류에 맞는 기본설정을 선택한다.
+     * 종류(LINE/SHARE)별로 가장 구체적인 스코프(시스템+분류 → 시스템 → 분류 → 전체) 한 그룹을 적용한다.
+     */
+    private List<ApprTemplateVO> selectScopedTemplates(String bizType, Long bizId) {
+        List<ApprTemplateVO> all = apprMapper.selectTemplateList(bizType);
+        String[] scope = resolveScope(bizType, bizId);
+        String sysId = scope[0];
+        String classCd = scope[1];
+        List<ApprTemplateVO> result = new ArrayList<>();
+        for (String kind : new String[]{"LINE", "SHARE"}) {
+            List<ApprTemplateVO> kindRows = new ArrayList<>();
+            for (ApprTemplateVO t : all) {
+                if (kind.equals(t.getKind())) {
+                    kindRows.add(t);
+                }
+            }
+            // 우선순위: (시스템+분류) → (시스템) → (분류) → (전체)
+            String[][] prefs = {
+                    {sysId, classCd}, {sysId, null}, {null, classCd}, {null, null}
+            };
+            for (String[] p : prefs) {
+                List<ApprTemplateVO> grp = new ArrayList<>();
+                for (ApprTemplateVO t : kindRows) {
+                    if (eq(t.getSysId(), p[0]) && eq(t.getClassCd(), p[1])) {
+                        grp.add(t);
+                    }
+                }
+                if (!grp.isEmpty()) {
+                    result.addAll(grp);
+                    break; // 가장 구체적인 한 그룹만 적용
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean eq(String a, String b) {
+        boolean ab = (a == null || a.isBlank());
+        boolean bb = (b == null || b.isBlank());
+        if (ab && bb) {
+            return true;
+        }
+        if (ab != bb) {
+            return false;
+        }
+        return a.equals(b);
     }
 }
