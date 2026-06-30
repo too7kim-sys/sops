@@ -2,13 +2,13 @@ package egovframework.ops.sys.menu.web;
 
 import egovframework.ops.sys.menu.service.EgovMenuService;
 import egovframework.ops.sys.menu.service.MenuVO;
+import egovframework.ops.sys.menu.service.RoleVO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 메뉴관리 / 권한관리 컨트롤러 (운영관리자 전용 — /sys/** 보안).
@@ -16,14 +16,6 @@ import java.util.Map;
 @Controller
 @RequestMapping("/sys")
 public class EgovMenuController {
-
-    /** 권한관리 대상 역할 */
-    private static final Map<String, String> ROLES = new LinkedHashMap<>();
-    static {
-        ROLES.put("ADMIN", "운영관리자");
-        ROLES.put("OPERATOR", "운영자");
-        ROLES.put("USER", "일반사용자");
-    }
 
     private final EgovMenuService menuService;
 
@@ -77,10 +69,18 @@ public class EgovMenuController {
     /* ============================ 권한관리 ============================ */
 
     @GetMapping("/auth")
-    public String auth(@RequestParam(defaultValue = "ADMIN") String role, Model model) {
-        model.addAttribute("roles", ROLES);
+    public String auth(@RequestParam(required = false) String role, Model model) {
+        java.util.Map<String, String> roles = menuService.selectRoleMap();
+        // 선택 역할 미지정/유효하지 않으면 첫 역할로
+        if (role == null || !roles.containsKey(role)) {
+            role = roles.isEmpty() ? null : roles.keySet().iterator().next();
+        }
+        model.addAttribute("roles", roles);
+        model.addAttribute("roleList", menuService.selectRoleList());
         model.addAttribute("selectedRole", role);
-        model.addAttribute("menuList", menuService.selectAuthMenuList(role));
+        if (role != null) {
+            model.addAttribute("menuList", menuService.selectAuthMenuList(role));
+        }
         model.addAttribute("menu", "auth");
         return "sys/auth";
     }
@@ -90,5 +90,28 @@ public class EgovMenuController {
                            @RequestParam(name = "menuIds", required = false) List<Long> menuIds) {
         menuService.saveMenuAuth(role, menuIds);
         return "redirect:/sys/auth?role=" + role;
+    }
+
+    /* ===== 역할 등록/수정/삭제 ===== */
+
+    @PostMapping("/role/save")
+    public String roleSave(@ModelAttribute RoleVO roleVO, RedirectAttributes ra) {
+        if (roleVO.getRoleCd() == null || roleVO.getRoleCd().isBlank()
+                || roleVO.getRoleNm() == null || roleVO.getRoleNm().isBlank()) {
+            ra.addFlashAttribute("roleMsg", "역할코드와 역할명을 입력하세요.");
+            return "redirect:/sys/auth";
+        }
+        menuService.saveRole(roleVO);
+        return "redirect:/sys/auth?role=" + roleVO.getRoleCd().trim().toUpperCase();
+    }
+
+    @PostMapping("/role/delete")
+    public String roleDelete(@RequestParam String roleCd, RedirectAttributes ra) {
+        try {
+            menuService.deleteRole(roleCd);
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("roleMsg", e.getMessage());
+        }
+        return "redirect:/sys/auth";
     }
 }

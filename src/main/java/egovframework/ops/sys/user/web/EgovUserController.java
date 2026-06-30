@@ -2,6 +2,7 @@ package egovframework.ops.sys.user.web;
 
 import egovframework.com.cmm.PaginationInfo;
 import egovframework.ops.sys.dept.service.EgovDeptService;
+import egovframework.ops.sys.menu.service.EgovMenuService;
 import egovframework.ops.sys.user.service.EgovUserService;
 import egovframework.ops.sys.user.service.UserVO;
 import org.springframework.stereotype.Controller;
@@ -20,10 +21,13 @@ public class EgovUserController {
 
     private final EgovUserService userService;
     private final EgovDeptService deptService;
+    private final EgovMenuService menuService;
 
-    public EgovUserController(EgovUserService userService, EgovDeptService deptService) {
+    public EgovUserController(EgovUserService userService, EgovDeptService deptService,
+                             EgovMenuService menuService) {
         this.userService = userService;
         this.deptService = deptService;
+        this.menuService = menuService;
     }
 
     /** 사용자 목록 */
@@ -50,6 +54,7 @@ public class EgovUserController {
     public String writeForm(Model model) {
         model.addAttribute("user", new UserVO());
         model.addAttribute("deptComboList", deptService.selectDeptComboList());
+        model.addAttribute("roleList", menuService.selectRoleList());
         model.addAttribute("menu", "user");
         return "sys/user/form";
     }
@@ -66,6 +71,7 @@ public class EgovUserController {
     public String editForm(@PathVariable String userId, Model model) {
         model.addAttribute("user", userService.selectUser(userId));
         model.addAttribute("deptComboList", deptService.selectDeptComboList());
+        model.addAttribute("roleList", menuService.selectRoleList());
         model.addAttribute("menu", "user");
         return "sys/user/form";
     }

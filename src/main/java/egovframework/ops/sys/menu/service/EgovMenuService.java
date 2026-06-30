@@ -29,4 +29,20 @@ public interface EgovMenuService {
 
     /** 권한 저장 — 역할의 허용 메뉴를 일괄 교체 */
     void saveMenuAuth(String role, List<Long> menuIds);
+
+    /* ===== 역할(권한 그룹) 관리 ===== */
+
+    /** 전체 역할(관리화면, 사용자 수 포함) */
+    List<RoleVO> selectRoleList();
+
+    /** 사용중 역할 — 코드→역할명 (권한관리 탭/역할선택용) */
+    java.util.Map<String, String> selectRoleMap();
+
+    RoleVO selectRole(String roleCd);
+
+    /** 역할 저장 — 신규(등록) / 기존(수정) 자동 판별 */
+    void saveRole(RoleVO vo);
+
+    /** 역할 삭제 — 내장역할/사용중(사용자 보유) 역할은 거부 */
+    void deleteRole(String roleCd);
 }

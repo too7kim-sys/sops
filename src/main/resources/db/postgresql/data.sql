@@ -237,6 +237,13 @@ INSERT INTO OPS_MENU_AUTH (ROLE_ID, MENU_ID) VALUES
  ('USER',1),('USER',2),('USER',11)
 ON CONFLICT (ROLE_ID, MENU_ID) DO NOTHING;
 
+-- 역할 마스터(내장 3종)
+INSERT INTO OPS_ROLE (ROLE_CD, ROLE_NM, SORT_NO, BUILTIN, USE_AT) VALUES
+ ('ADMIN',    '운영관리자',  1, 'Y', 'Y'),
+ ('OPERATOR', '운영자',      2, 'Y', 'Y'),
+ ('USER',     '일반사용자',  3, 'Y', 'Y')
+ON CONFLICT (ROLE_CD) DO NOTHING;
+
 -- 결재 기본설정(템플릿) — 변경관리 기본 결재선/공유 (TPL_ID 가 시리얼이라 ON CONFLICT 불가 → 존재여부로 가드)
 -- 결재선/공유가 비어 있는 업무 패널 조회 시 이 템플릿이 자동 적용된다.
 INSERT INTO OPS_APPR_TEMPLATE (BIZ_TYPE, KIND, LINE_TYPE, STEP_NO, SORT_NO, TARGET_TYPE, TARGET_VALUE, MEMO)

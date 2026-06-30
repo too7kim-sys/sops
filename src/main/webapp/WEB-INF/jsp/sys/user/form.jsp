@@ -32,9 +32,11 @@
                 <th>권한 <span class="required">*</span></th>
                 <td>
                     <select name="role" required>
-                        <option value="ADMIN" ${user.role == 'ADMIN' ? 'selected' : ''}>운영관리자</option>
-                        <option value="OPERATOR" ${user.role == 'OPERATOR' ? 'selected' : ''}>운영자</option>
-                        <option value="USER" ${user.role == 'USER' ? 'selected' : ''}>일반사용자</option>
+                        <c:forEach var="r" items="${roleList}">
+                            <c:if test="${r.useAt == 'Y' or r.roleCd == user.role}">
+                                <option value="${r.roleCd}" ${user.role == r.roleCd ? 'selected' : ''}>${r.roleNm}</option>
+                            </c:if>
+                        </c:forEach>
                     </select>
                 </td>
                 <th>사용여부 <span class="required">*</span></th>

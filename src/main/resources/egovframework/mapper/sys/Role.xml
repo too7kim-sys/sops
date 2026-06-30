@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.ops.sys.menu.service.impl.RoleMapper">
+
+    <select id="selectRoleList" resultType="egovframework.ops.sys.menu.service.RoleVO">
+        SELECT R.ROLE_CD AS roleCd, R.ROLE_NM AS roleNm, R.SORT_NO AS sortNo,
+               R.BUILTIN AS builtin, R.USE_AT AS useAt,
+               (SELECT COUNT(1) FROM OPS_USER U WHERE U.ROLE = R.ROLE_CD) AS userCnt
+          FROM OPS_ROLE R
+         ORDER BY R.SORT_NO, R.ROLE_CD
+    </select>
+
+    <select id="selectActiveRoleList" resultType="egovframework.ops.sys.menu.service.RoleVO">
+        SELECT ROLE_CD AS roleCd, ROLE_NM AS roleNm, SORT_NO AS sortNo,
+               BUILTIN AS builtin, USE_AT AS useAt
+          FROM OPS_ROLE
+         WHERE USE_AT = 'Y'
+         ORDER BY SORT_NO, ROLE_CD
+    </select>
+
+    <select id="selectRole" parameterType="string"
+            resultType="egovframework.ops.sys.menu.service.RoleVO">
+        SELECT ROLE_CD AS roleCd, ROLE_NM AS roleNm, SORT_NO AS sortNo,
+               BUILTIN AS builtin, USE_AT AS useAt
+          FROM OPS_ROLE
+         WHERE ROLE_CD = #{roleCd}
+    </select>
+
+    <select id="countRole" parameterType="string" resultType="int">
+        SELECT COUNT(1) FROM OPS_ROLE WHERE ROLE_CD = #{roleCd}
+    </select>
+
+    <insert id="insertRole" parameterType="egovframework.ops.sys.menu.service.RoleVO">
+        INSERT INTO OPS_ROLE (ROLE_CD, ROLE_NM, SORT_NO, BUILTIN, USE_AT, REG_DT)
+        VALUES (#{roleCd}, #{roleNm}, #{sortNo}, 'N', #{useAt}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateRole" parameterType="egovframework.ops.sys.menu.service.RoleVO">
+        UPDATE OPS_ROLE
+           SET ROLE_NM = #{roleNm}, SORT_NO = #{sortNo}, USE_AT = #{useAt}
+         WHERE ROLE_CD = #{roleCd}
+    </update>
+
+    <delete id="deleteRole" parameterType="string">
+        DELETE FROM OPS_ROLE WHERE ROLE_CD = #{roleCd} AND BUILTIN = 'N'
+    </delete>
+
+</mapper>
