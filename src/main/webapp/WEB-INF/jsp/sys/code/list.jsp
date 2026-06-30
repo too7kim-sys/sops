@@ -17,7 +17,7 @@
 </div>
 
 <form method="get" action="${ctx}/sys/code/list" class="searchbar">
-    <input type="text" name="searchCondition" value="${searchVO.searchCondition}" placeholder="코드그룹"/>
+    <input type="text" name="searchCondition" value="${searchVO.searchCondition}" placeholder="코드그룹/그룹명"/>
     <input type="text" name="searchKeyword" value="${searchVO.searchKeyword}" placeholder="코드값/코드명 검색"/>
     <button type="submit" class="btn btn-default">검색</button>
 </form>

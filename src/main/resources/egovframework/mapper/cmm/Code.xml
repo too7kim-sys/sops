@@ -29,11 +29,12 @@
           LEFT JOIN OPS_CODE_GRP G ON G.GRP_CD = C.CODE_GRP
          WHERE 1 = 1
         <if test="searchCondition != null and searchCondition != ''">
-            AND CODE_GRP = #{searchCondition}
+            AND (C.CODE_GRP LIKE '%' || #{searchCondition} || '%'
+                 OR G.GRP_NM LIKE '%' || #{searchCondition} || '%')
         </if>
         <if test="searchKeyword != null and searchKeyword != ''">
-            AND (CODE_ID LIKE '%' || #{searchKeyword} || '%'
-                 OR CODE_NM LIKE '%' || #{searchKeyword} || '%')
+            AND (C.CODE_ID LIKE '%' || #{searchKeyword} || '%'
+                 OR C.CODE_NM LIKE '%' || #{searchKeyword} || '%')
         </if>
          ORDER BY CODE_GRP, SORT_ORDR
          OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
@@ -41,13 +42,17 @@
 
     <select id="selectCodeMngListCnt" parameterType="egovframework.ops.cmm.code.service.CodeVO"
             resultType="int">
-        SELECT COUNT(*) FROM OPS_CODE WHERE 1 = 1
+        SELECT COUNT(*)
+          FROM OPS_CODE C
+          LEFT JOIN OPS_CODE_GRP G ON G.GRP_CD = C.CODE_GRP
+         WHERE 1 = 1
         <if test="searchCondition != null and searchCondition != ''">
-            AND CODE_GRP = #{searchCondition}
+            AND (C.CODE_GRP LIKE '%' || #{searchCondition} || '%'
+                 OR G.GRP_NM LIKE '%' || #{searchCondition} || '%')
         </if>
         <if test="searchKeyword != null and searchKeyword != ''">
-            AND (CODE_ID LIKE '%' || #{searchKeyword} || '%'
-                 OR CODE_NM LIKE '%' || #{searchKeyword} || '%')
+            AND (C.CODE_ID LIKE '%' || #{searchKeyword} || '%'
+                 OR C.CODE_NM LIKE '%' || #{searchKeyword} || '%')
         </if>
     </select>
 
