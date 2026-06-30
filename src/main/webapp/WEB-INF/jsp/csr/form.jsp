@@ -17,7 +17,7 @@
         <table class="form">
             <tr>
                 <th>대상 시스템 <span class="required">*</span></th>
-                <td>
+                <td colspan="3">
                     <div class="sysfind" id="sysFind">
                         <div class="sysfind-box" id="sysFindBox">
                             <span class="sysfind-tags" id="sysTags"></span>
@@ -33,6 +33,8 @@
                     </div>
                     <div class="h-meta">검색어를 입력해 시스템을 찾아 선택하세요. 선택 항목은 위에 표시됩니다. (1개 이상)</div>
                 </td>
+            </tr>
+            <tr>
                 <th>요청 대분류 <span class="required">*</span></th>
                 <td>
                     <select name="csrType" id="csrType" required>
@@ -41,10 +43,8 @@
                         </c:forEach>
                     </select>
                 </td>
-            </tr>
-            <tr>
                 <th>요청 소분류 <span class="required">*</span></th>
-                <td colspan="3">
+                <td>
                     <select name="csrSubType" id="csrSubType" required style="min-width:240px;">
                         <%-- 대분류 선택에 따라 스크립트로 채워짐 --%>
                     </select>
