@@ -121,11 +121,12 @@
                 </select>
             </label>
             <label class="tgt-user">사용자
-                <select name="targetValue">
-                    <c:forEach var="u" items="${candidates}">
-                        <option value="${u.userId}">${u.userNm} (${u.userId})</option>
-                    </c:forEach>
-                </select>
+                <span class="dept-search" style="max-width:240px;">
+                    <input type="text" id="tplUser_nm" class="dept-search-disp" data-prefix="tplUser"
+                           placeholder="사용자 검색" autocomplete="off" readonly onclick="openUserPopup('tplUser')"/>
+                    <input type="hidden" name="targetValue" id="tplUser_val"/>
+                    <button type="button" class="dept-search-btn" onclick="openUserPopup('tplUser')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
+                </span>
             </label>
             <label class="tgt-dept" style="display:none;">부서
                 <span class="dept-search" style="max-width:240px;">
@@ -153,7 +154,7 @@
         var kind = f.querySelector('.tpl-kind').value;
         var u = f.querySelector('.tgt-user'), d = f.querySelector('.tgt-dept'), lt = f.querySelector('.tpl-linetype');
         u.style.display = (tt === 'USER') ? '' : 'none';
-        u.querySelector('select').disabled = (tt !== 'USER');
+        var uv = u.querySelector('[name=targetValue]'); if (uv) uv.disabled = (tt !== 'USER');
         d.style.display = (tt === 'DEPT') ? '' : 'none';
         var dv = d.querySelector('[name=targetValue]'); if (dv) dv.disabled = (tt !== 'DEPT');
         lt.style.display = (kind === 'LINE') ? '' : 'none';

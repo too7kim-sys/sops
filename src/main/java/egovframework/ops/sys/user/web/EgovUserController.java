@@ -49,6 +49,18 @@ public class EgovUserController {
         return "sys/user/list";
     }
 
+    /** 사용자 검색 팝업 (결재 기본설정 등 사용자 지정 폼 공통) */
+    @GetMapping("/popup")
+    public String popup(@ModelAttribute("searchVO") UserVO searchVO,
+                        @RequestParam(defaultValue = "user") String prefix,
+                        Model model) {
+        searchVO.setPageUnit(200);
+        searchVO.initPaging();
+        model.addAttribute("userList", userService.selectUserList(searchVO));
+        model.addAttribute("prefix", prefix);
+        return "sys/user/popup";
+    }
+
     /** 사용자 등록 폼 */
     @GetMapping("/write")
     public String writeForm(Model model) {

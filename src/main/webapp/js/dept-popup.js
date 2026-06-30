@@ -1,6 +1,25 @@
-/* 부서 팝업 검색 공통 스크립트 (jQuery 비의존) */
+/* 부서/사용자 팝업 검색 공통 스크립트 (jQuery 비의존) */
 (function () {
     function ctx() { return window.CTX || ''; }
+
+    /** 사용자 검색 팝업 열기. prefix 는 대상 필드 식별자(P_nm 표시 / P_val 값=사용자ID) */
+    window.openUserPopup = function (prefix) {
+        var disp = document.getElementById(prefix + '_nm');
+        var kw = (disp && disp.value) ? disp.value : '';
+        var url = ctx() + '/sys/user/popup?prefix=' + encodeURIComponent(prefix)
+            + '&searchKeyword=' + encodeURIComponent(kw);
+        var win = window.open(url, 'userPopup_' + prefix,
+            'width=620,height=560,scrollbars=yes,resizable=yes');
+        if (win) { win.focus(); }
+    };
+
+    /** 사용자 팝업에서 선택 시 호출(opener) — 표시필드(성명)/값필드(ID) 세팅 */
+    window.applyUser = function (prefix, userId, userNm) {
+        var disp = document.getElementById(prefix + '_nm');
+        var val = document.getElementById(prefix + '_val');
+        if (disp) { disp.value = userNm + ' (' + userId + ')'; }
+        if (val) { val.value = userId; }
+    };
 
     /** 부서 검색 팝업 열기. prefix 는 대상 필드 식별자(P_nm / P_val). 표시필드 입력값을 검색어로 전달 */
     window.openDeptPopup = function (prefix) {
