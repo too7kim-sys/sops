@@ -27,28 +27,30 @@
     <div class="list-scroll"><table class="list">
         <thead>
         <tr>
-            <th style="width:200px;">코드그룹</th>
-            <th style="width:160px;">코드값</th>
+            <th style="width:170px;">코드그룹</th>
+            <th style="width:150px;">코드그룹명</th>
+            <th style="width:150px;">코드값</th>
             <th>코드명</th>
-            <th class="center" style="width:90px;">정렬순서</th>
-            <th class="center" style="width:80px;">사용여부</th>
-            <th class="center" style="width:80px;">수정</th>
+            <th class="center" style="width:80px;">정렬순서</th>
+            <th class="center" style="width:70px;">사용여부</th>
+            <th class="center" style="width:70px;">수정</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach var="c" items="${codeList}">
             <tr>
                 <td>${c.codeGrp}</td>
+                <td>${empty c.grpNm ? '-' : c.grpNm}</td>
                 <td>${c.codeId}</td>
                 <td>${c.codeNm}</td>
                 <td class="center">${c.sortOrdr}</td>
                 <td class="center">${c.useAt}</td>
                 <td class="center">
-                    <a href="${ctx}/sys/code/edit?codeGrp=${c.codeGrp}&codeId=${c.codeId}&codeNm=${c.codeNm}&sortOrdr=${c.sortOrdr}&useAt=${c.useAt}">수정</a>
+                    <a href="${ctx}/sys/code/edit?codeGrp=${c.codeGrp}&grpNm=${c.grpNm}&codeId=${c.codeId}&codeNm=${c.codeNm}&sortOrdr=${c.sortOrdr}&useAt=${c.useAt}">수정</a>
                 </td>
             </tr>
         </c:forEach>
-        <c:if test="${empty codeList}"><tr><td colspan="6" class="empty">등록된 코드가 없습니다.</td></tr></c:if>
+        <c:if test="${empty codeList}"><tr><td colspan="7" class="empty">등록된 코드가 없습니다.</td></tr></c:if>
         </tbody>
     </table></div>
     <jsp:include page="/WEB-INF/jsp/include/paging.jsp"><jsp:param name="baseUrl" value="/sys/code/list"/></jsp:include>

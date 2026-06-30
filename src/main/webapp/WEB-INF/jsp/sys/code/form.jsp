@@ -18,14 +18,18 @@
                 <td>
                     <input type="text" name="codeGrp" value="${code.codeGrp}" required ${isNew ? '' : 'readonly'}/>
                 </td>
+                <th>코드그룹명 <span class="required">*</span></th>
+                <td>
+                    <input type="text" name="grpNm" value="${code.grpNm}" required placeholder="예) 요청 상태"/>
+                </td>
+            </tr>
+            <tr>
                 <th>코드값 <span class="required">*</span></th>
                 <td>
                     <input type="text" name="codeId" value="${code.codeId}" required ${isNew ? '' : 'readonly'}/>
                 </td>
-            </tr>
-            <tr>
                 <th>코드명 <span class="required">*</span></th>
-                <td colspan="3"><input type="text" name="codeNm" value="${code.codeNm}" required/></td>
+                <td><input type="text" name="codeNm" value="${code.codeNm}" required/></td>
             </tr>
             <tr>
                 <th>정렬순서</th>

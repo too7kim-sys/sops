@@ -22,4 +22,13 @@ public interface CodeMapper {
     void updateCode(CodeVO codeVO);
 
     void deleteCode(CodeVO codeVO);
+
+    /* 코드그룹 마스터(그룹명) */
+    String selectCodeGrpNm(String codeGrp);
+
+    int countCodeGrp(String codeGrp);
+
+    void insertCodeGrp(CodeVO codeVO);
+
+    void updateCodeGrp(CodeVO codeVO);
 }

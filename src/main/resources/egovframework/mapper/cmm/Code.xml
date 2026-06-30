@@ -5,6 +5,7 @@
 
     <resultMap id="codeMap" type="egovframework.ops.cmm.code.service.CodeVO">
         <result property="codeGrp"   column="CODE_GRP"/>
+        <result property="grpNm"     column="GRP_NM"/>
         <result property="codeId"    column="CODE_ID"/>
         <result property="codeNm"    column="CODE_NM"/>
         <result property="sortOrdr"  column="SORT_ORDR"/>
@@ -21,8 +22,11 @@
 
     <select id="selectCodeMngList" parameterType="egovframework.ops.cmm.code.service.CodeVO"
             resultMap="codeMap">
-        SELECT CODE_GRP, CODE_ID, CODE_NM, SORT_ORDR, USE_AT, UPPER_CODE
-          FROM OPS_CODE
+        SELECT C.CODE_GRP AS CODE_GRP, G.GRP_NM AS GRP_NM, C.CODE_ID AS CODE_ID,
+               C.CODE_NM AS CODE_NM, C.SORT_ORDR AS SORT_ORDR, C.USE_AT AS USE_AT,
+               C.UPPER_CODE AS UPPER_CODE
+          FROM OPS_CODE C
+          LEFT JOIN OPS_CODE_GRP G ON G.GRP_CD = C.CODE_GRP
          WHERE 1 = 1
         <if test="searchCondition != null and searchCondition != ''">
             AND CODE_GRP = #{searchCondition}
@@ -62,5 +66,23 @@
     <delete id="deleteCode" parameterType="egovframework.ops.cmm.code.service.CodeVO">
         DELETE FROM OPS_CODE WHERE CODE_GRP = #{codeGrp} AND CODE_ID = #{codeId}
     </delete>
+
+    <!-- ===== 코드그룹 마스터(그룹명) ===== -->
+    <select id="selectCodeGrpNm" parameterType="string" resultType="string">
+        SELECT GRP_NM FROM OPS_CODE_GRP WHERE GRP_CD = #{codeGrp}
+    </select>
+
+    <select id="countCodeGrp" parameterType="string" resultType="int">
+        SELECT COUNT(1) FROM OPS_CODE_GRP WHERE GRP_CD = #{codeGrp}
+    </select>
+
+    <insert id="insertCodeGrp" parameterType="egovframework.ops.cmm.code.service.CodeVO">
+        INSERT INTO OPS_CODE_GRP (GRP_CD, GRP_NM, SORT_ORDR, USE_AT)
+        VALUES (#{codeGrp}, #{grpNm}, 99, 'Y')
+    </insert>
+
+    <update id="updateCodeGrp" parameterType="egovframework.ops.cmm.code.service.CodeVO">
+        UPDATE OPS_CODE_GRP SET GRP_NM = #{grpNm} WHERE GRP_CD = #{codeGrp}
+    </update>
 
 </mapper>

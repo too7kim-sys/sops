@@ -41,13 +41,28 @@ public class EgovCodeServiceImpl extends EgovAbstractServiceImpl implements Egov
         if (codeVO.getUseAt() == null) {
             codeVO.setUseAt("Y");
         }
+        saveCodeGrp(codeVO);
         codeMapper.insertCode(codeVO);
     }
 
     @Override
     @Transactional
     public void updateCode(CodeVO codeVO) {
+        saveCodeGrp(codeVO);
         codeMapper.updateCode(codeVO);
+    }
+
+    /** 코드그룹명 upsert — 입력 시 그룹 마스터에 반영(그룹 단위로 일관 유지) */
+    private void saveCodeGrp(CodeVO codeVO) {
+        if (codeVO.getCodeGrp() == null || codeVO.getCodeGrp().isBlank()
+                || codeVO.getGrpNm() == null || codeVO.getGrpNm().isBlank()) {
+            return;
+        }
+        if (codeMapper.countCodeGrp(codeVO.getCodeGrp()) > 0) {
+            codeMapper.updateCodeGrp(codeVO);
+        } else {
+            codeMapper.insertCodeGrp(codeVO);
+        }
     }
 
     @Override

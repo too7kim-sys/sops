@@ -16,6 +16,9 @@ public class CodeVO extends ComDefaultVO {
     /** 코드그룹 */
     private String codeGrp;
 
+    /** 코드그룹명 (OPS_CODE_GRP 조인/입력) */
+    private String grpNm;
+
     /** 코드값 */
     private String codeId;
 
