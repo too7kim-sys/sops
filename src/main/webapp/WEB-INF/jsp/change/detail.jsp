@@ -40,6 +40,9 @@
                     <span class="badge st-${fn:toLowerCase(change.status)}">${change.statusNm}</span>
                 </td>
             </tr>
+            <tr>
+                <th>처리유형</th><td colspan="3">${empty change.procTypeNm ? '-' : change.procTypeNm}</td>
+            </tr>
             <tr><th>제목</th><td colspan="3">${change.title}</td></tr>
             <tr>
                 <th>요청자</th><td>${empty change.reqId ? '-' : uf:nm(userNameMap, change.reqId)}</td>
@@ -69,22 +72,25 @@
 
     <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
     <div>
-        <%-- 적용 --%>
+        <%-- 변경 처리 : 처리유형 선택 + 적용/완료 --%>
         <div class="panel">
-            <h3>적용 처리</h3>
+            <h3>변경 처리</h3>
             <form method="post" action="${ctx}/change/apply">
                 <input type="hidden" name="chgId" value="${change.chgId}"/>
                 <table class="form">
-                    <tr><th>적용 상태 <span class="required">*</span></th>
+                    <tr><th>처리유형 <span class="required">*</span></th>
                         <td>
-                            <select name="status" required>
-                                <option value="APPLIED">적용</option>
-                                <option value="COMPLETED">완료</option>
+                            <select name="procType" required>
+                                <c:forEach var="cd" items="${procTypeList}">
+                                    <option value="${cd.codeId}" ${cd.codeId == change.procType ? 'selected' : ''}>${cd.codeNm}</option>
+                                </c:forEach>
                             </select>
+                            <span class="h-meta">일반변경 · 단순변경 · 긴급변경</span>
                         </td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
-                    <button type="submit" class="btn btn-primary">적용 등록</button>
+                    <button type="submit" name="status" value="APPLIED" class="btn btn-primary">적용 등록</button>
+                    <button type="submit" name="status" value="COMPLETED" class="btn btn-success">완료 처리</button>
                 </div>
             </form>
         </div>

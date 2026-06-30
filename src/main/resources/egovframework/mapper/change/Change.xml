@@ -54,6 +54,8 @@
                C.TITLE        AS title,
                C.CHG_TYPE     AS chgType,
                TC.CODE_NM     AS chgTypeNm,
+               C.PROC_TYPE    AS procType,
+               PC.CODE_NM     AS procTypeNm,
                C.REASON       AS reason,
                C.CONTENT      AS content,
                C.STATUS       AS status,
@@ -72,6 +74,7 @@
           LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
           LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CHANGE_STATUS' AND SC.CODE_ID = C.STATUS
           LEFT JOIN OPS_CODE TC ON TC.CODE_GRP = 'CHANGE_TYPE' AND TC.CODE_ID = C.CHG_TYPE
+          LEFT JOIN OPS_CODE PC ON PC.CODE_GRP = 'CHANGE_PROC_TYPE' AND PC.CODE_ID = C.PROC_TYPE
          WHERE C.CHG_ID = #{chgId}
     </select>
 
@@ -108,8 +111,9 @@
 
     <update id="updateChangeApply" parameterType="egovframework.ops.change.service.ChangeVO">
         UPDATE OPS_CHANGE
-           SET STATUS   = #{status},
-               APPLY_DT = COALESCE(APPLY_DT, CURRENT_TIMESTAMP)
+           SET STATUS    = #{status},
+               PROC_TYPE = COALESCE(#{procType}, PROC_TYPE),
+               APPLY_DT  = COALESCE(APPLY_DT, CURRENT_TIMESTAMP)
          WHERE CHG_ID = #{chgId}
     </update>
 

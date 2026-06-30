@@ -64,6 +64,7 @@ public class EgovChangeController {
         ChangeVO change = changeService.selectChange(chgId);
         model.addAttribute("change", change);
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
+        model.addAttribute("procTypeList", codeService.selectCodeList("CHANGE_PROC_TYPE"));
         model.addAttribute("cabDecisionList", codeService.selectCodeList("CAB_DECISION"));
         // CAB 심의위원 기본값 : 요청자 + 심의자 + 결재선(검토/승인/처리) 대상자 (중복 제거, 순서 유지)
         java.util.LinkedHashSet<String> members = new java.util.LinkedHashSet<>();

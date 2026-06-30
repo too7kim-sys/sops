@@ -36,6 +36,12 @@ public class ChangeVO extends ComDefaultVO {
     /** 변경 유형명 (조인) */
     private String chgTypeNm;
 
+    /** 처리유형 (NORMAL/STANDARD/EMERGENCY : 일반/단순/긴급변경) */
+    private String procType;
+
+    /** 처리유형명 (조인) */
+    private String procTypeNm;
+
     /** 변경 사유 */
     private String reason;
 
