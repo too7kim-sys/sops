@@ -76,7 +76,13 @@
     </div>
 
     <div>
-        <c:if test="${csr.status != 'CLOSED' and csr.status != 'REJECTED'}">
+        <c:if test="${csr.status != 'CLOSED' and csr.status != 'REJECTED' and not canProcess}">
+        <div class="panel">
+            <h3>요청 처리</h3>
+            <div class="h-meta">요청 처리는 <b>처리자</b>(결재선 처리 담당자)만 가능합니다.</div>
+        </div>
+        </c:if>
+        <c:if test="${csr.status != 'CLOSED' and csr.status != 'REJECTED' and canProcess}">
         <div class="panel">
             <h3>요청 처리</h3>
             <form method="post" action="${ctx}/csr/process">

@@ -82,13 +82,33 @@ public class EgovCsrController {
 
     /** 요청 상세 */
     @GetMapping("/detail/{csrId}")
-    public String detail(@PathVariable Long csrId, Model model) {
+    public String detail(@PathVariable Long csrId, Model model,
+                         @AuthenticationPrincipal LoginUser loginUser) {
         model.addAttribute("csr", csrService.selectCsr(csrId));
         model.addAttribute("statusList", codeService.selectCodeList("CSR_STATUS"));
         model.addAttribute("fileList", csrService.selectCsrFileList(csrId));
         model.addAttribute("transferTargets", egovframework.ops.csr.service.impl.CsrTransferService.TARGETS);
+        // 요청 처리는 처리자(결재선 HANDLE 담당자)만 가능 — 화면 노출 제어용
+        model.addAttribute("canProcess", canProcess(csrId, loginUser));
         model.addAttribute("menu", "csr");
         return "csr/detail";
+    }
+
+    /** 처리자 여부 — 결재선의 처리(HANDLE) 담당자이거나 운영관리자면 처리 가능 */
+    private boolean canProcess(Long csrId, LoginUser loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        if ("ADMIN".equals(loginUser.getUser().getRole())) {
+            return true;
+        }
+        String uid = loginUser.getUsername();
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CSR", csrId)) {
+            if ("HANDLE".equals(ln.getLineType()) && uid.equals(ln.getAssigneeId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** 요청 이관 — 대상 모듈로 신규 레코드 생성 후 연계, 대상 상세로 이동 */
@@ -230,6 +250,10 @@ public class EgovCsrController {
     public String process(@ModelAttribute CsrVO csrVO,
                           @RequestParam(required = false) String targetType,
                           @AuthenticationPrincipal LoginUser loginUser) {
+        // 요청 처리는 처리자(결재선 HANDLE 담당자)·운영관리자만 허용
+        if (!canProcess(csrVO.getCsrId(), loginUser)) {
+            return "redirect:/csr/detail/" + csrVO.getCsrId();
+        }
         if (csrVO.getChargerId() == null || csrVO.getChargerId().isBlank()) {
             csrVO.setChargerId(loginUser.getUsername());
         }
