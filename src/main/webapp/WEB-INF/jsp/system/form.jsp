@@ -43,7 +43,14 @@
                 <th>운영담당자</th>
                 <td><input type="text" name="mngrNm" value="${system.mngrNm}"/></td>
                 <th>운영부서</th>
-                <td><input type="text" name="mngrDept" value="${system.mngrDept}"/></td>
+                <td>
+                    <span class="dept-search">
+                        <input type="text" id="sysDept_nm" class="dept-search-disp" data-prefix="sysDept"
+                               value="${system.mngrDept}" placeholder="부서명 입력 후 Enter" autocomplete="off"/>
+                        <input type="hidden" name="mngrDept" id="sysDept_val" data-dept-bind="nm" value="${system.mngrDept}"/>
+                        <button type="button" class="dept-search-btn" onclick="openDeptPopup('sysDept')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
+                    </span>
+                </td>
             </tr>
             <tr>
                 <th>사용여부</th>
