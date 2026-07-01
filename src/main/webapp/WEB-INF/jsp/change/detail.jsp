@@ -311,7 +311,6 @@
                 </td></tr>
         </table>
         <div class="right" style="margin-top:12px;">
-            <button type="submit" name="status" value="APPLIED" class="btn btn-primary">적용 등록</button>
             <button type="submit" name="status" value="COMPLETED" class="btn btn-success">완료 처리</button>
         </div>
     </form>
