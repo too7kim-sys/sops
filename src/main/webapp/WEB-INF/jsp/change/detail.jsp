@@ -83,11 +83,14 @@
 
 <%-- CAB(변경자문위원회) 심의 — 검토자(결재선 REVIEW 담당자)만 수행 --%>
 <div class="panel">
+    <%-- CAB 심의가 등록되면(이력 존재) 심의 종료 — 입력 폼을 숨기고 심의이력만 노출 --%>
+    <c:set var="cabFormShown" value="${empty change.cabList and change.status != 'COMPLETED' and change.status != 'REJECTED'}"/>
+    <c:if test="${cabFormShown}">
     <h3>CAB 심의</h3>
-    <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED' and not canReview}">
+    <c:if test="${not canReview}">
         <div class="h-meta">CAB 심의는 <b>검토자</b>(결재선 검토 담당자)만 수행할 수 있습니다.</div>
     </c:if>
-    <c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED' and canReview}">
+    <c:if test="${canReview}">
     <form method="post" action="${ctx}/change/cab">
         <input type="hidden" name="chgId" value="${change.chgId}"/>
         <table class="form">
@@ -121,8 +124,9 @@
         </div>
     </form>
     </c:if>
+    </c:if>
 
-    <h3 style="margin-top:20px;">CAB 심의이력</h3>
+    <h3<c:if test="${cabFormShown}"> style="margin-top:20px;"</c:if>>CAB 심의이력</h3>
     <table class="list">
         <thead>
         <tr>
@@ -148,7 +152,7 @@
     </table>
 </div>
 
-<c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
+<c:if test="${cabFormShown}">
 <%-- 심의위원 사용자 검색 팝업 --%>
 <div id="cabUserModal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
