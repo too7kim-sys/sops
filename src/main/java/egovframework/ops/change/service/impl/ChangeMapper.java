@@ -26,6 +26,8 @@ public interface ChangeMapper {
 
     void updateChangeApply(ChangeVO vo);
 
+    void updateChangeLink(ChangeVO vo);
+
     void deleteChange(Long chgId);
 
     List<ChangeCabVO> selectChangeCabList(Long chgId);

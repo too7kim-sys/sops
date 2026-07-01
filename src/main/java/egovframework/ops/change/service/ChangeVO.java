@@ -84,6 +84,12 @@ public class ChangeVO extends ComDefaultVO {
     /** 이행후검토(PIR) 일시 */
     private String pirDt;
 
+    /** 이관 연계 대상(RELEASE/INCIDENT) */
+    private String linkedType;
+
+    /** 이관 연계 대상 ID */
+    private Long linkedId;
+
     /** CAB(변경자문위원회) 심의 이력 목록 */
     private List<ChangeCabVO> cabList;
 }

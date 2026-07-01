@@ -26,15 +26,18 @@ public class EgovChangeController {
     private final EgovSystemService systemService;
     private final EgovCodeService codeService;
     private final EgovApprService apprService;
+    private final egovframework.ops.change.service.impl.ChangeTransferService transferService;
 
     public EgovChangeController(EgovChangeService changeService,
                                 EgovSystemService systemService,
                                 EgovCodeService codeService,
-                                EgovApprService apprService) {
+                                EgovApprService apprService,
+                                egovframework.ops.change.service.impl.ChangeTransferService transferService) {
         this.changeService = changeService;
         this.systemService = systemService;
         this.codeService = codeService;
         this.apprService = apprService;
+        this.transferService = transferService;
     }
 
     /** 변경 목록 */
@@ -66,6 +69,9 @@ public class EgovChangeController {
         model.addAttribute("change", change);
         // CAB 심의는 검토자(결재선 REVIEW 담당자)·운영관리자만 수행 — 폼 노출 제어
         model.addAttribute("canReview", canReview(chgId, loginUser));
+        // 변경 처리는 처리자(결재선 HANDLE 담당자)·운영관리자만 수행 — 폼 노출 제어
+        model.addAttribute("canProcess", canProcess(chgId, loginUser));
+        model.addAttribute("transferTargets", egovframework.ops.change.service.impl.ChangeTransferService.TARGETS);
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
         model.addAttribute("procTypeList", codeService.selectCodeList("CHANGE_PROC_TYPE"));
         model.addAttribute("cabDecisionList", codeService.selectCodeList("CAB_DECISION"));
@@ -113,6 +119,28 @@ public class EgovChangeController {
         return "ADMIN".equals(loginUser.getUser().getRole()) || isReviewer(chgId, loginUser);
     }
 
+    /** 처리자 여부 — 결재선의 처리(HANDLE) 담당자 본인 */
+    private boolean isChanger(Long chgId, LoginUser loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        String uid = loginUser.getUsername();
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", chgId)) {
+            if ("HANDLE".equals(ln.getLineType()) && uid.equals(ln.getAssigneeId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 변경 처리 가능 여부 — 처리자 본인이거나 운영관리자 */
+    private boolean canProcess(Long chgId, LoginUser loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        return "ADMIN".equals(loginUser.getUser().getRole()) || isChanger(chgId, loginUser);
+    }
+
     /** 변경요청 등록 폼 */
     @GetMapping("/write")
     public String writeForm(Model model) {
@@ -158,10 +186,21 @@ public class EgovChangeController {
         return "redirect:/change/detail/" + changeVO.getChgId();
     }
 
-    /** 적용 처리 */
+    /** 변경 처리(적용/완료) — 처리자만, 완료 시 배포요청/장애관리로 이관 가능 */
     @PostMapping("/apply")
-    public String apply(@ModelAttribute ChangeVO changeVO) {
+    public String apply(@ModelAttribute ChangeVO changeVO,
+                        @RequestParam(required = false) String transferTo,
+                        @AuthenticationPrincipal LoginUser loginUser) {
+        // 변경 처리는 처리자(결재선 HANDLE)·운영관리자만
+        if (!canProcess(changeVO.getChgId(), loginUser)) {
+            return "redirect:/change/detail/" + changeVO.getChgId();
+        }
         changeService.applyChange(changeVO);
+        // 완료 처리 시 후속 업무(배포요청/장애관리)로 이관 선택 시 대상 생성 후 이동
+        if ("COMPLETED".equals(changeVO.getStatus()) && transferTo != null && !transferTo.isBlank()) {
+            String detailUrl = transferService.transfer(changeVO.getChgId(), transferTo, loginUser.getUsername());
+            return "redirect:" + detailUrl;
+        }
         return "redirect:/change/detail/" + changeVO.getChgId();
     }
 

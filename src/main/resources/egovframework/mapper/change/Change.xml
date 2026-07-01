@@ -69,7 +69,9 @@
                TO_CHAR(C.APPLY_DT, 'YYYY-MM-DD HH24:MI') AS applyDt,
                TO_CHAR(C.REG_DT,   'YYYY-MM-DD HH24:MI') AS regDt,
                C.PIR_CONTENT  AS pirContent,
-               TO_CHAR(C.PIR_DT,   'YYYY-MM-DD HH24:MI') AS pirDt
+               TO_CHAR(C.PIR_DT,   'YYYY-MM-DD HH24:MI') AS pirDt,
+               C.LINKED_TYPE  AS linkedType,
+               C.LINKED_ID    AS linkedId
           FROM OPS_CHANGE C
           LEFT JOIN OPS_SYSTEM S ON C.SYS_ID = S.SYS_ID
           LEFT JOIN OPS_CODE SC ON SC.CODE_GRP = 'CHANGE_STATUS' AND SC.CODE_ID = C.STATUS
@@ -114,6 +116,12 @@
            SET STATUS    = #{status},
                PROC_TYPE = COALESCE(#{procType}, PROC_TYPE),
                APPLY_DT  = COALESCE(APPLY_DT, CURRENT_TIMESTAMP)
+         WHERE CHG_ID = #{chgId}
+    </update>
+
+    <update id="updateChangeLink" parameterType="egovframework.ops.change.service.ChangeVO">
+        UPDATE OPS_CHANGE
+           SET LINKED_TYPE = #{linkedType}, LINKED_ID = #{linkedId}
          WHERE CHG_ID = #{chgId}
     </update>
 

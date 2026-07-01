@@ -116,6 +116,8 @@ CREATE TABLE OPS_CHANGE (
     APPR_OPINION VARCHAR(4000),           -- 심의의견
     PLAN_DT      DATE,                    -- 적용예정일
     APPLY_DT     TIMESTAMP,               -- 실적용일시
+    LINKED_TYPE  VARCHAR(20),             -- 이관 연계 대상(RELEASE/INCIDENT)
+    LINKED_ID    BIGINT,                  -- 이관 연계 대상 ID
     PIR_CONTENT  VARCHAR(8000),           -- 이행후검토(PIR) 내용
     PIR_DT       TIMESTAMP,               -- 이행후검토 일시
     REG_DT       TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
