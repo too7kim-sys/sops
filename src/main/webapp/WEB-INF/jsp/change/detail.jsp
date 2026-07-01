@@ -67,6 +67,9 @@
             <tr><th>변경 사유</th><td colspan="3"><div class="rte-view">${empty change.reason ? '-' : change.reason}</div></td></tr>
             <tr><th>변경 내용</th><td colspan="3"><div class="rte-view">${empty change.content ? '-' : change.content}</div></td></tr>
             <tr><th>심의 의견</th><td colspan="3"><div class="rte-view">${empty change.apprOpinion ? '-' : change.apprOpinion}</div></td></tr>
+            <c:if test="${not empty change.procResult}">
+            <tr><th>처리 결과</th><td colspan="3"><div class="rte-view">${change.procResult}</div></td></tr>
+            </c:if>
         </table>
     </div>
 
@@ -286,7 +289,10 @@
     <c:if test="${not canProcess}">
         <div class="h-meta">변경 처리는 <b>처리자</b>(결재선 처리 담당자)만 가능합니다.</div>
     </c:if>
-    <c:if test="${canProcess}">
+    <c:if test="${canProcess and not apprComplete}">
+        <div class="h-meta"><b>검토·승인</b>이 모두 완료되어야 변경 처리를 진행할 수 있습니다. (결재선 진행 상황을 확인하세요)</div>
+    </c:if>
+    <c:if test="${canProcess and apprComplete}">
     <form method="post" action="${ctx}/change/apply">
         <input type="hidden" name="chgId" value="${change.chgId}"/>
         <table class="form">
@@ -299,6 +305,8 @@
                     </select>
                     <span class="h-meta">일반변경 · 단순변경 · 긴급변경</span>
                 </td></tr>
+            <tr><th>처리 결과 <span class="required">*</span></th>
+                <td><textarea class="wysiwyg" name="procResult" rows="4" required>${change.procResult}</textarea></td></tr>
             <tr><th>완료 시 이관</th>
                 <td>
                     <select name="transferTo" style="width:auto;">

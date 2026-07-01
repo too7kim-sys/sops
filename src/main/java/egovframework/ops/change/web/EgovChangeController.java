@@ -71,6 +71,8 @@ public class EgovChangeController {
         model.addAttribute("canReview", canReview(chgId, loginUser));
         // 변경 처리는 처리자(결재선 HANDLE 담당자)·운영관리자만 수행 — 폼 노출 제어
         model.addAttribute("canProcess", canProcess(chgId, loginUser));
+        // 변경 처리는 검토·승인이 모두 완료되어야 가능 — 폼 활성 제어
+        model.addAttribute("apprComplete", isApprComplete(chgId));
         model.addAttribute("transferTargets", egovframework.ops.change.service.impl.ChangeTransferService.TARGETS);
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
         model.addAttribute("procTypeList", codeService.selectCodeList("CHANGE_PROC_TYPE"));
@@ -141,6 +143,29 @@ public class EgovChangeController {
         return "ADMIN".equals(loginUser.getUser().getRole()) || isChanger(chgId, loginUser);
     }
 
+    /**
+     * 검토·승인 완료 여부 — 결재선의 모든 검토(REVIEW) 라인이 REVIEWED,
+     * 모든 승인(APPROVE) 라인이 APPROVED 여야 변경 처리 가능.
+     * 검토/승인 라인이 하나도 없으면 아직 완료로 보지 않는다.
+     */
+    private boolean isApprComplete(Long chgId) {
+        boolean hasGate = false;
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", chgId)) {
+            if ("REVIEW".equals(ln.getLineType())) {
+                hasGate = true;
+                if (!"REVIEWED".equals(ln.getStatus())) {
+                    return false;
+                }
+            } else if ("APPROVE".equals(ln.getLineType())) {
+                hasGate = true;
+                if (!"APPROVED".equals(ln.getStatus())) {
+                    return false;
+                }
+            }
+        }
+        return hasGate;
+    }
+
     /** 변경요청 등록 폼 */
     @GetMapping("/write")
     public String writeForm(Model model) {
@@ -191,8 +216,8 @@ public class EgovChangeController {
     public String apply(@ModelAttribute ChangeVO changeVO,
                         @RequestParam(required = false) String transferTo,
                         @AuthenticationPrincipal LoginUser loginUser) {
-        // 변경 처리는 처리자(결재선 HANDLE)·운영관리자만
-        if (!canProcess(changeVO.getChgId(), loginUser)) {
+        // 변경 처리는 처리자(결재선 HANDLE)·운영관리자만, 검토·승인 완료 후에만
+        if (!canProcess(changeVO.getChgId(), loginUser) || !isApprComplete(changeVO.getChgId())) {
             return "redirect:/change/detail/" + changeVO.getChgId();
         }
         changeService.applyChange(changeVO);

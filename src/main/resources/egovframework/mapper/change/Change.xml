@@ -67,6 +67,7 @@
                C.APPR_OPINION AS apprOpinion,
                TO_CHAR(C.PLAN_DT,  'YYYY-MM-DD')         AS planDt,
                TO_CHAR(C.APPLY_DT, 'YYYY-MM-DD HH24:MI') AS applyDt,
+               C.PROC_RESULT  AS procResult,
                TO_CHAR(C.REG_DT,   'YYYY-MM-DD HH24:MI') AS regDt,
                C.PIR_CONTENT  AS pirContent,
                TO_CHAR(C.PIR_DT,   'YYYY-MM-DD HH24:MI') AS pirDt,
@@ -113,9 +114,10 @@
 
     <update id="updateChangeApply" parameterType="egovframework.ops.change.service.ChangeVO">
         UPDATE OPS_CHANGE
-           SET STATUS    = #{status},
-               PROC_TYPE = COALESCE(#{procType}, PROC_TYPE),
-               APPLY_DT  = COALESCE(APPLY_DT, CURRENT_TIMESTAMP)
+           SET STATUS      = #{status},
+               PROC_TYPE   = COALESCE(#{procType}, PROC_TYPE),
+               PROC_RESULT = COALESCE(#{procResult}, PROC_RESULT),
+               APPLY_DT    = COALESCE(APPLY_DT, CURRENT_TIMESTAMP)
          WHERE CHG_ID = #{chgId}
     </update>
 

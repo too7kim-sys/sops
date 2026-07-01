@@ -75,6 +75,9 @@ public class ChangeVO extends ComDefaultVO {
     /** 적용 일시 */
     private String applyDt;
 
+    /** 처리 결과(변경 처리 완료 시 처리자가 기록) */
+    private String procResult;
+
     /** 등록 일시 */
     private String regDt;
 
