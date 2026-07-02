@@ -75,6 +75,31 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     @Override
     @Transactional
+    public int autoReviewApprove(String bizType, Long bizId, String actorId, String opinion) {
+        int cnt = 0;
+        for (ApprLineVO l : selectLineList(bizType, bizId)) {
+            String next = null;
+            if ("REVIEW".equals(l.getLineType())) {
+                next = "REVIEWED";
+            } else if ("APPROVE".equals(l.getLineType())) {
+                next = "APPROVED";
+            }
+            if (next != null && !next.equals(l.getStatus())) {
+                ApprLineVO up = new ApprLineVO();
+                up.setApprId(l.getApprId());
+                up.setStatus(next);
+                up.setOpinion(opinion);
+                apprMapper.actLine(up);
+                cnt++;
+            }
+        }
+        // 승인 라인 전원 승인 → 모듈 상태(승인) 전이 + 변경 처리이력 기록
+        applyModuleOutcome(bizType, bizId, actorId, null, opinion);
+        return cnt;
+    }
+
+    @Override
+    @Transactional
     public String applyModuleOutcome(String bizType, Long bizId, String actorId, String actorNm, String opinion) {
         String[] rule = STATUS_RULE.get(bizType);
         if (rule == null) {

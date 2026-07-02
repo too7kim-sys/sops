@@ -131,8 +131,11 @@
 
 <%-- CAB(변경자문위원회) 심의 — 검토자(결재선 REVIEW 담당자)만 수행 --%>
 <div class="panel">
-    <%-- CAB 심의가 등록되면(이력 존재) 심의 종료 — 입력 폼을 숨기고 심의이력만 노출 --%>
-    <c:set var="cabFormShown" value="${empty change.cabList and change.status != 'COMPLETED' and change.status != 'REJECTED'}"/>
+    <%-- CAB 심의는 중요도 1등급 시스템만 수행 · 심의이력이 있으면(등록 완료) 폼 숨김 --%>
+    <c:set var="cabFormShown" value="${cabRequired and empty change.cabList and change.status != 'COMPLETED' and change.status != 'REJECTED'}"/>
+    <c:if test="${not cabRequired}">
+        <div class="h-meta">대상 시스템이 <b>중요도 2등급 이하</b>로 <b>CAB 심의 없이 자동 검토·승인</b> 처리됩니다.</div>
+    </c:if>
     <c:if test="${cabFormShown}">
     <h3>CAB 심의</h3>
     <c:if test="${not canReview}">

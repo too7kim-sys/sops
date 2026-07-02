@@ -73,6 +73,8 @@ public class EgovChangeController {
         model.addAttribute("canProcess", canProcess(chgId, loginUser));
         // 변경 처리는 검토·승인이 모두 완료되어야 가능 — 폼 활성 제어
         model.addAttribute("apprComplete", isApprComplete(chgId));
+        // CAB 심의는 중요도 1등급 시스템만 수행 — 그 외 등급은 CAB 폼 미노출(자동 검토·승인)
+        model.addAttribute("cabRequired", change != null && isGrade1(change.getSysId()));
         model.addAttribute("transferTargets", egovframework.ops.change.service.impl.ChangeTransferService.TARGETS);
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
         model.addAttribute("procTypeList", codeService.selectCodeList("CHANGE_PROC_TYPE"));
@@ -135,6 +137,15 @@ public class EgovChangeController {
         return false;
     }
 
+    /** 대상 시스템의 중요도등급이 1등급인지 — 1등급만 CAB 심의 수행 */
+    private boolean isGrade1(String sysId) {
+        if (sysId == null || sysId.isBlank()) {
+            return false;
+        }
+        egovframework.ops.system.service.SystemVO sys = systemService.selectSystem(sysId);
+        return sys != null && "1".equals(sys.getGrad());
+    }
+
     /** 변경 처리 가능 여부 — 처리자 본인이거나 운영관리자 */
     private boolean canProcess(Long chgId, LoginUser loginUser) {
         if (loginUser == null) {
@@ -183,6 +194,11 @@ public class EgovChangeController {
         changeService.insertChange(changeVO);
         // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
         apprService.applyTemplate("CHANGE", changeVO.getChgId(), loginUser.getUsername());
+        // CAB 심의는 중요도 1등급 시스템만 수행, 그 외 등급은 CAB 없이 자동 검토·승인
+        if (!isGrade1(changeVO.getSysId())) {
+            apprService.autoReviewApprove("CHANGE", changeVO.getChgId(), loginUser.getUsername(),
+                    "자동 검토·승인(중요도 2등급 이하 · CAB 심의 생략)");
+        }
         return "redirect:/change/detail/" + changeVO.getChgId();
     }
 

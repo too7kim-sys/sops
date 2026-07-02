@@ -30,6 +30,14 @@ public interface EgovApprService {
     void actLine(ApprLineVO vo);
 
     /**
+     * 결재선의 모든 검토(REVIEW)·승인(APPROVE) 라인을 자동 완료(REVIEWED/APPROVED)한 뒤
+     * 모듈 상태 전이를 반영한다. CAB 심의 없이 자동 검토·승인이 필요한 경우 사용.
+     *
+     * @return 자동 처리된 라인 수
+     */
+    int autoReviewApprove(String bizType, Long bizId, String actorId, String opinion);
+
+    /**
      * 결재선 처리 결과를 업무 모듈 상태에 반영(자동 전이).
      *
      * <p>승인 라인 전원 승인 → 모듈 승인상태, 1건이라도 반려 → 모듈 반려상태로 전이한다.
