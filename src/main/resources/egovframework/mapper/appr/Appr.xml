@@ -100,7 +100,6 @@
             UNION ALL
             SELECT 1 FROM OPS_APPR_LINE
              WHERE BIZ_TYPE = #{bizType} AND BIZ_ID = #{bizId} AND ASSIGNEE_ID = #{userId}
-               AND (TARGET_TYPE IS NULL OR TARGET_TYPE NOT IN ('DEPT', 'ALL'))
             UNION ALL
             SELECT 1 FROM OPS_SHARE
              WHERE BIZ_TYPE = #{bizType} AND BIZ_ID = #{bizId} AND USER_ID = #{userId}
