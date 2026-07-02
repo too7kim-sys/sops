@@ -17,7 +17,7 @@
     <select id="selectSystemList" parameterType="egovframework.ops.system.service.SystemVO"
             resultType="egovframework.ops.system.service.SystemVO">
         SELECT SYS_ID AS sysId, SYS_NM AS sysNm, SYS_DESC AS sysDesc,
-               MNGR_NM AS mngrNm, MNGR_DEPT AS mngrDept, GRAD AS grad, USE_AT AS useAt,
+               MNGR_NM AS mngrNm, MNGR_ID AS mngrId, MNGR_DEPT AS mngrDept, GRAD AS grad, USE_AT AS useAt,
                TO_CHAR(REG_DT, 'YYYY-MM-DD') AS regDt
           FROM OPS_SYSTEM
          WHERE 1 = 1
@@ -46,7 +46,7 @@
     <select id="selectSystem" parameterType="string"
             resultType="egovframework.ops.system.service.SystemVO">
         SELECT SYS_ID AS sysId, SYS_NM AS sysNm, SYS_DESC AS sysDesc,
-               MNGR_NM AS mngrNm, MNGR_DEPT AS mngrDept, GRAD AS grad,
+               MNGR_NM AS mngrNm, MNGR_ID AS mngrId, MNGR_DEPT AS mngrDept, GRAD AS grad,
                VCS_TYPE AS vcsType, GIT_URL AS gitUrl, GIT_BRANCH AS gitBranch,
                DEPLOY_PATH AS deployPath, DEPLOY_SCRIPT AS deployScript,
                USE_AT AS useAt,
@@ -56,15 +56,15 @@
     </select>
 
     <insert id="insertSystem" parameterType="egovframework.ops.system.service.SystemVO">
-        INSERT INTO OPS_SYSTEM (SYS_ID, SYS_NM, SYS_DESC, MNGR_NM, MNGR_DEPT, GRAD,
+        INSERT INTO OPS_SYSTEM (SYS_ID, SYS_NM, SYS_DESC, MNGR_NM, MNGR_ID, MNGR_DEPT, GRAD,
                VCS_TYPE, GIT_URL, GIT_BRANCH, DEPLOY_PATH, DEPLOY_SCRIPT, USE_AT, REG_DT)
-        VALUES (#{sysId}, #{sysNm}, #{sysDesc}, #{mngrNm}, #{mngrDept}, #{grad},
+        VALUES (#{sysId}, #{sysNm}, #{sysDesc}, #{mngrNm}, #{mngrId}, #{mngrDept}, #{grad},
                #{vcsType}, #{gitUrl}, #{gitBranch}, #{deployPath}, #{deployScript}, #{useAt}, CURRENT_TIMESTAMP)
     </insert>
 
     <update id="updateSystem" parameterType="egovframework.ops.system.service.SystemVO">
         UPDATE OPS_SYSTEM
-           SET SYS_NM = #{sysNm}, SYS_DESC = #{sysDesc}, MNGR_NM = #{mngrNm},
+           SET SYS_NM = #{sysNm}, SYS_DESC = #{sysDesc}, MNGR_NM = #{mngrNm}, MNGR_ID = #{mngrId},
                MNGR_DEPT = #{mngrDept}, GRAD = #{grad},
                VCS_TYPE = #{vcsType}, GIT_URL = #{gitUrl}, GIT_BRANCH = #{gitBranch},
                DEPLOY_PATH = #{deployPath}, DEPLOY_SCRIPT = #{deployScript},

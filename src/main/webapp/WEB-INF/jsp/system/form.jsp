@@ -48,7 +48,7 @@
                 </td>
             </tr>
             <tr>
-                <th>운영담당자</th>
+                <th>운영담당자(성명)</th>
                 <td><input type="text" name="mngrNm" value="${system.mngrNm}"/></td>
                 <th>운영부서</th>
                 <td>
@@ -58,6 +58,19 @@
                         <input type="hidden" name="mngrDept" id="sysDept_val" data-dept-bind="nm" value="${system.mngrDept}"/>
                         <button type="button" class="dept-search-btn" onclick="openDeptPopup('sysDept')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
                     </span>
+                </td>
+            </tr>
+            <tr>
+                <th>운영담당자 계정</th>
+                <td colspan="3">
+                    <span class="dept-search">
+                        <input type="text" id="sysMngr_nm" class="dept-search-disp"
+                               value="${system.mngrId}" placeholder="사용자 검색(성명/ID)" autocomplete="off" readonly/>
+                        <input type="hidden" name="mngrId" id="sysMngr_val" value="${system.mngrId}"/>
+                        <button type="button" class="dept-search-btn" onclick="openUserPopup('sysMngr')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line></svg>검색</button>
+                        <c:if test="${not empty system.mngrId}"><button type="button" class="btn btn-default btn-sm" onclick="document.getElementById('sysMngr_nm').value='';document.getElementById('sysMngr_val').value='';">해제</button></c:if>
+                    </span>
+                    <span class="h-meta">지정 시 이 계정이 해당 시스템 대상 요청을 열람·처리할 수 있습니다.</span>
                 </td>
             </tr>
             <tr>

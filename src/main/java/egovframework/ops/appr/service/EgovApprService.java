@@ -101,4 +101,7 @@ public interface EgovApprService {
      * 요청자/처리자/결재선 대상자(검토/승인/처리/심의)/공유 대상자 중 하나면 true.
      */
     boolean canAccess(String bizType, Long bizId, String userId);
+
+    /** 요청(CSR)의 대상시스템(주/다중) 운영담당자 여부 — 열람·처리 권한 판정용 */
+    boolean isCsrSystemManager(Long csrId, String userId);
 }

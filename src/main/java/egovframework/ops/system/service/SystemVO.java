@@ -22,8 +22,11 @@ public class SystemVO extends ComDefaultVO {
     /** 시스템 설명 */
     private String sysDesc;
 
-    /** 운영담당자 */
+    /** 운영담당자(성명) */
     private String mngrNm;
+
+    /** 운영담당자 계정(사용자ID) — 요청 열람·처리 권한 */
+    private String mngrId;
 
     /** 운영부서 */
     private String mngrDept;

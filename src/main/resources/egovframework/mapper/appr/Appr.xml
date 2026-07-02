@@ -105,6 +105,14 @@
         ) T
     </select>
 
+    <!-- 요청(CSR)의 대상시스템(주시스템 OPS_CSR.SYS_ID + 다중대상 OPS_CSR_SYS) 운영담당자 일치 -->
+    <select id="countCsrSysMgr" resultType="int">
+        SELECT COUNT(*) FROM OPS_SYSTEM S
+         WHERE S.MNGR_ID = #{userId}
+           AND ( S.SYS_ID = (SELECT SYS_ID FROM OPS_CSR WHERE CSR_ID = #{csrId})
+                 OR S.SYS_ID IN (SELECT SYS_ID FROM OPS_CSR_SYS WHERE CSR_ID = #{csrId}) )
+    </select>
+
     <!-- ===================== 공유 ===================== -->
 
     <select id="selectShareList" parameterType="egovframework.ops.appr.service.ShareVO"

@@ -226,7 +226,19 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
         if (r == null || bizId == null || userId == null) {
             return true; // 정의되지 않은 대상/식별 불가 → 차단하지 않음
         }
-        return apprMapper.countAccess(r[0], r[1], r[2], r[3], bizType, bizId, userId) > 0;
+        if (apprMapper.countAccess(r[0], r[1], r[2], r[3], bizType, bizId, userId) > 0) {
+            return true;
+        }
+        // 요청(CSR)은 대상시스템(주/다중)의 운영담당자도 열람·처리 가능
+        return "CSR".equals(bizType) && isCsrSystemManager(bizId, userId);
+    }
+
+    @Override
+    public boolean isCsrSystemManager(Long csrId, String userId) {
+        if (csrId == null || userId == null || userId.isBlank()) {
+            return false;
+        }
+        return apprMapper.countCsrSysMgr(csrId, userId) > 0;
     }
 
     @Override

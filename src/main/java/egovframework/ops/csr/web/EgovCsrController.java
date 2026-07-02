@@ -110,12 +110,14 @@ public class EgovCsrController {
         return false;
     }
 
-    /** 처리 가능 여부 — 처리자 본인이거나 운영관리자(대리처리) */
+    /** 처리 가능 여부 — 처리자 본인, 대상시스템 운영담당자, 또는 운영관리자(대리처리) */
     private boolean canProcess(Long csrId, LoginUser loginUser) {
         if (loginUser == null) {
             return false;
         }
-        return "ADMIN".equals(loginUser.getUser().getRole()) || isHandler(csrId, loginUser);
+        return "ADMIN".equals(loginUser.getUser().getRole())
+                || isHandler(csrId, loginUser)
+                || apprService.isCsrSystemManager(csrId, loginUser.getUsername());
     }
 
     /** 요청 이관 — 대상 모듈로 신규 레코드 생성 후 연계, 대상 상세로 이동 */

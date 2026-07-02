@@ -33,7 +33,8 @@ CREATE TABLE OPS_SYSTEM (
     SYS_ID     VARCHAR(20)   NOT NULL,
     SYS_NM     VARCHAR(100)  NOT NULL,
     SYS_DESC   VARCHAR(500),
-    MNGR_NM    VARCHAR(50),               -- 운영담당자
+    MNGR_NM    VARCHAR(50),               -- 운영담당자(성명)
+    MNGR_ID    VARCHAR(20),               -- 운영담당자 계정(사용자ID) — 요청 열람·처리 권한
     MNGR_DEPT  VARCHAR(100),              -- 운영부서
     GRAD       VARCHAR(20),               -- 중요도등급 (1~3등급)
     VCS_TYPE      VARCHAR(10) DEFAULT 'GIT', -- 형상관리 유형 (GIT/SVN)
