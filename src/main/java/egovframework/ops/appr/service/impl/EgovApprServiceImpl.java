@@ -247,7 +247,18 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
         if (csrId == null) {
             return 0;
         }
-        // 1) 기존 처리(HANDLE) 라인 제거 + 처리 단계 결정(템플릿 HANDLE 단계 유지, 없으면 최종단계 다음)
+        // 대상시스템 운영담당자 조회 — 담당자가 지정된 경우에만 처리(HANDLE) 라인을 실시간 구성한다.
+        // 담당자가 한 명도 없으면 기본결재선(템플릿)의 처리 라인을 그대로 유지(설정이 보이도록).
+        java.util.List<String> mgrs = new java.util.ArrayList<>();
+        for (String mgr : apprMapper.selectCsrSysMgrIds(csrId)) {
+            if (mgr != null && !mgr.isBlank() && !mgrs.contains(mgr)) {
+                mgrs.add(mgr);
+            }
+        }
+        if (mgrs.isEmpty()) {
+            return 0;
+        }
+        // 기존 처리(HANDLE) 라인 제거 + 처리 단계 결정(템플릿 HANDLE 단계 유지, 없으면 최종단계 다음)
         Integer handleStep = null;
         int maxStep = 0;
         java.util.List<Long> toDelete = new java.util.ArrayList<>();
@@ -265,12 +276,9 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
             apprMapper.deleteLine(id);
         }
         int step = (handleStep != null) ? handleStep : (maxStep + 1);
-        // 2) 대상시스템 운영담당자별로 처리 라인 생성(실시간)
+        // 대상시스템 운영담당자별로 처리 라인 생성(실시간)
         int cnt = 0, sort = 1;
-        for (String mgr : apprMapper.selectCsrSysMgrIds(csrId)) {
-            if (mgr == null || mgr.isBlank()) {
-                continue;
-            }
+        for (String mgr : mgrs) {
             ApprLineVO lv = new ApprLineVO();
             lv.setBizType("CSR");
             lv.setBizId(csrId);
