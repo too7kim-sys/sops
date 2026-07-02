@@ -228,8 +228,10 @@ public class EgovCsrController {
                          @AuthenticationPrincipal LoginUser loginUser) throws IOException {
         csrVO.setReqId(loginUser.getUsername());
         csrService.insertCsr(csrVO);
-        // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
+        // 결재 기본설정(템플릿) 자동 적용 — 검토/승인/공유 등 기본결재선 생성
         apprService.applyTemplate("CSR", csrVO.getCsrId(), loginUser.getUsername());
+        // 처리(HANDLE)는 등록 시 지정하지 않고, 대상시스템 운영담당자로 실시간 구성
+        apprService.assignCsrHandlersBySystem(csrVO.getCsrId(), loginUser.getUsername());
         storeFiles(csrVO.getCsrId(), files, loginUser.getUsername());
         return "redirect:/csr/detail/" + csrVO.getCsrId();
     }

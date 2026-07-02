@@ -113,6 +113,14 @@
                  OR S.SYS_ID IN (SELECT SYS_ID FROM OPS_CSR_SYS WHERE CSR_ID = #{csrId}) )
     </select>
 
+    <!-- 요청(CSR)의 대상시스템(주/다중) 운영담당자 계정 목록 -->
+    <select id="selectCsrSysMgrIds" parameterType="long" resultType="string">
+        SELECT DISTINCT S.MNGR_ID FROM OPS_SYSTEM S
+         WHERE S.MNGR_ID IS NOT NULL AND S.MNGR_ID &lt;&gt; ''
+           AND ( S.SYS_ID = (SELECT SYS_ID FROM OPS_CSR WHERE CSR_ID = #{csrId})
+                 OR S.SYS_ID IN (SELECT SYS_ID FROM OPS_CSR_SYS WHERE CSR_ID = #{csrId}) )
+    </select>
+
     <!-- ===================== 공유 ===================== -->
 
     <select id="selectShareList" parameterType="egovframework.ops.appr.service.ShareVO"

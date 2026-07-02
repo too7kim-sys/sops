@@ -104,4 +104,13 @@ public interface EgovApprService {
 
     /** 요청(CSR)의 대상시스템(주/다중) 운영담당자 여부 — 열람·처리 권한 판정용 */
     boolean isCsrSystemManager(Long csrId, String userId);
+
+    /**
+     * 요청(CSR)의 처리(HANDLE) 결재선을 대상시스템 운영담당자로 실시간 구성한다.
+     * 기존 처리 라인(템플릿 지정분)은 제거하고, 대상시스템 담당자별로 처리 라인을 생성한다.
+     * (검토/승인 등 기본결재선의 단계 구조는 유지)
+     *
+     * @return 생성된 처리 라인 수
+     */
+    int assignCsrHandlersBySystem(Long csrId, String actorId);
 }

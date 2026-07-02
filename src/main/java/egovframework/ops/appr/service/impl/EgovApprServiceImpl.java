@@ -242,6 +242,51 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
     }
 
     @Override
+    @Transactional
+    public int assignCsrHandlersBySystem(Long csrId, String actorId) {
+        if (csrId == null) {
+            return 0;
+        }
+        // 1) 기존 처리(HANDLE) 라인 제거 + 처리 단계 결정(템플릿 HANDLE 단계 유지, 없으면 최종단계 다음)
+        Integer handleStep = null;
+        int maxStep = 0;
+        java.util.List<Long> toDelete = new java.util.ArrayList<>();
+        for (ApprLineVO l : selectLineList("CSR", csrId)) {
+            if ("HANDLE".equals(l.getLineType())) {
+                if (l.getStepNo() != null) {
+                    handleStep = l.getStepNo();
+                }
+                toDelete.add(l.getApprId());
+            } else if (l.getStepNo() != null && l.getStepNo() > maxStep) {
+                maxStep = l.getStepNo();
+            }
+        }
+        for (Long id : toDelete) {
+            apprMapper.deleteLine(id);
+        }
+        int step = (handleStep != null) ? handleStep : (maxStep + 1);
+        // 2) 대상시스템 운영담당자별로 처리 라인 생성(실시간)
+        int cnt = 0, sort = 1;
+        for (String mgr : apprMapper.selectCsrSysMgrIds(csrId)) {
+            if (mgr == null || mgr.isBlank()) {
+                continue;
+            }
+            ApprLineVO lv = new ApprLineVO();
+            lv.setBizType("CSR");
+            lv.setBizId(csrId);
+            lv.setLineType("HANDLE");
+            lv.setStepNo(step);
+            lv.setSortNo(sort++);
+            lv.setAssigneeId(mgr);
+            lv.setStatus("PENDING");
+            lv.setRegId(actorId);
+            apprMapper.insertLine(lv);
+            cnt++;
+        }
+        return cnt;
+    }
+
+    @Override
     public List<String> selectDeptList() {
         return apprMapper.selectDeptList();
     }

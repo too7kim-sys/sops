@@ -58,6 +58,9 @@ public interface ApprMapper {
     /** 요청(CSR)의 대상시스템(주시스템 + 다중대상) 운영담당자(MNGR_ID) 일치 건수 */
     int countCsrSysMgr(@Param("csrId") Long csrId, @Param("userId") String userId);
 
+    /** 요청(CSR)의 대상시스템(주/다중) 운영담당자 계정 목록(중복·NULL 제외) */
+    List<String> selectCsrSysMgrIds(Long csrId);
+
     List<ShareVO> selectShareList(ShareVO param);
 
     void insertShare(ShareVO vo);
