@@ -243,6 +243,112 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     @Override
     @Transactional
+    public void refreshApprLines(String bizType, Long bizId, String actorId) {
+        if (bizType == null || bizId == null) {
+            return;
+        }
+        // 1) 현재 기본결재선(템플릿) 해석 : (라인유형|단계) → 현재 담당자 집합
+        java.util.Map<String, java.util.LinkedHashSet<String>> desired = new java.util.LinkedHashMap<>();
+        Integer handleStep = null;
+        int maxStep = 0;
+        for (ApprTemplateVO t : selectScopedTemplates(bizType, bizId)) {
+            if (!"LINE".equals(t.getKind()) || t.getLineType() == null) {
+                continue;
+            }
+            String key = t.getLineType() + "|" + t.getStepNo();
+            java.util.LinkedHashSet<String> set = desired.computeIfAbsent(key, k -> new java.util.LinkedHashSet<>());
+            for (String id : resolveTargets(bizType, bizId, t.getTargetType(), t.getTargetValue())) {
+                if (id != null && !id.isBlank()) {
+                    set.add(id);
+                }
+            }
+            if (t.getStepNo() != null && t.getStepNo() > maxStep) {
+                maxStep = t.getStepNo();
+            }
+            if ("HANDLE".equals(t.getLineType())) {
+                handleStep = t.getStepNo();
+            }
+        }
+        // 요청(CSR)의 처리(HANDLE)는 대상시스템 운영담당자로 실시간 대체(담당자 지정 시)
+        if ("CSR".equals(bizType)) {
+            java.util.List<String> mgrs = new java.util.ArrayList<>();
+            for (String m : apprMapper.selectCsrSysMgrIds(bizId)) {
+                if (m != null && !m.isBlank() && !mgrs.contains(m)) {
+                    mgrs.add(m);
+                }
+            }
+            if (!mgrs.isEmpty()) {
+                int hs = (handleStep != null) ? handleStep : (maxStep + 1);
+                desired.keySet().removeIf(k -> k.startsWith("HANDLE|"));
+                desired.put("HANDLE|" + hs, new java.util.LinkedHashSet<>(mgrs));
+            }
+        }
+
+        // 2) 기존 라인 분류 : 그룹별 완료(acted) 담당자 / 대기(pending) 담당자·라인
+        java.util.List<ApprLineVO> existing = selectLineList(bizType, bizId);
+        java.util.Map<String, java.util.Set<String>> actedByGroup = new java.util.HashMap<>();
+        java.util.Map<String, java.util.Set<String>> pendingByGroup = new java.util.LinkedHashMap<>();
+        java.util.Map<String, java.util.List<Long>> pendingIdsByGroup = new java.util.HashMap<>();
+        java.util.Map<String, Integer> maxSortByGroup = new java.util.HashMap<>();
+        for (ApprLineVO l : existing) {
+            String key = l.getLineType() + "|" + l.getStepNo();
+            if (l.getSortNo() != null) {
+                maxSortByGroup.merge(key, l.getSortNo(), Math::max);
+            }
+            if ("PENDING".equals(l.getStatus())) {
+                pendingByGroup.computeIfAbsent(key, k -> new java.util.HashSet<>()).add(l.getAssigneeId());
+                pendingIdsByGroup.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(l.getApprId());
+            } else {
+                actedByGroup.computeIfAbsent(key, k -> new java.util.HashSet<>()).add(l.getAssigneeId());
+            }
+        }
+
+        // 3) 재구성 대상 = 템플릿(기본결재선)이 정의한 그룹만.
+        //    (템플릿에 없는 수동 추가 라인이나, 템플릿 미정의 업무는 건드리지 않음)
+        for (String key : desired.keySet()) {
+            java.util.Set<String> acted = actedByGroup.getOrDefault(key, java.util.Collections.emptySet());
+            java.util.Set<String> curPending = pendingByGroup.getOrDefault(key, java.util.Collections.emptySet());
+            // 이미 완료된 단계(대기 없음 + 처리이력 있음)는 재개하지 않음
+            if (curPending.isEmpty() && !acted.isEmpty()) {
+                continue;
+            }
+            java.util.LinkedHashSet<String> want = desired.getOrDefault(key, new java.util.LinkedHashSet<>());
+            // 목표 대기 담당자 = 현재 해석 담당자 - 이미 처리한 담당자
+            java.util.LinkedHashSet<String> wantPending = new java.util.LinkedHashSet<>();
+            for (String a : want) {
+                if (!acted.contains(a)) {
+                    wantPending.add(a);
+                }
+            }
+            // 변경 없으면 건너뜀(불필요한 쓰기·apprId 변동 방지)
+            if (wantPending.equals(curPending)) {
+                continue;
+            }
+            // 기존 대기 라인 제거 후 현재 담당자로 재생성
+            for (Long id : pendingIdsByGroup.getOrDefault(key, java.util.Collections.emptyList())) {
+                apprMapper.deleteLine(id);
+            }
+            String[] parts = key.split("\\|");
+            String lineType = parts[0];
+            Integer stepNo = "null".equals(parts[1]) ? null : Integer.valueOf(parts[1]);
+            int sort = maxSortByGroup.getOrDefault(key, 0) + 1;
+            for (String a : wantPending) {
+                ApprLineVO lv = new ApprLineVO();
+                lv.setBizType(bizType);
+                lv.setBizId(bizId);
+                lv.setLineType(lineType);
+                lv.setStepNo(stepNo);
+                lv.setSortNo(sort++);
+                lv.setAssigneeId(a);
+                lv.setStatus("PENDING");
+                lv.setRegId(actorId);
+                apprMapper.insertLine(lv);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
     public int assignCsrHandlersBySystem(Long csrId, String actorId) {
         if (csrId == null) {
             return 0;

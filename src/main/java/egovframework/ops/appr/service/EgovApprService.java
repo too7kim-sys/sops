@@ -106,6 +106,14 @@ public interface EgovApprService {
     boolean isCsrSystemManager(Long csrId, String userId);
 
     /**
+     * 각 관리화면 접근 시, 미완료(PENDING) 결재선을 현재 기본결재선(템플릿) 기준으로 재구성한다.
+     * 이미 처리된(검토/승인/처리 완료) 라인은 이력으로 보존하고, 진행 중 단계의 대기 라인만
+     * 현재 담당자/부서로 재해석하여 담당자·부서 이동에도 진행이 막히지 않도록 한다.
+     * (변경이 없으면 아무 것도 쓰지 않는다.)
+     */
+    void refreshApprLines(String bizType, Long bizId, String actorId);
+
+    /**
      * 요청(CSR)의 처리(HANDLE) 결재선을 대상시스템 운영담당자로 실시간 구성한다.
      * 기존 처리 라인(템플릿 지정분)은 제거하고, 대상시스템 담당자별로 처리 라인을 생성한다.
      * (검토/승인 등 기본결재선의 단계 구조는 유지)

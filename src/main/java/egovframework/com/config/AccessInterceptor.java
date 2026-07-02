@@ -61,9 +61,7 @@ public class AccessInterceptor implements HandlerInterceptor {
             return true; // 미인증 → 시큐리티에 위임
         }
         LoginUser user = (LoginUser) auth.getPrincipal();
-        if ("ADMIN".equals(user.getUser().getRole())) {
-            return true; // 운영관리자는 전체 접근
-        }
+        boolean isAdmin = "ADMIN".equals(user.getUser().getRole());
 
         String ctx = request.getContextPath();
         String path = request.getRequestURI().substring(ctx.length());
@@ -75,6 +73,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
         String bizType;
         Long bizId;
+        boolean moduleDetailGet = false;
         if ("appr".equals(seg)) {
             // 결재선/공유 패널 등 — 파라미터로 대상 식별
             bizType = request.getParameter("bizType");
@@ -95,12 +94,25 @@ public class AccessInterceptor implements HandlerInterceptor {
             if (bizId == null) {
                 return true; // 목록/등록 등 특정 레코드 없음 → 허용
             }
+            // 상세화면(GET) 접근 시에만 결재선 실시간 재구성 대상
+            moduleDetailGet = "GET".equalsIgnoreCase(request.getMethod())
+                    && parts.length >= 3 && "detail".equals(parts[2]);
         }
 
-        if (apprService.canAccess(bizType, bizId, user.getUsername())) {
-            return true;
+        // 운영관리자는 전체 접근 — 그 외 사용자는 접근권한 판정
+        if (!isAdmin && !apprService.canAccess(bizType, bizId, user.getUsername())) {
+            response.sendRedirect(ctx + "/denied");
+            return false;
         }
-        response.sendRedirect(ctx + "/denied");
-        return false;
+        // 각 관리 상세화면 접근 시 미완료 결재선을 현재 기본결재선 기준으로 재구성
+        // (등록 시 저장한 담당자에 의존하지 않아 담당자·부서 이동에도 진행 가능)
+        if (moduleDetailGet) {
+            try {
+                apprService.refreshApprLines(bizType, bizId, user.getUsername());
+            } catch (RuntimeException ignore) {
+                // 재구성 실패가 화면 접근을 막지 않도록 방어
+            }
+        }
+        return true;
     }
 }
