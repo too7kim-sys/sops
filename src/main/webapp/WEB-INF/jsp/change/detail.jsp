@@ -84,6 +84,51 @@
     </c:if>
 </div>
 
+<%-- 변경 처리 — 처리자(결재선 HANDLE 담당자)만 · 검토·승인 완료 후 · 완료 시 배포요청/장애관리로 이관 --%>
+<c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
+<div class="panel">
+    <h3>변경 처리</h3>
+    <c:if test="${not canProcess}">
+        <div class="h-meta">변경 처리는 <b>처리자</b>(결재선 처리 담당자)만 가능합니다.</div>
+    </c:if>
+    <c:if test="${canProcess and not apprComplete}">
+        <div class="h-meta"><b>검토·승인</b>이 모두 완료되어야 변경 처리를 진행할 수 있습니다. (결재선 진행 상황을 확인하세요)</div>
+    </c:if>
+    <c:if test="${canProcess and apprComplete}">
+    <form method="post" action="${ctx}/change/apply">
+        <input type="hidden" name="chgId" value="${change.chgId}"/>
+        <table class="form">
+            <tr><th>처리유형 <span class="required">*</span></th>
+                <td>
+                    <select name="procType" required>
+                        <c:forEach var="cd" items="${procTypeList}">
+                            <option value="${cd.codeId}" ${cd.codeId == change.procType ? 'selected' : ''}>${cd.codeNm}</option>
+                        </c:forEach>
+                    </select>
+                    <span class="h-meta">일반변경 · 단순변경 · 긴급변경</span>
+                </td></tr>
+            <tr><th>처리 결과 <span class="required">*</span></th>
+                <td><textarea class="wysiwyg" name="procResult" rows="4" required>${change.procResult}</textarea></td></tr>
+            <tr><th>완료 시 이관</th>
+                <td>
+                    <select name="transferTo" style="width:auto;">
+                        <option value="">이관 안함</option>
+                        <c:forEach var="t" items="${transferTargets}">
+                            <option value="${t.key}">${t.value.label}</option>
+                        </c:forEach>
+                    </select>
+                    <span class="h-meta">완료 처리 시 선택한 후속 업무(배포요청/장애관리)로 이관 생성됩니다.</span>
+                </td></tr>
+        </table>
+        <div class="right" style="margin-top:12px;">
+            <button type="submit" name="status" value="APPLIED" class="btn btn-primary">적용 등록</button>
+            <button type="submit" name="status" value="COMPLETED" class="btn btn-success">완료 처리</button>
+        </div>
+    </form>
+    </c:if>
+</div>
+</c:if>
+
 <%-- CAB(변경자문위원회) 심의 — 검토자(결재선 REVIEW 담당자)만 수행 --%>
 <div class="panel">
     <%-- CAB 심의가 등록되면(이력 존재) 심의 종료 — 입력 폼을 숨기고 심의이력만 노출 --%>
@@ -281,50 +326,6 @@
 </c:if>
 
 <div class="toolbar" style="justify-content:flex-end;"><a href="${ctx}/change/list" class="btn btn-default">목록 ＞</a></div>
-
-<%-- 변경 처리 — 처리자(결재선 HANDLE 담당자)만 · 완료 시 배포요청/장애관리로 이관 --%>
-<c:if test="${change.status != 'COMPLETED' and change.status != 'REJECTED'}">
-<div class="panel">
-    <h3>변경 처리</h3>
-    <c:if test="${not canProcess}">
-        <div class="h-meta">변경 처리는 <b>처리자</b>(결재선 처리 담당자)만 가능합니다.</div>
-    </c:if>
-    <c:if test="${canProcess and not apprComplete}">
-        <div class="h-meta"><b>검토·승인</b>이 모두 완료되어야 변경 처리를 진행할 수 있습니다. (결재선 진행 상황을 확인하세요)</div>
-    </c:if>
-    <c:if test="${canProcess and apprComplete}">
-    <form method="post" action="${ctx}/change/apply">
-        <input type="hidden" name="chgId" value="${change.chgId}"/>
-        <table class="form">
-            <tr><th>처리유형 <span class="required">*</span></th>
-                <td>
-                    <select name="procType" required>
-                        <c:forEach var="cd" items="${procTypeList}">
-                            <option value="${cd.codeId}" ${cd.codeId == change.procType ? 'selected' : ''}>${cd.codeNm}</option>
-                        </c:forEach>
-                    </select>
-                    <span class="h-meta">일반변경 · 단순변경 · 긴급변경</span>
-                </td></tr>
-            <tr><th>처리 결과 <span class="required">*</span></th>
-                <td><textarea class="wysiwyg" name="procResult" rows="4" required>${change.procResult}</textarea></td></tr>
-            <tr><th>완료 시 이관</th>
-                <td>
-                    <select name="transferTo" style="width:auto;">
-                        <option value="">이관 안함</option>
-                        <c:forEach var="t" items="${transferTargets}">
-                            <option value="${t.key}">${t.value.label}</option>
-                        </c:forEach>
-                    </select>
-                    <span class="h-meta">완료 처리 시 선택한 후속 업무(배포요청/장애관리)로 이관 생성됩니다.</span>
-                </td></tr>
-        </table>
-        <div class="right" style="margin-top:12px;">
-            <button type="submit" name="status" value="COMPLETED" class="btn btn-success">완료 처리</button>
-        </div>
-    </form>
-    </c:if>
-</div>
-</c:if>
 
 <%-- 결재선(검토/승인/처리자) · 병렬 처리 · 공유 --%>
 <c:import url="/appr/panel" charEncoding="UTF-8">
