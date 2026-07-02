@@ -46,6 +46,9 @@ public class ApprLineVO extends ComDefaultVO {
     /** 지정 대상자 부서 (조인) */
     private String assigneeDept;
 
+    /** 지정 근거(USER/DEPT/REQUESTER/ALL) — 부서/전체 전개분은 열람권한에서 제외 */
+    private String targetType;
+
     /** 처리 상태 (PENDING/APPROVED/REJECTED/REVIEWED/DONE) */
     private String status;
 

@@ -241,14 +241,19 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
         return apprMapper.countCsrSysMgr(csrId, userId) > 0;
     }
 
+    /** 지정근거 우선순위 : 개인 지정(USER/REQUESTER) > 부서/전체 전개(DEPT/ALL) */
+    private int targetRank(String targetType) {
+        return ("USER".equals(targetType) || "REQUESTER".equals(targetType)) ? 2 : 1;
+    }
+
     @Override
     @Transactional
     public void refreshApprLines(String bizType, Long bizId, String actorId) {
         if (bizType == null || bizId == null) {
             return;
         }
-        // 1) 현재 기본결재선(템플릿) 해석 : (라인유형|단계) → 현재 담당자 집합
-        java.util.Map<String, java.util.LinkedHashSet<String>> desired = new java.util.LinkedHashMap<>();
+        // 1) 현재 기본결재선(템플릿) 해석 : (라인유형|단계) → (담당자 → 지정근거 targetType)
+        java.util.Map<String, java.util.LinkedHashMap<String, String>> desired = new java.util.LinkedHashMap<>();
         Integer handleStep = null;
         int maxStep = 0;
         for (ApprTemplateVO t : selectScopedTemplates(bizType, bizId)) {
@@ -256,10 +261,14 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
                 continue;
             }
             String key = t.getLineType() + "|" + t.getStepNo();
-            java.util.LinkedHashSet<String> set = desired.computeIfAbsent(key, k -> new java.util.LinkedHashSet<>());
+            java.util.LinkedHashMap<String, String> grp = desired.computeIfAbsent(key, k -> new java.util.LinkedHashMap<>());
             for (String id : resolveTargets(bizType, bizId, t.getTargetType(), t.getTargetValue())) {
                 if (id != null && !id.isBlank()) {
-                    set.add(id);
+                    // 개인 지정(USER/REQUESTER)이 부서/전체 전개보다 우선(열람권한 판정용)
+                    String prev = grp.get(id);
+                    if (prev == null || targetRank(t.getTargetType()) > targetRank(prev)) {
+                        grp.put(id, t.getTargetType());
+                    }
                 }
             }
             if (t.getStepNo() != null && t.getStepNo() > maxStep) {
@@ -269,7 +278,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
                 handleStep = t.getStepNo();
             }
         }
-        // 요청(CSR)의 처리(HANDLE)는 대상시스템 운영담당자로 실시간 대체(담당자 지정 시)
+        // 요청(CSR)의 처리(HANDLE)는 대상시스템 운영담당자(특정 개인)로 실시간 대체(담당자 지정 시)
         if ("CSR".equals(bizType)) {
             java.util.List<String> mgrs = new java.util.ArrayList<>();
             for (String m : apprMapper.selectCsrSysMgrIds(bizId)) {
@@ -280,7 +289,11 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
             if (!mgrs.isEmpty()) {
                 int hs = (handleStep != null) ? handleStep : (maxStep + 1);
                 desired.keySet().removeIf(k -> k.startsWith("HANDLE|"));
-                desired.put("HANDLE|" + hs, new java.util.LinkedHashSet<>(mgrs));
+                java.util.LinkedHashMap<String, String> m = new java.util.LinkedHashMap<>();
+                for (String mgr : mgrs) {
+                    m.put(mgr, "USER");
+                }
+                desired.put("HANDLE|" + hs, m);
             }
         }
 
@@ -312,10 +325,10 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
             if (curPending.isEmpty() && !acted.isEmpty()) {
                 continue;
             }
-            java.util.LinkedHashSet<String> want = desired.getOrDefault(key, new java.util.LinkedHashSet<>());
+            java.util.LinkedHashMap<String, String> want = desired.getOrDefault(key, new java.util.LinkedHashMap<>());
             // 목표 대기 담당자 = 현재 해석 담당자 - 이미 처리한 담당자
             java.util.LinkedHashSet<String> wantPending = new java.util.LinkedHashSet<>();
-            for (String a : want) {
+            for (String a : want.keySet()) {
                 if (!acted.contains(a)) {
                     wantPending.add(a);
                 }
@@ -340,6 +353,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
                 lv.setStepNo(stepNo);
                 lv.setSortNo(sort++);
                 lv.setAssigneeId(a);
+                lv.setTargetType(want.get(a));
                 lv.setStatus("PENDING");
                 lv.setRegId(actorId);
                 apprMapper.insertLine(lv);
@@ -392,6 +406,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
             lv.setStepNo(step);
             lv.setSortNo(sort++);
             lv.setAssigneeId(mgr);
+            lv.setTargetType("USER"); // 시스템 운영담당자(특정 개인) — 열람 허용
             lv.setStatus("PENDING");
             lv.setRegId(actorId);
             apprMapper.insertLine(lv);
@@ -484,6 +499,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
                     lv.setStepNo(t.getStepNo());
                     lv.setSortNo(sort++);
                     lv.setAssigneeId(uid);
+                    lv.setTargetType(t.getTargetType());
                     lv.setStatus("PENDING");
                     lv.setRegId(actorId);
                     apprMapper.insertLine(lv);

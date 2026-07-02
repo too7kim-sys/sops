@@ -496,6 +496,7 @@ CREATE TABLE OPS_APPR_LINE (
     STEP_NO     INT          DEFAULT 1,          -- 단계(동일 단계 = 병렬)
     SORT_NO     INT          DEFAULT 1,          -- 단계 내 표시순서
     ASSIGNEE_ID VARCHAR(20)  NOT NULL,           -- 지정 대상자
+    TARGET_TYPE VARCHAR(20),                      -- 지정 근거(USER/DEPT/REQUESTER/ALL) — 부서/전체 전개분은 열람 제외
     STATUS      VARCHAR(10)  DEFAULT 'PENDING',  -- PENDING/APPROVED/REJECTED/REVIEWED/DONE
     OPINION     VARCHAR(4000),                   -- 의견
     ACT_DT      TIMESTAMP,                       -- 처리일시

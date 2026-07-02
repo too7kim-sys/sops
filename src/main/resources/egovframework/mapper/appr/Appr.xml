@@ -15,6 +15,7 @@
                A.STEP_NO     AS stepNo,
                A.SORT_NO     AS sortNo,
                A.ASSIGNEE_ID AS assigneeId,
+               A.TARGET_TYPE AS targetType,
                U.USER_NM     AS assigneeNm,
                UD.DEPT_NM    AS assigneeDept,
                A.STATUS      AS status,
@@ -51,9 +52,9 @@
     <insert id="insertLine" parameterType="egovframework.ops.appr.service.ApprLineVO"
             useGeneratedKeys="true" keyProperty="apprId">
         INSERT INTO OPS_APPR_LINE
-            (BIZ_TYPE, BIZ_ID, LINE_TYPE, STEP_NO, SORT_NO, ASSIGNEE_ID, STATUS, OPINION, REG_ID, REG_DT)
+            (BIZ_TYPE, BIZ_ID, LINE_TYPE, STEP_NO, SORT_NO, ASSIGNEE_ID, TARGET_TYPE, STATUS, OPINION, REG_ID, REG_DT)
         VALUES
-            (#{bizType}, #{bizId}, #{lineType}, #{stepNo}, #{sortNo}, #{assigneeId},
+            (#{bizType}, #{bizId}, #{lineType}, #{stepNo}, #{sortNo}, #{assigneeId}, #{targetType},
              #{status}, #{opinion}, #{regId}, CURRENT_TIMESTAMP)
     </insert>
 
@@ -99,6 +100,7 @@
             UNION ALL
             SELECT 1 FROM OPS_APPR_LINE
              WHERE BIZ_TYPE = #{bizType} AND BIZ_ID = #{bizId} AND ASSIGNEE_ID = #{userId}
+               AND (TARGET_TYPE IS NULL OR TARGET_TYPE NOT IN ('DEPT', 'ALL'))
             UNION ALL
             SELECT 1 FROM OPS_SHARE
              WHERE BIZ_TYPE = #{bizType} AND BIZ_ID = #{bizId} AND USER_ID = #{userId}
