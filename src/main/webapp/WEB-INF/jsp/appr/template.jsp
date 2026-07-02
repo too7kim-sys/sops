@@ -44,7 +44,7 @@
     <table class="list">
         <thead>
         <tr>
-            <th style="width:70px;">종류</th>
+            <th style="width:84px;">종류</th>
             <th style="width:130px;">대상 시스템</th>
             <th style="width:110px;">요청 분류</th>
             <th style="width:100px;">라인유형</th>

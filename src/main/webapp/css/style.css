@@ -130,7 +130,7 @@ table.form textarea { resize: vertical; min-height: 70px; }
 .searchbar select, .searchbar input[type=text] { padding: 7px 9px; border: 1px solid #cfd5dd; border-radius: 4px; font-size: 13px; }
 
 /* ---------- 상태 배지 ---------- */
-.badge { display: inline-block; padding: 2px 9px; border-radius: 11px; font-size: 12px; font-weight: 600; }
+.badge { display: inline-block; padding: 2px 9px; border-radius: 11px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .st-received,.st-requested,.st-planned { background: #e7eefb; color: #2e5da8; }
 .st-analyzing,.st-reviewing,.st-deploying { background: #fff1d6; color: #b3760a; }
 .st-acting,.st-applied { background: #ffe3cc; color: #c4540a; }
