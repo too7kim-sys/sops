@@ -16,7 +16,17 @@
         <table class="form">
             <tr>
                 <th>부서코드</th>
-                <td><input type="text" name="deptCd" value="${dept.deptCd}" placeholder="예) D100"/></td>
+                <td>
+                    <c:choose>
+                        <c:when test="${isNew}">
+                            <span class="h-meta">저장 시 자동 생성됩니다 (D###)</span>
+                        </c:when>
+                        <c:otherwise>
+                            <input type="hidden" name="deptCd" value="${dept.deptCd}"/>
+                            <span>${dept.deptCd}</span>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
                 <th>부서명 <span class="required">*</span></th>
                 <td><input type="text" name="deptNm" value="${dept.deptNm}" required/></td>
             </tr>

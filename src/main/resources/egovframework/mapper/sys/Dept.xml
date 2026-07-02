@@ -67,6 +67,10 @@
          ORDER BY SORT_ORDR, DEPT_ID
     </select>
 
+    <select id="selectAllDeptCds" resultType="string">
+        SELECT DEPT_CD FROM OPS_DEPT WHERE DEPT_CD IS NOT NULL
+    </select>
+
     <insert id="insertDept" parameterType="egovframework.ops.sys.dept.service.DeptVO"
             useGeneratedKeys="true" keyProperty="deptId">
         INSERT INTO OPS_DEPT

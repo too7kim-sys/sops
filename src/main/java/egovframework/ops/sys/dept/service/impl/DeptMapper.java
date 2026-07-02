@@ -19,6 +19,9 @@ public interface DeptMapper {
 
     List<DeptVO> selectDeptComboList();
 
+    /** 전체 부서코드(자동 채번용, 비활성 포함) */
+    List<String> selectAllDeptCds();
+
     void insertDept(DeptVO vo);
 
     void updateDept(DeptVO vo);
