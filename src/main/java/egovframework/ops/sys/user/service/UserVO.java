@@ -25,6 +25,9 @@ public class UserVO extends ComDefaultVO {
     /** 권한 : ADMIN(운영관리자), OPERATOR(운영자), USER(일반사용자) */
     private String role;
 
+    /** 권한명 (OPS_ROLE.ROLE_NM 조인) */
+    private String roleNm;
+
     /** 직급 (성명(직급) 표기용) */
     private String positn;
 

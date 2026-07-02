@@ -17,12 +17,13 @@
     <!-- 부서는 코드(DEPT_CD)로 저장하고 화면 표시는 OPS_DEPT 조인으로 부서명을 함께 조회 -->
     <select id="selectUserList" parameterType="egovframework.ops.sys.user.service.UserVO"
             resultType="egovframework.ops.sys.user.service.UserVO">
-        SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.ROLE AS role, U.POSITN AS positn,
+        SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.ROLE AS role, R.ROLE_NM AS roleNm, U.POSITN AS positn,
                U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
                U.EMAIL AS email, U.TELNO AS telno, U.USE_AT AS useAt,
                TO_CHAR(U.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
           FROM OPS_USER U
           LEFT JOIN OPS_DEPT D ON D.DEPT_CD = U.DEPT_CD
+          LEFT JOIN OPS_ROLE R ON R.ROLE_CD = U.ROLE
          WHERE 1 = 1
         <include refid="searchWhere"/>
          ORDER BY U.REG_DT DESC, U.USER_ID
@@ -41,11 +42,12 @@
     <select id="selectUser" parameterType="string"
             resultType="egovframework.ops.sys.user.service.UserVO">
         SELECT U.USER_ID AS userId, U.USER_NM AS userNm, U.PASSWORD AS password,
-               U.ROLE AS role, U.POSITN AS positn, U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
+               U.ROLE AS role, R.ROLE_NM AS roleNm, U.POSITN AS positn, U.DEPT_CD AS deptCd, D.DEPT_NM AS deptNm,
                U.EMAIL AS email, U.TELNO AS telno, U.USE_AT AS useAt,
                TO_CHAR(U.REG_DT, 'YYYY-MM-DD HH24:MI') AS regDt
           FROM OPS_USER U
           LEFT JOIN OPS_DEPT D ON D.DEPT_CD = U.DEPT_CD
+          LEFT JOIN OPS_ROLE R ON R.ROLE_CD = U.ROLE
          WHERE U.USER_ID = #{userId}
     </select>
 

@@ -48,14 +48,7 @@
                 <td><a href="${ctx}/sys/user/edit/${u.userId}">${u.userId}</a></td>
                 <td>${u.userNm}</td>
                 <td class="center">${empty u.positn ? '-' : u.positn}</td>
-                <td class="center">
-                    <c:choose>
-                        <c:when test="${u.role == 'ADMIN'}">운영관리자</c:when>
-                        <c:when test="${u.role == 'OPERATOR'}">운영자</c:when>
-                        <c:when test="${u.role == 'USER'}">일반사용자</c:when>
-                        <c:otherwise>${u.role}</c:otherwise>
-                    </c:choose>
-                </td>
+                <td class="center">${empty u.roleNm ? u.role : u.roleNm}</td>
                 <td>${u.deptNm}</td>
                 <td>${u.email}</td>
                 <td class="center">${u.useAt}</td>
