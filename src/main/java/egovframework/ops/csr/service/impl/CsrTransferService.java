@@ -103,6 +103,8 @@ public class CsrTransferService {
         CsrVO csr = csrService.selectCsr(csrId);
         String title = csr.getTitle();
         String content = csr.getContent();
+        // 원 요청(요청관리)을 등록한 요청자 — 이관 시 대상의 요청자로 승계
+        String reqId = (csr.getReqId() != null && !csr.getReqId().isBlank()) ? csr.getReqId() : actorId;
 
         // 선택한 대상 시스템별로 각각 이관(신규 생성). 다중 선택이 없으면 대표 시스템 1건.
         java.util.List<String> sysIds = new java.util.ArrayList<>();
@@ -120,7 +122,7 @@ public class CsrTransferService {
         Long firstId = null;
         int cnt = 0;
         for (String sysId : sysIds) {
-            Long newId = createTarget(targetType, sysId, title, content, actorId);
+            Long newId = createTarget(targetType, sysId, title, content, actorId, reqId);
             if (firstId == null) {
                 firstId = newId;
             }
@@ -134,13 +136,14 @@ public class CsrTransferService {
     }
 
     /** 대상 모듈에 시스템 1건의 신규 레코드를 생성하고 ID 반환 */
-    private Long createTarget(String targetType, String sysId, String title, String content, String actorId) {
+    private Long createTarget(String targetType, String sysId, String title, String content, String actorId, String reqId) {
         Long newId;
         switch (targetType) {
             case "CHANGE": {
                 ChangeVO v = new ChangeVO();
                 v.setSysId(sysId); v.setTitle(title); v.setContent(content);
-                v.setChgType("PROGRAM"); v.setStatus("REQUESTED"); v.setReqId(actorId);
+                // 변경관리 요청자는 이관자가 아니라 원 요청(요청관리)을 등록한 사람
+                v.setChgType("PROGRAM"); v.setStatus("REQUESTED"); v.setReqId(reqId);
                 changeService.insertChange(v); newId = v.getChgId(); break;
             }
             case "RELEASE": {
