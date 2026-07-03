@@ -99,19 +99,19 @@ public class AccessInterceptor implements HandlerInterceptor {
                     && parts.length >= 3 && "detail".equals(parts[2]);
         }
 
-        // 운영관리자는 전체 접근 — 그 외 사용자는 접근권한 판정
-        if (!isAdmin && !apprService.canAccess(bizType, bizId, user.getUsername())) {
-            response.sendRedirect(ctx + "/denied");
-            return false;
-        }
-        // 각 관리 상세화면 접근 시 미완료 결재선을 현재 기본결재선 기준으로 재구성
-        // (등록 시 저장한 담당자에 의존하지 않아 담당자·부서 이동에도 진행 가능)
+        // 각 관리 상세화면 접근 시, 접근권한 판정보다 먼저 결재선을 현재 기본결재선 기준으로 재구성.
+        // (이관 등으로 결재선이 아직 없던 건도 처리자/검토자가 실시간으로 결재선에 반영되어 접근 가능)
         if (moduleDetailGet) {
             try {
                 apprService.refreshApprLines(bizType, bizId, user.getUsername());
             } catch (RuntimeException ignore) {
                 // 재구성 실패가 화면 접근을 막지 않도록 방어
             }
+        }
+        // 운영관리자는 전체 접근 — 그 외 사용자는 (재구성된) 결재선 기준으로 접근권한 판정
+        if (!isAdmin && !apprService.canAccess(bizType, bizId, user.getUsername())) {
+            response.sendRedirect(ctx + "/denied");
+            return false;
         }
         return true;
     }
