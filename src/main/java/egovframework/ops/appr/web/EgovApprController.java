@@ -188,7 +188,8 @@ public class EgovApprController {
         model.addAttribute("hideReview", hideReview);
         model.addAttribute("lineList", displayLines);
         // 현재 진행 단계 = 미완료(PENDING) 결재선 중 최소 단계. 같은 단계는 병렬, 단계는 순차 진행.
-        model.addAttribute("currentStep", currentActiveStep(displayLines));
+        // 화면에서 숨긴 라인(변경관리 검토 등)도 단계 판정에는 포함해 act() 단계 게이트와 일치시킨다.
+        model.addAttribute("currentStep", currentActiveStep(lines));
         model.addAttribute("shares", shares);
         model.addAttribute("candidates", apprService.selectAssigneeCandidates());
         model.addAttribute("lineTypeList", codeService.selectCodeList("LINE_TYPE"));

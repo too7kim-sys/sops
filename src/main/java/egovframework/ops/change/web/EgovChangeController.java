@@ -264,6 +264,18 @@ public class EgovChangeController {
             cabVO.setReviewer(loginUser.getUsername());
         }
         changeService.cabReview(cabVO);
+        // 변경관리는 검토(REVIEW)를 CAB 심의로 수행하므로, 심의 등록 시 결재선의 검토 단계도 완료 처리한다.
+        // (검토 라인이 대기로 남으면 단계 게이트에 걸려 승인이 되지 않음)
+        String reviewStatus = "REJECTED".equals(cabVO.getDecision()) ? "REJECTED" : "REVIEWED";
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", cabVO.getChgId())) {
+            if ("REVIEW".equals(ln.getLineType()) && "PENDING".equals(ln.getStatus())) {
+                egovframework.ops.appr.service.ApprLineVO up = new egovframework.ops.appr.service.ApprLineVO();
+                up.setApprId(ln.getApprId());
+                up.setStatus(reviewStatus);
+                up.setOpinion("[CAB 심의] " + (cabVO.getOpinion() == null ? "" : cabVO.getOpinion()));
+                apprService.actLine(up);
+            }
+        }
         return "redirect:/change/detail/" + cabVO.getChgId();
     }
 
