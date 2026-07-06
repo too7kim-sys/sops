@@ -68,8 +68,9 @@ public class EgovChangeController {
         ChangeVO change = changeService.selectChange(chgId);
         // 중요도 2등급 이하(CAB 미대상)는 검토·승인을 자동 완료 — 이관 등으로 등록 시 자동승인이
         // 누락된 건도 상세 접근 시 보정(그렇지 않으면 검토 단계에 막혀 '이전 단계 진행 중'으로 결재 불가).
+        // 승인 이후 상태(APPROVED/APPLIED/COMPLETED/REJECTED)에서는 재실행하지 않는다(적용/완료 상태 되돌림 방지).
         if (change != null
-                && !"COMPLETED".equals(change.getStatus()) && !"REJECTED".equals(change.getStatus())
+                && ("REQUESTED".equals(change.getStatus()) || "REVIEWING".equals(change.getStatus()))
                 && !isGrade1(change.getSysId())) {
             apprService.autoReviewApprove("CHANGE", chgId, loginUser.getUsername(),
                     "자동 검토·승인(중요도 2등급 이하 · CAB 심의 생략)");
