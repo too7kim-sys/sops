@@ -236,7 +236,7 @@ public class EgovChangeController {
         return "redirect:/change/detail/" + changeVO.getChgId();
     }
 
-    /** 변경 처리(적용/완료) — 처리자만, 완료 시 배포요청/장애관리로 이관 가능 */
+    /** 변경 처리(적용/완료) — 처리자만, 적용 시 배포요청/장애관리로 이관 가능 */
     @PostMapping("/apply")
     public String apply(@ModelAttribute ChangeVO changeVO,
                         @RequestParam(required = false) String transferTo,
@@ -246,8 +246,8 @@ public class EgovChangeController {
             return "redirect:/change/detail/" + changeVO.getChgId();
         }
         changeService.applyChange(changeVO);
-        // 완료 처리 시 후속 업무(배포요청/장애관리)로 이관 선택 시 대상 생성 후 이동
-        if ("COMPLETED".equals(changeVO.getStatus()) && transferTo != null && !transferTo.isBlank()) {
+        // 적용 등록 시 후속 업무(배포요청/장애관리)로 이관 선택 시 대상 생성 후 이동
+        if ("APPLIED".equals(changeVO.getStatus()) && transferTo != null && !transferTo.isBlank()) {
             String detailUrl = transferService.transfer(changeVO.getChgId(), transferTo, loginUser.getUsername());
             return "redirect:" + detailUrl;
         }
