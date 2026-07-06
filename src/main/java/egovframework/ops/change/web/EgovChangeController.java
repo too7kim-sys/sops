@@ -67,11 +67,12 @@ public class EgovChangeController {
                          @AuthenticationPrincipal LoginUser loginUser) {
         ChangeVO change = changeService.selectChange(chgId);
         // 중요도 2등급 이하(CAB 미대상)는 검토·승인을 자동 완료 — 이관 등으로 등록 시 자동승인이
-        // 누락된 건도 상세 접근 시 보정(그렇지 않으면 검토 단계에 막혀 '이전 단계 진행 중'으로 결재 불가).
-        // 승인 이후 상태(APPROVED/APPLIED/COMPLETED/REJECTED)에서는 재실행하지 않는다(적용/완료 상태 되돌림 방지).
+        // 누락된 건도 상세 접근 시 1회 보정(그렇지 않으면 검토 단계에 막혀 '이전 단계 진행 중'으로 결재 불가).
+        // 대기 중인 검토/승인 라인이 있을 때만 실행하므로, 이미 완료된 건은 접속마다 재실행하지 않는다.
         if (change != null
-                && ("REQUESTED".equals(change.getStatus()) || "REVIEWING".equals(change.getStatus()))
-                && !isGrade1(change.getSysId())) {
+                && !"COMPLETED".equals(change.getStatus()) && !"REJECTED".equals(change.getStatus())
+                && !isGrade1(change.getSysId())
+                && hasPendingReviewApprove(chgId)) {
             apprService.autoReviewApprove("CHANGE", chgId, loginUser.getUsername(),
                     "자동 검토·승인(중요도 2등급 이하 · CAB 심의 생략)");
             change = changeService.selectChange(chgId); // 자동 완료 반영된 상태로 재조회
@@ -141,6 +142,17 @@ public class EgovChangeController {
         String uid = loginUser.getUsername();
         for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", chgId)) {
             if ("HANDLE".equals(ln.getLineType()) && uid.equals(ln.getAssigneeId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 결재선에 대기(PENDING) 중인 검토(REVIEW)·승인(APPROVE) 라인이 있는지 — 자동 검토·승인 필요 판정 */
+    private boolean hasPendingReviewApprove(Long chgId) {
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", chgId)) {
+            if (("REVIEW".equals(ln.getLineType()) || "APPROVE".equals(ln.getLineType()))
+                    && "PENDING".equals(ln.getStatus())) {
                 return true;
             }
         }
