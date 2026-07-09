@@ -12,6 +12,8 @@
         접근이 필요하면 운영관리자에게 공유를 요청하세요. (운영관리자는 전체 열람 가능)
     </p>
     <div class="toolbar" style="justify-content:center; margin-top:22px;">
+        <%-- 이전 페이지 이동은 브라우저 히스토리로만 처리(서버 리다이렉트·Referer 미사용) → 오픈리다이렉트/XSS 방지 --%>
+        <button type="button" class="btn btn-default" onclick="if(history.length>1){history.back();}else{location.href='${ctx}/main';}">＜ 이전 페이지로</button>
         <a href="${ctx}/main" class="btn btn-primary">운영현황으로</a>
         <a href="${ctx}/appr/shared" class="btn btn-default">공유함</a>
     </div>
