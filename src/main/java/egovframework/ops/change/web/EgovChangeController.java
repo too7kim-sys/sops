@@ -66,15 +66,15 @@ public class EgovChangeController {
     public String detail(@PathVariable Long chgId, Model model,
                          @AuthenticationPrincipal LoginUser loginUser) {
         ChangeVO change = changeService.selectChange(chgId);
-        // 중요도 2등급 이하(CAB 미대상)는 검토·승인을 자동 완료 — 이관 등으로 등록 시 자동승인이
-        // 누락된 건도 상세 접근 시 1회 보정(그렇지 않으면 검토 단계에 막혀 '이전 단계 진행 중'으로 결재 불가).
+        // CAB 심의 대상이 아니면(중요도 3등급 이하 또는 검토자 미지정) 검토·승인을 자동 완료 —
+        // 이관 등으로 등록 시 자동승인이 누락된 건도 상세 접근 시 1회 보정(검토 단계 미완료로 결재가 막히는 것 방지).
         // 대기 중인 검토/승인 라인이 있을 때만 실행하므로, 이미 완료된 건은 접속마다 재실행하지 않는다.
         if (change != null
                 && !"COMPLETED".equals(change.getStatus()) && !"REJECTED".equals(change.getStatus())
-                && !isGrade1(change.getSysId())
+                && !isCabRequired(chgId, change.getSysId())
                 && hasPendingReviewApprove(chgId)) {
             apprService.autoReviewApprove("CHANGE", chgId, loginUser.getUsername(),
-                    "자동 검토·승인(중요도 2등급 이하 · CAB 심의 생략)");
+                    "자동 검토·승인(CAB 심의 대상 아님 · 중요도 3등급 이하 또는 검토자 미지정)");
             change = changeService.selectChange(chgId); // 자동 완료 반영된 상태로 재조회
         }
         model.addAttribute("change", change);
@@ -84,8 +84,8 @@ public class EgovChangeController {
         model.addAttribute("canProcess", canProcess(chgId, loginUser));
         // 변경 처리는 검토·승인이 모두 완료되어야 가능 — 폼 활성 제어
         model.addAttribute("apprComplete", isApprComplete(chgId));
-        // CAB 심의는 중요도 1등급 시스템만 수행 — 그 외 등급은 CAB 폼 미노출(자동 검토·승인)
-        model.addAttribute("cabRequired", change != null && isGrade1(change.getSysId()));
+        // CAB 심의는 중요도 1·2등급이면서 검토자가 지정된 경우만 수행 — 그 외는 CAB 폼 미노출(자동 검토·승인)
+        model.addAttribute("cabRequired", change != null && isCabRequired(chgId, change.getSysId()));
         model.addAttribute("transferTargets", egovframework.ops.change.service.impl.ChangeTransferService.TARGETS);
         model.addAttribute("statusList", codeService.selectCodeList("CHANGE_STATUS"));
         model.addAttribute("procTypeList", codeService.selectCodeList("CHANGE_PROC_TYPE"));
@@ -160,12 +160,27 @@ public class EgovChangeController {
     }
 
     /** 대상 시스템의 중요도등급이 1등급인지 — 1등급만 CAB 심의 수행 */
-    private boolean isGrade1(String sysId) {
+    private boolean isCabGrade(String sysId) {
         if (sysId == null || sysId.isBlank()) {
             return false;
         }
         egovframework.ops.system.service.SystemVO sys = systemService.selectSystem(sysId);
-        return sys != null && "1".equals(sys.getGrad());
+        return sys != null && ("1".equals(sys.getGrad()) || "2".equals(sys.getGrad()));
+    }
+
+    /** 결재선에 검토(REVIEW) 담당자가 지정되어 있는지 */
+    private boolean hasReviewer(Long chgId) {
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("CHANGE", chgId)) {
+            if ("REVIEW".equals(ln.getLineType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** CAB 심의 대상 여부 — 중요도 1·2등급이면서 결재선에 검토자가 있을 때만 수행(그 외 자동 검토·승인) */
+    private boolean isCabRequired(Long chgId, String sysId) {
+        return isCabGrade(sysId) && hasReviewer(chgId);
     }
 
     /** 변경 처리 가능 여부 — 처리자 본인이거나 운영관리자 */
@@ -216,10 +231,10 @@ public class EgovChangeController {
         changeService.insertChange(changeVO);
         // 결재 기본설정(템플릿) 자동 적용 — 결재/검토/공유/처리자 라인을 기본설정에 따라 생성
         apprService.applyTemplate("CHANGE", changeVO.getChgId(), loginUser.getUsername());
-        // CAB 심의는 중요도 1등급 시스템만 수행, 그 외 등급은 CAB 없이 자동 검토·승인
-        if (!isGrade1(changeVO.getSysId())) {
+        // CAB 심의는 중요도 1·2등급이면서 검토자가 지정된 경우만 수행, 그 외는 CAB 없이 자동 검토·승인
+        if (!isCabRequired(changeVO.getChgId(), changeVO.getSysId())) {
             apprService.autoReviewApprove("CHANGE", changeVO.getChgId(), loginUser.getUsername(),
-                    "자동 검토·승인(중요도 2등급 이하 · CAB 심의 생략)");
+                    "자동 검토·승인(CAB 심의 대상 아님 · 중요도 3등급 이하 또는 검토자 미지정)");
         }
         return "redirect:/change/detail/" + changeVO.getChgId();
     }
