@@ -254,7 +254,9 @@
                     WHEN 'TEST' THEN 'TEST_TYPE' WHEN 'INTERFACE' THEN 'INTF_TYPE'
                     WHEN 'CI' THEN 'CI_TYPE' WHEN 'EVENT' THEN 'EVENT_TYPE' ELSE NULL END
          WHERE T.BIZ_TYPE = #{bizType}
-         ORDER BY T.KIND DESC, T.STEP_NO, T.TPL_ID
+         ORDER BY T.STEP_NO,
+                  CASE T.KIND WHEN 'LINE' THEN 1 WHEN 'HANDLE' THEN 2 WHEN 'SHARE' THEN 3 ELSE 9 END,
+                  T.SYS_ID NULLS FIRST, T.TPL_ID
     </select>
 
     <insert id="insertTemplate" parameterType="egovframework.ops.appr.service.ApprTemplateVO">
