@@ -113,8 +113,8 @@
                 <td><input type="date" name="planDt" value="${change.planDt}"/></td></tr>
             <tr><th>적용 일시</th>
                 <td>
-                    <input type="datetime-local" name="applyDt" value="${fn:replace(change.applyDt, ' ', 'T')}"/>
-                    <span class="h-meta">미입력 시 처리 시각으로 기록됩니다.</span>
+                    <input type="time" name="applyTime" value="${fn:substringAfter(change.applyDt, ' ')}"/>
+                    <span class="h-meta">시간만 선택 — 날짜는 적용 예정일 기준(미지정 시 처리일), 미입력 시 처리 시각으로 기록됩니다.</span>
                 </td></tr>
             <tr><th>적용 시 이관</th>
                 <td>
