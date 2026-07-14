@@ -115,8 +115,8 @@ CREATE TABLE OPS_CHANGE (
     APPR_ID      VARCHAR(20),             -- 승인자
     APPR_DT      TIMESTAMP,               -- 승인일시
     APPR_OPINION VARCHAR(4000),           -- 심의의견
-    PLAN_DT      DATE,                    -- 적용예정일
-    APPLY_DT     TIMESTAMP,               -- 실적용일시
+    PLAN_DT      TIMESTAMP,               -- 적용 예정일시(from)
+    APPLY_DT     TIMESTAMP,               -- 적용 예정일시(to)
     PROC_RESULT  VARCHAR(8000),           -- 처리 결과(변경 처리 완료 시 기록)
     LINKED_TYPE  VARCHAR(20),             -- 이관 연계 대상(RELEASE/INCIDENT)
     LINKED_ID    BIGINT,                  -- 이관 연계 대상 ID

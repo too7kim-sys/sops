@@ -49,8 +49,13 @@
                 <th>요청일시</th><td>${empty change.reqDt ? '-' : change.reqDt}</td>
             </tr>
             <tr>
-                <th>적용 예정일</th><td>${empty change.planDt ? '-' : change.planDt}</td>
-                <th>적용 일시</th><td>${empty change.applyDt ? '-' : change.applyDt}</td>
+                <th>적용 예정일시</th>
+                <td colspan="3">
+                    <c:choose>
+                        <c:when test="${empty change.planDt and empty change.applyDt}">-</c:when>
+                        <c:otherwise>${empty change.planDt ? '(미정)' : change.planDt} ~ ${empty change.applyDt ? '(미정)' : change.applyDt}</c:otherwise>
+                    </c:choose>
+                </td>
             </tr>
             <tr>
                 <th>소요일(근무일)</th>
@@ -109,12 +114,12 @@
                 </td></tr>
             <tr><th>처리 결과 <span class="required">*</span></th>
                 <td><textarea class="wysiwyg" name="procResult" rows="4" required>${change.procResult}</textarea></td></tr>
-            <tr><th>적용 예정일</th>
-                <td><input type="date" name="planDt" value="${change.planDt}"/></td></tr>
-            <tr><th>적용 일시</th>
+            <tr><th>적용 예정일시</th>
                 <td>
-                    <input type="time" name="applyTime" value="${fn:substringAfter(change.applyDt, ' ')}"/>
-                    <span class="h-meta">시간만 선택 — 날짜는 적용 예정일 기준(미지정 시 처리일), 미입력 시 처리 시각으로 기록됩니다.</span>
+                    <input type="datetime-local" name="planDt" value="${fn:replace(change.planDt, ' ', 'T')}"/>
+                    <span style="margin:0 6px;">~</span>
+                    <input type="datetime-local" name="applyDt" value="${fn:replace(change.applyDt, ' ', 'T')}"/>
+                    <span class="h-meta">적용 예정 시작 ~ 종료 일시</span>
                 </td></tr>
             <tr><th>적용 시 이관</th>
                 <td>

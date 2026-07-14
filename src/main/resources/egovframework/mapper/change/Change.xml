@@ -65,7 +65,7 @@
                C.APPR_ID      AS apprId,
                TO_CHAR(C.APPR_DT,  'YYYY-MM-DD HH24:MI') AS apprDt,
                C.APPR_OPINION AS apprOpinion,
-               TO_CHAR(C.PLAN_DT,  'YYYY-MM-DD')         AS planDt,
+               TO_CHAR(C.PLAN_DT,  'YYYY-MM-DD HH24:MI') AS planDt,
                TO_CHAR(C.APPLY_DT, 'YYYY-MM-DD HH24:MI') AS applyDt,
                C.PROC_RESULT  AS procResult,
                TO_CHAR(C.REG_DT,   'YYYY-MM-DD HH24:MI') AS regDt,
@@ -84,11 +84,12 @@
     <insert id="insertChange" parameterType="egovframework.ops.change.service.ChangeVO"
             useGeneratedKeys="true" keyProperty="chgId">
         INSERT INTO OPS_CHANGE
-            (SYS_ID, TITLE, CHG_TYPE, REASON, CONTENT, STATUS, REQ_ID, REQ_DT, PLAN_DT, REG_DT)
+            (SYS_ID, TITLE, CHG_TYPE, REASON, CONTENT, STATUS, REQ_ID, REQ_DT, PLAN_DT, APPLY_DT, REG_DT)
         VALUES
             (#{sysId}, #{title}, #{chgType}, #{reason}, #{content}, #{status},
              #{reqId}, CURRENT_TIMESTAMP,
-             <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>NULL</otherwise></choose>,
+             <choose><when test="planDt != null and planDt != ''">CAST(REPLACE(#{planDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>NULL</otherwise></choose>,
+             <choose><when test="applyDt != null and applyDt != ''">CAST(REPLACE(#{applyDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>NULL</otherwise></choose>,
              CURRENT_TIMESTAMP)
     </insert>
 
@@ -99,7 +100,8 @@
                CHG_TYPE = #{chgType},
                REASON   = #{reason},
                CONTENT  = #{content},
-               PLAN_DT  = <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>NULL</otherwise></choose>
+               PLAN_DT  = <choose><when test="planDt != null and planDt != ''">CAST(REPLACE(#{planDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>NULL</otherwise></choose>,
+               APPLY_DT = <choose><when test="applyDt != null and applyDt != ''">CAST(REPLACE(#{applyDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>NULL</otherwise></choose>
          WHERE CHG_ID = #{chgId}
     </update>
 
@@ -117,8 +119,8 @@
            SET STATUS      = #{status},
                PROC_TYPE   = COALESCE(#{procType}, PROC_TYPE),
                PROC_RESULT = COALESCE(#{procResult}, PROC_RESULT),
-               PLAN_DT     = <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>PLAN_DT</otherwise></choose>,
-               APPLY_DT    = <choose><when test="applyDt != null and applyDt != ''">CAST(REPLACE(#{applyDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>COALESCE(APPLY_DT, CURRENT_TIMESTAMP)</otherwise></choose>
+               PLAN_DT     = <choose><when test="planDt != null and planDt != ''">CAST(REPLACE(#{planDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>PLAN_DT</otherwise></choose>,
+               APPLY_DT    = <choose><when test="applyDt != null and applyDt != ''">CAST(REPLACE(#{applyDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>APPLY_DT</otherwise></choose>
          WHERE CHG_ID = #{chgId}
     </update>
 

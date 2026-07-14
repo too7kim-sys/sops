@@ -268,18 +268,12 @@ public class EgovChangeController {
     @PostMapping("/apply")
     public String apply(@ModelAttribute ChangeVO changeVO,
                         @RequestParam(required = false) String transferTo,
-                        @RequestParam(required = false) String applyTime,
                         @AuthenticationPrincipal LoginUser loginUser) {
         // 변경 처리는 처리자(결재선 HANDLE)·운영관리자만, 검토·승인 완료 후에만
         if (!canProcess(changeVO.getChgId(), loginUser) || !isApprComplete(changeVO.getChgId())) {
             return "redirect:/change/detail/" + changeVO.getChgId();
         }
-        // 적용 일시는 시간만 선택 — 날짜는 적용 예정일 기준(미지정 시 처리일)으로 결합
-        if (applyTime != null && !applyTime.isBlank()) {
-            String date = (changeVO.getPlanDt() != null && !changeVO.getPlanDt().isBlank())
-                    ? changeVO.getPlanDt() : java.time.LocalDate.now().toString();
-            changeVO.setApplyDt(date + " " + applyTime);
-        }
+        // 적용 예정일시(from=planDt, to=applyDt)는 폼에서 datetime 으로 전달되어 그대로 저장
         changeService.applyChange(changeVO);
         // 적용 등록 시 후속 업무(배포요청/장애관리)로 이관 선택 시 대상 생성 후 이동
         if ("APPLIED".equals(changeVO.getStatus()) && transferTo != null && !transferTo.isBlank()) {

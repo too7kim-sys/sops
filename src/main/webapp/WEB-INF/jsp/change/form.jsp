@@ -39,8 +39,13 @@
                 <td colspan="3"><input type="text" name="title" value="${change.title}" required/></td>
             </tr>
             <tr>
-                <th>적용 예정일</th>
-                <td colspan="3"><input type="date" name="planDt" value="${change.planDt}"/></td>
+                <th>적용 예정일시</th>
+                <td colspan="3">
+                    <input type="datetime-local" name="planDt" value="${fn:replace(change.planDt, ' ', 'T')}"/>
+                    <span style="margin:0 6px;">~</span>
+                    <input type="datetime-local" name="applyDt" value="${fn:replace(change.applyDt, ' ', 'T')}"/>
+                    <span class="h-meta">적용 예정 시작 ~ 종료 일시</span>
+                </td>
             </tr>
             <tr>
                 <th>변경 사유</th>
