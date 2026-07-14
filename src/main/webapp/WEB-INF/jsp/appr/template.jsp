@@ -59,19 +59,27 @@
         <c:if test="${empty templateList}"><tr><td colspan="9" class="empty">정의된 기본설정이 없습니다.</td></tr></c:if>
         <c:forEach var="t" items="${templateList}">
             <tr>
-                <td><span class="badge ${t.kind == 'SHARE' ? 'lt-handle' : 'lt-review'}">${t.kind == 'SHARE' ? '공유' : '결재선'}</span></td>
+                <td>
+                    <c:choose>
+                        <c:when test="${t.kind == 'SHARE'}"><span class="badge lt-handle">공유</span></c:when>
+                        <c:when test="${t.kind == 'HANDLE'}"><span class="badge lt-approve">처리</span></c:when>
+                        <c:otherwise><span class="badge lt-review">결재선</span></c:otherwise>
+                    </c:choose>
+                </td>
                 <td>${empty t.sysId ? '전체' : (empty t.sysNm ? t.sysId : t.sysNm)}</td>
                 <td>${empty t.classCd ? '전체' : (empty t.classNm ? t.classCd : t.classNm)}</td>
                 <td>
                     <c:choose>
-                        <c:when test="${t.kind == 'SHARE'}">-</c:when>
-                        <c:otherwise>
+                        <c:when test="${t.kind == 'LINE'}">
                             <select name="lineType" form="tplU_${t.tplId}" style="width:100%;">
                                 <c:forEach var="lty" items="${lineTypeList}">
-                                    <option value="${lty.codeId}" ${lty.codeId == t.lineType ? 'selected' : ''}>${lty.codeNm}</option>
+                                    <c:if test="${lty.codeId != 'HANDLE'}">
+                                        <option value="${lty.codeId}" ${lty.codeId == t.lineType ? 'selected' : ''}>${lty.codeNm}</option>
+                                    </c:if>
                                 </c:forEach>
                             </select>
-                        </c:otherwise>
+                        </c:when>
+                        <c:otherwise>-</c:otherwise>
                     </c:choose>
                 </td>
                 <td class="center"><input type="number" name="stepNo" value="${t.stepNo}" min="1" style="width:52px;text-align:center;" form="tplU_${t.tplId}"/></td>
@@ -118,13 +126,16 @@
             <label>종류
                 <select name="kind" class="tpl-kind">
                     <option value="LINE">결재선</option>
+                    <option value="HANDLE">처리</option>
                     <option value="SHARE">공유</option>
                 </select>
             </label>
             <label class="tpl-linetype">라인유형
                 <select name="lineType">
                     <c:forEach var="lty" items="${lineTypeList}">
-                        <option value="${lty.codeId}">${lty.codeNm}</option>
+                        <c:if test="${lty.codeId != 'HANDLE'}">
+                            <option value="${lty.codeId}">${lty.codeNm}</option>
+                        </c:if>
                     </c:forEach>
                 </select>
             </label>

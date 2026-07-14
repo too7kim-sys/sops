@@ -257,7 +257,8 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
         Integer handleStep = null;
         int maxStep = 0;
         for (ApprTemplateVO t : selectScopedTemplates(bizType, bizId)) {
-            if (!"LINE".equals(t.getKind()) || t.getLineType() == null) {
+            // 결재선(LINE: 검토/승인)과 처리(HANDLE)는 결재 라인으로 전개, 공유(SHARE)는 제외
+            if (!("LINE".equals(t.getKind()) || "HANDLE".equals(t.getKind())) || t.getLineType() == null) {
                 continue;
             }
             String key = t.getLineType() + "|" + t.getStepNo();
@@ -545,7 +546,7 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
         String sysId = scope[0];
         String classCd = scope[1];
         List<ApprTemplateVO> result = new ArrayList<>();
-        for (String kind : new String[]{"LINE", "SHARE"}) {
+        for (String kind : new String[]{"LINE", "HANDLE", "SHARE"}) {
             List<ApprTemplateVO> kindRows = new ArrayList<>();
             for (ApprTemplateVO t : all) {
                 if (kind.equals(t.getKind())) {

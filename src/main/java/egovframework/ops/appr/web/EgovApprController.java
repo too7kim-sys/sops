@@ -382,6 +382,8 @@ public class EgovApprController {
         if ("ADMIN".equals(loginUser.getUser().getRole())) {
             if ("SHARE".equals(vo.getKind())) {
                 vo.setLineType(null);
+            } else if ("HANDLE".equals(vo.getKind())) {
+                vo.setLineType("HANDLE"); // 처리는 종류 자체가 처리(HANDLE) 라인
             }
             if (vo.getStepNo() == null) vo.setStepNo(1);
             if (vo.getSortNo() == null) vo.setSortNo(1);
@@ -401,6 +403,8 @@ public class EgovApprController {
         if ("ADMIN".equals(loginUser.getUser().getRole())) {
             if ("SHARE".equals(vo.getKind())) {
                 vo.setLineType(null);
+            } else if ("HANDLE".equals(vo.getKind())) {
+                vo.setLineType("HANDLE"); // 처리는 종류 자체가 처리(HANDLE) 라인
             }
             if (vo.getStepNo() == null) vo.setStepNo(1);
             if (vo.getSortNo() == null) vo.setSortNo(1);
