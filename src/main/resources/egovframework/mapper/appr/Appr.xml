@@ -254,7 +254,7 @@
                     WHEN 'TEST' THEN 'TEST_TYPE' WHEN 'INTERFACE' THEN 'INTF_TYPE'
                     WHEN 'CI' THEN 'CI_TYPE' WHEN 'EVENT' THEN 'EVENT_TYPE' ELSE NULL END
          WHERE T.BIZ_TYPE = #{bizType}
-         ORDER BY T.KIND DESC, T.STEP_NO, T.SORT_NO, T.TPL_ID
+         ORDER BY T.KIND DESC, T.STEP_NO, T.TPL_ID
     </select>
 
     <insert id="insertTemplate" parameterType="egovframework.ops.appr.service.ApprTemplateVO">
@@ -266,7 +266,7 @@
 
     <update id="updateTemplate" parameterType="egovframework.ops.appr.service.ApprTemplateVO">
         UPDATE OPS_APPR_TEMPLATE
-           SET LINE_TYPE = #{lineType}, STEP_NO = #{stepNo}, SORT_NO = #{sortNo}, MEMO = #{memo}
+           SET LINE_TYPE = #{lineType}, STEP_NO = #{stepNo}, MEMO = #{memo}
          WHERE TPL_ID = #{tplId}
     </update>
 
