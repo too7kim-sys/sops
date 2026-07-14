@@ -117,7 +117,8 @@
            SET STATUS      = #{status},
                PROC_TYPE   = COALESCE(#{procType}, PROC_TYPE),
                PROC_RESULT = COALESCE(#{procResult}, PROC_RESULT),
-               APPLY_DT    = COALESCE(APPLY_DT, CURRENT_TIMESTAMP)
+               PLAN_DT     = <choose><when test="planDt != null and planDt != ''">TO_DATE(#{planDt}, 'YYYY-MM-DD')</when><otherwise>PLAN_DT</otherwise></choose>,
+               APPLY_DT    = <choose><when test="applyDt != null and applyDt != ''">CAST(REPLACE(#{applyDt}, 'T', ' ') AS TIMESTAMP)</when><otherwise>COALESCE(APPLY_DT, CURRENT_TIMESTAMP)</otherwise></choose>
          WHERE CHG_ID = #{chgId}
     </update>
 

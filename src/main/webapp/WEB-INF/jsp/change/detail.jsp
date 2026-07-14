@@ -109,6 +109,13 @@
                 </td></tr>
             <tr><th>처리 결과 <span class="required">*</span></th>
                 <td><textarea class="wysiwyg" name="procResult" rows="4" required>${change.procResult}</textarea></td></tr>
+            <tr><th>적용 예정일</th>
+                <td><input type="date" name="planDt" value="${change.planDt}"/></td></tr>
+            <tr><th>적용 일시</th>
+                <td>
+                    <input type="datetime-local" name="applyDt" value="${fn:replace(change.applyDt, ' ', 'T')}"/>
+                    <span class="h-meta">미입력 시 처리 시각으로 기록됩니다.</span>
+                </td></tr>
             <tr><th>적용 시 이관</th>
                 <td>
                     <select name="transferTo" style="width:auto;">
