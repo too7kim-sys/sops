@@ -107,6 +107,29 @@ public class MapperReloader implements ApplicationListener<ContextRefreshedEvent
                 cur = cur.getParentFile();
             }
         }
+        // 실배포(WAR) 환경 : 소스 경로가 없으면 전개된 클래스패스의 매퍼 디렉터리
+        // (WEB-INF/classes/egovframework/mapper) 를 감시 → 배포본 XML 수정도 자동 반영
+        File cp = classpathMapperDir();
+        if (cp != null && cp.isDirectory()) {
+            return cp;
+        }
+        return null;
+    }
+
+    /** 클래스패스에 전개된 매퍼 루트 디렉터리(WEB-INF/classes/egovframework/mapper) 반환(없으면 null) */
+    private File classpathMapperDir() {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null) {
+            cl = getClass().getClassLoader();
+        }
+        java.net.URL url = cl.getResource("egovframework/mapper");
+        if (url != null && "file".equals(url.getProtocol())) {
+            try {
+                return new File(url.toURI());
+            } catch (Exception ignore) {
+                return new File(url.getPath());
+            }
+        }
         return null;
     }
 
