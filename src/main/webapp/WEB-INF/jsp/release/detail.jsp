@@ -61,6 +61,7 @@
             </tr>
             <tr><th>처리자</th><td colspan="3">${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
             <tr><th>배포 내용</th><td colspan="3"><div class="rte-view">${empty release.content ? '-' : release.content}</div></td></tr>
+            <tr><th>배포 목록</th><td colspan="3"><div class="rte-view">${empty release.result ? '-' : release.result}</div></td></tr>
         </table>
     </div>
 
@@ -101,7 +102,7 @@
                             <input type="datetime-local" name="deployDt" value="${fn:replace(release.deployDt, ' ', 'T')}"/>
                             <span class="h-meta">배포 예정 시작 ~ 배포(완료) 일시</span>
                         </td></tr>
-                    <tr><th>배포 내용</th><td><textarea class="wysiwyg" name="content" rows="4">${release.content}</textarea></td></tr>
+                    <tr><th>배포 목록</th><td><textarea class="wysiwyg" name="result" rows="4">${release.result}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>

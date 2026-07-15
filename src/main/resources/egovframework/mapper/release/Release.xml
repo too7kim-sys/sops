@@ -99,7 +99,7 @@
     <update id="updateReleaseProcess" parameterType="egovframework.ops.release.service.ReleaseVO">
         UPDATE OPS_RELEASE
            SET STATUS     = #{status},
-               CONTENT    = #{content},
+               RESULT     = #{result},
                CHARGER_ID = #{chargerId},
                PLAN_DT    =
                <choose>
