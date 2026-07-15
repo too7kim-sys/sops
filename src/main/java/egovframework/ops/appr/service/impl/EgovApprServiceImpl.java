@@ -538,7 +538,9 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     /**
      * 업무 레코드의 시스템·분류에 맞는 기본설정을 선택한다.
-     * 종류(LINE/SHARE)별로 가장 구체적인 스코프(시스템+분류 → 시스템 → 분류 → 전체) 한 그룹을 적용한다.
+     * 역할 슬롯(종류+라인유형 : 결재선/검토, 결재선/승인, 처리, 공유)별로 독립적으로
+     * 가장 구체적인 스코프(시스템+분류 → 시스템 → 분류 → 전체) 한 그룹을 적용한다.
+     * (예: 검토를 특정 시스템에만 지정해도 승인·처리는 전체 설정이 그대로 적용된다.)
      */
     private List<ApprTemplateVO> selectScopedTemplates(String bizType, Long bizId) {
         List<ApprTemplateVO> all = apprMapper.selectTemplateList(bizType);
@@ -546,11 +548,16 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
         String sysId = scope[0];
         String classCd = scope[1];
         List<ApprTemplateVO> result = new ArrayList<>();
-        for (String kind : new String[]{"LINE", "HANDLE", "SHARE"}) {
-            List<ApprTemplateVO> kindRows = new ArrayList<>();
+        // 역할 슬롯 목록(등장 순서 유지) : 종류|라인유형
+        java.util.LinkedHashSet<String> slots = new java.util.LinkedHashSet<>();
+        for (ApprTemplateVO t : all) {
+            slots.add(t.getKind() + "|" + t.getLineType());
+        }
+        for (String slot : slots) {
+            List<ApprTemplateVO> slotRows = new ArrayList<>();
             for (ApprTemplateVO t : all) {
-                if (kind.equals(t.getKind())) {
-                    kindRows.add(t);
+                if (slot.equals(t.getKind() + "|" + t.getLineType())) {
+                    slotRows.add(t);
                 }
             }
             // 우선순위: (시스템+분류) → (시스템) → (분류) → (전체)
@@ -559,14 +566,14 @@ public class EgovApprServiceImpl extends EgovAbstractServiceImpl implements Egov
             };
             for (String[] p : prefs) {
                 List<ApprTemplateVO> grp = new ArrayList<>();
-                for (ApprTemplateVO t : kindRows) {
+                for (ApprTemplateVO t : slotRows) {
                     if (eq(t.getSysId(), p[0]) && eq(t.getClassCd(), p[1])) {
                         grp.add(t);
                     }
                 }
                 if (!grp.isEmpty()) {
                     result.addAll(grp);
-                    break; // 가장 구체적인 한 그룹만 적용
+                    break; // 슬롯별 가장 구체적인 한 그룹만 적용
                 }
             }
         }
