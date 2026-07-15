@@ -69,6 +69,8 @@ public class EgovReleaseController {
         model.addAttribute("release", release);
         model.addAttribute("statusList", codeService.selectCodeList("RELEASE_STATUS"));
         model.addAttribute("itemResultList", codeService.selectCodeList("RELEASE_ITEM_RESULT"));
+        // 결재선 승인/검토 완료 여부 — 미완료 시 배포 처리 상태를 '배포계획'으로 고정(전이 잠금)
+        model.addAttribute("apprPassed", isApprPassed(relId));
         // Git 자동배포 : 대상 시스템 git 설정 및 배포 실행 이력
         if (release != null) {
             model.addAttribute("system", systemService.selectSystem(release.getSysId()));
@@ -76,6 +78,25 @@ public class EgovReleaseController {
         }
         model.addAttribute("menu", "release");
         return "release/detail";
+    }
+
+    /**
+     * 결재선 통과 여부 — 결재선의 모든 검토(REVIEW) 라인이 REVIEWED, 모든 승인(APPROVE)
+     * 라인이 APPROVED 여야 통과로 본다. 검토·승인 라인이 하나도 없으면(결재선 미구성)
+     * 잠글 게이트가 없으므로 통과로 간주한다.
+     * 통과 전에는 배포 처리 상태를 '배포계획(PLANNED)'으로만 둘 수 있고, 통과 후에야
+     * 배포중·배포완료 등으로 상태를 변경할 수 있다.
+     */
+    private boolean isApprPassed(Long relId) {
+        for (egovframework.ops.appr.service.ApprLineVO ln : apprService.selectLineList("RELEASE", relId)) {
+            if ("REVIEW".equals(ln.getLineType()) && !"REVIEWED".equals(ln.getStatus())) {
+                return false;
+            }
+            if ("APPROVE".equals(ln.getLineType()) && !"APPROVED".equals(ln.getStatus())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** Git 자동배포 실행 (비동기) */
@@ -139,6 +160,10 @@ public class EgovReleaseController {
                           @AuthenticationPrincipal LoginUser loginUser) {
         if (releaseVO.getChargerId() == null || releaseVO.getChargerId().isBlank()) {
             releaseVO.setChargerId(loginUser.getUsername());
+        }
+        // 결재선 승인/검토 미완료 시에는 상태 전이를 '배포계획'으로 강제(화면 우회 제출 차단)
+        if (!isApprPassed(releaseVO.getRelId())) {
+            releaseVO.setStatus("PLANNED");
         }
         releaseService.processRelease(releaseVO);
         return "redirect:/release/detail/" + releaseVO.getRelId();

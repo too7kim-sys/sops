@@ -100,10 +100,18 @@
         UPDATE OPS_RELEASE
            SET STATUS     = #{status},
                RESULT     = #{result},
-               CHARGER_ID = #{chargerId}
-               <if test="status == 'DEPLOYED'">
-               , DEPLOY_DT = COALESCE(DEPLOY_DT, CURRENT_TIMESTAMP)
-               </if>
+               CHARGER_ID = #{chargerId},
+               PLAN_DT    =
+               <choose>
+                   <when test="planDt != null and planDt != ''">TO_TIMESTAMP(REPLACE(#{planDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when>
+                   <otherwise>PLAN_DT</otherwise>
+               </choose>,
+               DEPLOY_DT  =
+               <choose>
+                   <when test="deployDt != null and deployDt != ''">TO_TIMESTAMP(REPLACE(#{deployDt}, 'T', ' '), 'YYYY-MM-DD HH24:MI')</when>
+                   <when test="status == 'DEPLOYED'">COALESCE(DEPLOY_DT, CURRENT_TIMESTAMP)</when>
+                   <otherwise>DEPLOY_DT</otherwise>
+               </choose>
          WHERE REL_ID = #{relId}
     </update>
 

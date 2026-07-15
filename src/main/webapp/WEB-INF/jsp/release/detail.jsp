@@ -43,8 +43,13 @@
                 <th>연계 변경ID</th><td>${empty release.chgId ? '-' : release.chgId}</td>
             </tr>
             <tr>
-                <th>배포 예정일</th><td>${empty release.planDt ? '-' : release.planDt}</td>
-                <th>배포 일시</th><td>${empty release.deployDt ? '-' : release.deployDt}</td>
+                <th>배포 예정일시</th>
+                <td colspan="3">
+                    <c:choose>
+                        <c:when test="${empty release.planDt and empty release.deployDt}">-</c:when>
+                        <c:otherwise>${empty release.planDt ? '-' : release.planDt} ~ ${empty release.deployDt ? '-' : release.deployDt}</c:otherwise>
+                    </c:choose>
+                </td>
             </tr>
             <tr>
                 <th>소요일(근무일)</th>
@@ -65,16 +70,37 @@
         <c:if test="${release.status != 'DEPLOYED' and release.status != 'ROLLBACK'}">
         <div class="panel">
             <h3>배포 처리</h3>
+            <c:if test="${not apprPassed}">
+                <div class="h-meta"><b>결재선 승인·검토 완료 전</b>에는 처리 상태를 <b>배포계획</b>으로만 둘 수 있습니다. 승인·검토가 완료되면 배포중·배포완료 등으로 상태를 변경할 수 있습니다.</div>
+            </c:if>
             <form method="post" action="${ctx}/release/process">
                 <input type="hidden" name="relId" value="${release.relId}"/>
                 <table class="form">
                     <tr><th>처리 상태 <span class="required">*</span></th>
                         <td>
                             <select name="status" required>
-                                <c:forEach var="cd" items="${statusList}">
-                                    <option value="${cd.codeId}" ${cd.codeId == release.status ? 'selected' : ''}>${cd.codeNm}</option>
-                                </c:forEach>
+                                <c:choose>
+                                    <c:when test="${apprPassed}">
+                                        <c:forEach var="cd" items="${statusList}">
+                                            <option value="${cd.codeId}" ${cd.codeId == release.status ? 'selected' : ''}>${cd.codeNm}</option>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="cd" items="${statusList}">
+                                            <c:if test="${cd.codeId == 'PLANNED'}">
+                                                <option value="${cd.codeId}" selected>${cd.codeNm}</option>
+                                            </c:if>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
                             </select>
+                        </td></tr>
+                    <tr><th>배포 예정일시</th>
+                        <td>
+                            <input type="datetime-local" name="planDt" value="${fn:replace(release.planDt, ' ', 'T')}"/>
+                            <span style="margin:0 6px;">~</span>
+                            <input type="datetime-local" name="deployDt" value="${fn:replace(release.deployDt, ' ', 'T')}"/>
+                            <span class="h-meta">배포 예정 시작 ~ 배포(완료) 일시</span>
                         </td></tr>
                     <tr><th>배포 결과</th><td><textarea class="wysiwyg" name="result" rows="4">${release.result}</textarea></td></tr>
                 </table>

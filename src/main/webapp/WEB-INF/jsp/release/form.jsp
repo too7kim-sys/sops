@@ -34,9 +34,10 @@
             </tr>
             <tr>
                 <th>연계 변경ID</th>
-                <td><input type="number" name="chgId" value="${release.chgId}" placeholder="변경요청 ID(선택)"/></td>
-                <th>배포예정일시</th>
-                <td><input type="datetime-local" name="planDt" value="${fn:replace(release.planDt,' ','T')}"/></td>
+                <td colspan="3">
+                    <input type="number" name="chgId" value="${release.chgId}" placeholder="변경요청 ID(선택)"/>
+                    <span class="h-meta">배포 예정일시(시작~배포 일시)는 결재 완료 후 [배포 처리]에서 등록합니다.</span>
+                </td>
             </tr>
             <tr>
                 <th>배포 내용</th>
