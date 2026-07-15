@@ -6,7 +6,6 @@ import egovframework.ops.appr.service.EgovApprService;
 import egovframework.ops.cmm.code.service.EgovCodeService;
 import egovframework.ops.deploy.service.DeployService;
 import egovframework.ops.release.service.EgovReleaseService;
-import egovframework.ops.release.service.ReleaseItemVO;
 import egovframework.ops.release.service.ReleaseVO;
 import egovframework.ops.system.service.EgovSystemService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -68,7 +67,6 @@ public class EgovReleaseController {
         ReleaseVO release = releaseService.selectRelease(relId);
         model.addAttribute("release", release);
         model.addAttribute("statusList", codeService.selectCodeList("RELEASE_STATUS"));
-        model.addAttribute("itemResultList", codeService.selectCodeList("RELEASE_ITEM_RESULT"));
         // 결재선 승인/검토 완료 여부 — 미완료 시 배포 처리 상태를 '배포계획'으로 고정(전이 잠금)
         model.addAttribute("apprPassed", isApprPassed(relId));
         // Git 자동배포 : 대상 시스템 git 설정 및 배포 실행 이력
@@ -167,13 +165,6 @@ public class EgovReleaseController {
         }
         releaseService.processRelease(releaseVO);
         return "redirect:/release/detail/" + releaseVO.getRelId();
-    }
-
-    /** 배포 항목 등록 */
-    @PostMapping("/item")
-    public String addItem(@ModelAttribute ReleaseItemVO releaseItemVO) {
-        releaseService.addReleaseItem(releaseItemVO);
-        return "redirect:/release/detail/" + releaseItemVO.getRelId();
     }
 
     /** 배포 삭제 */

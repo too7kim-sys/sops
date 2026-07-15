@@ -60,8 +60,7 @@
                 </td>
             </tr>
             <tr><th>처리자</th><td colspan="3">${empty release.chargerId ? '-' : uf:nm(userNameMap, release.chargerId)}</td></tr>
-            <tr><th>배포 내용</th><td colspan="3"><div class="rte-view">${release.content}</div></td></tr>
-            <tr><th>배포 결과</th><td colspan="3"><div class="rte-view">${empty release.result ? '-' : release.result}</div></td></tr>
+            <tr><th>배포 내용</th><td colspan="3"><div class="rte-view">${empty release.content ? '-' : release.content}</div></td></tr>
         </table>
     </div>
 
@@ -102,7 +101,7 @@
                             <input type="datetime-local" name="deployDt" value="${fn:replace(release.deployDt, ' ', 'T')}"/>
                             <span class="h-meta">배포 예정 시작 ~ 배포(완료) 일시</span>
                         </td></tr>
-                    <tr><th>배포 결과</th><td><textarea class="wysiwyg" name="result" rows="4">${release.result}</textarea></td></tr>
+                    <tr><th>배포 내용</th><td><textarea class="wysiwyg" name="content" rows="4">${release.content}</textarea></td></tr>
                 </table>
                 <div class="right" style="margin-top:12px;">
                     <button type="submit" class="btn btn-success">처리 등록</button>
@@ -192,58 +191,6 @@
             </tbody>
         </table>
     </c:if>
-</div>
-
-<%-- 배포 항목 --%>
-<div class="panel">
-    <h3>배포 항목</h3>
-    <table class="list">
-        <thead>
-        <tr>
-            <th class="center" style="width:50px;">#</th>
-            <th>항목명</th>
-            <th>설명</th>
-            <th class="center" style="width:120px;">결과</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="it" items="${release.itemList}" varStatus="stat">
-            <tr>
-                <td class="center">${stat.count}</td>
-                <td>${it.itemNm}</td>
-                <td style="white-space:pre-line;">${empty it.itemDesc ? '-' : it.itemDesc}</td>
-                <td class="center"><span class="badge st-${fn:toLowerCase(it.itemResult)}">${empty it.itemResultNm ? it.itemResult : it.itemResultNm}</span></td>
-            </tr>
-        </c:forEach>
-        <c:if test="${empty release.itemList}"><tr><td colspan="4" class="empty">배포 항목이 없습니다.</td></tr></c:if>
-        </tbody>
-    </table>
-
-    <form method="post" action="${ctx}/release/item" style="margin-top:12px;">
-        <input type="hidden" name="relId" value="${release.relId}"/>
-        <table class="form">
-            <tr>
-                <th>항목명 <span class="required">*</span></th>
-                <td><input type="text" name="itemNm" required/></td>
-                <th>결과 <span class="required">*</span></th>
-                <td>
-                    <select name="itemResult" required>
-                        <option value="">선택</option>
-                        <c:forEach var="cd" items="${itemResultList}">
-                            <option value="${cd.codeId}">${cd.codeNm}</option>
-                        </c:forEach>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>설명</th>
-                <td colspan="3"><textarea name="itemDesc" rows="3"></textarea></td>
-            </tr>
-        </table>
-        <div class="right" style="margin-top:12px;">
-            <button type="submit" class="btn btn-success">항목 등록</button>
-        </div>
-    </form>
 </div>
 
 <div class="toolbar" style="justify-content:flex-end;"><a href="${ctx}/release/list" class="btn btn-default">목록 ＞</a></div>

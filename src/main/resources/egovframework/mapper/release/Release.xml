@@ -99,7 +99,7 @@
     <update id="updateReleaseProcess" parameterType="egovframework.ops.release.service.ReleaseVO">
         UPDATE OPS_RELEASE
            SET STATUS     = #{status},
-               RESULT     = #{result},
+               CONTENT    = #{content},
                CHARGER_ID = #{chargerId},
                PLAN_DT    =
                <choose>
@@ -118,27 +118,5 @@
     <delete id="deleteRelease" parameterType="long">
         DELETE FROM OPS_RELEASE WHERE REL_ID = #{relId}
     </delete>
-
-    <select id="selectReleaseItemList" parameterType="long"
-            resultType="egovframework.ops.release.service.ReleaseItemVO">
-        SELECT I.RITEM_ID    AS ritemId,
-               I.REL_ID      AS relId,
-               I.ITEM_NM     AS itemNm,
-               I.ITEM_DESC   AS itemDesc,
-               I.ITEM_RESULT AS itemResult,
-               IC.CODE_NM    AS itemResultNm
-          FROM OPS_RELEASE_ITEM I
-          LEFT JOIN OPS_CODE IC ON IC.CODE_GRP = 'RELEASE_ITEM_RESULT' AND IC.CODE_ID = I.ITEM_RESULT
-         WHERE I.REL_ID = #{relId}
-         ORDER BY I.RITEM_ID
-    </select>
-
-    <insert id="insertReleaseItem" parameterType="egovframework.ops.release.service.ReleaseItemVO"
-            useGeneratedKeys="true" keyProperty="ritemId">
-        INSERT INTO OPS_RELEASE_ITEM
-            (REL_ID, ITEM_NM, ITEM_DESC, ITEM_RESULT)
-        VALUES
-            (#{relId}, #{itemNm}, #{itemDesc}, #{itemResult})
-    </insert>
 
 </mapper>

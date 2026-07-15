@@ -2,7 +2,6 @@ package egovframework.ops.release.service.impl;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.ops.release.service.EgovReleaseService;
-import egovframework.ops.release.service.ReleaseItemVO;
 import egovframework.ops.release.service.ReleaseVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +35,7 @@ public class EgovReleaseServiceImpl extends EgovAbstractServiceImpl implements E
 
     @Override
     public ReleaseVO selectRelease(Long relId) {
-        ReleaseVO vo = releaseMapper.selectRelease(relId);
-        if (vo != null) {
-            vo.setItemList(releaseMapper.selectReleaseItemList(relId));
-        }
-        return vo;
+        return releaseMapper.selectRelease(relId);
     }
 
     @Override
@@ -70,12 +65,5 @@ public class EgovReleaseServiceImpl extends EgovAbstractServiceImpl implements E
     @Transactional
     public void deleteRelease(Long relId) {
         releaseMapper.deleteRelease(relId);
-    }
-
-    @Override
-    @Transactional
-    public void addReleaseItem(ReleaseItemVO vo) {
-        releaseMapper.insertReleaseItem(vo);
-        log.debug("배포 항목 등록 : REL-{} / RITEM-{}", vo.getRelId(), vo.getRitemId());
     }
 }
