@@ -146,7 +146,7 @@
     <%-- CAB 심의는 중요도 1등급 시스템만 수행 · 심의이력이 있으면(등록 완료) 폼 숨김 --%>
     <c:set var="cabFormShown" value="${cabRequired and empty change.cabList and change.status != 'COMPLETED' and change.status != 'REJECTED'}"/>
     <c:if test="${not cabRequired}">
-        <div class="h-meta"><b>CAB 심의 대상</b>이 아니어서(중요도 3등급 이하 또는 검토자 미지정) <b>CAB 심의 없이 자동 검토·승인</b> 처리됩니다.</div>
+        <div class="h-meta"><b>CAB 심의 대상</b>이 아니어서(결재라인에 검토 없음) <b>CAB 심의 없이 자동 검토·승인</b> 처리됩니다.</div>
     </c:if>
     <c:if test="${cabFormShown}">
     <h3>CAB 심의</h3>
